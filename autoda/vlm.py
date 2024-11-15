@@ -5,7 +5,7 @@ import os
 from typing import Optional
 
 import torch
-from transformers import AutoTokenizer, AutoModelForCausalLM
+from transformers import AutoTokenizer  # AutoModelForCausalLM
 from transformers import AutoProcessor, AutoModelForImageTextToText
 
 

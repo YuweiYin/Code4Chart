@@ -1,21 +1,25 @@
 import os
 import sys
-import json
+# import json
 import time
 from typing import Optional, List, Dict, Tuple, Any
 
 import fire
-import numpy as np
+# import numpy as np
+
+# import base64
+# from PIL import Image
+# from io import BytesIO
 
 # import torch
 # from transformers import AutoTokenizer, AutoModelForCausalLM
 # from huggingface_hub import login as hf_login
 # from datasets import load_dataset, DatasetDict, Dataset
 
-from text_llm import TextLLM
-from code_llm import CodeLLM
-from vlm import VLM
-from default_inputs import DefaultInputs
+from autoda.text_llm import TextLLM
+from autoda.code_llm import CodeLLM
+from autoda.vlm import VLM
+from autoda.default_inputs import DefaultInputs
 from utils.init_functions import logger_setup, cuda_setup, random_setup
 
 
@@ -160,9 +164,6 @@ class AutoDA:
             vis_code_python: List[str] = None,
     ) -> Tuple[List[str], List[Any]]:
         # Execute the visualization code and get the chart figure (the jpg file and its base64 encoding)
-        import base64
-        from PIL import Image
-        from io import BytesIO
 
         chart_path = []
         chart_base64 = []
