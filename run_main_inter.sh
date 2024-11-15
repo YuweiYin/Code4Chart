@@ -45,12 +45,6 @@ then
   VLM="meta-llama/Llama-3.2-11B-Vision-Instruct"
 fi
 
-echo -e "RUN_ID: ${RUN_ID}"
-echo -e "TASK: ${TASK}"
-echo -e "MODEL: ${MODEL}"
-echo -e "INTENT_SUBJECT: ${INTENT_SUBJECT}"
-echo -e "SAVE_STEPS: ${SAVE_STEPS}"
-echo -e "EPOCH: ${EPOCH}"
 echo -e "BSZ: ${BSZ}"
 echo -e "TEXT_LLM: ${TEXT_LLM}"
 echo -e "CODE_LLM: ${CODE_LLM}"
