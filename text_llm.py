@@ -7,8 +7,6 @@ from typing import Optional
 import torch
 from transformers import AutoTokenizer, AutoModelForCausalLM
 
-from default_inputs import DefaultInputs
-
 
 class TextLLM:
 
@@ -99,16 +97,13 @@ class TextLLM:
         ]
 
         self.tokenizer_gen = tokenizer_gen
+        # self.model = None
+        self.model = self.load_model()
 
-    def text_generation(
+    def load_model(
             self,
     ):
-        # TODO: Input prompts
-        # Load the tabular data and data analysis requirements/instructions
-        inputs = None
-        def_input = DefaultInputs()
-
-        # Load the model. TODO: load the model in __init__
+        # Load the model
         cur_model_path = self.hf_id
         model = AutoModelForCausalLM.from_pretrained(
             cur_model_path,
@@ -123,11 +118,29 @@ class TextLLM:
         # list(model.state_dict().keys())
         model.generation_config.pad_token_id = self.tokenizer_gen.pad_token_id  # eos_token_id
         # model.resize_token_embeddings(len(self.tokenizer_train))  # if added new special tokens (Option 1)
-        model.train()
+        # model.train()
+
+        model.eval()
+        # Set all modules as non-trainable
+        trainable_param_names = []
+        for p_name, param in model.named_parameters():
+            if any(tpn in p_name for tpn in trainable_param_names):
+                param.requires_grad = True
+            else:
+                param.requires_grad = False
         total_params = sum(p.numel() for p in model.parameters())
         train_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
         if self.verbose:
             self.logger.info(f"Number of total parameters ({cur_model_path}): {total_params}")
             self.logger.info(f"Number of trainable parameters (cur_model_path): {train_params}")
+
+        return model
+
+    def run_generation(
+            self,
+    ):
+        # TODO: Input prompts
+        # Load the tabular data and data analysis requirements/instructions
+        inputs = None
 
         return None

@@ -9,6 +9,7 @@
 
 ```bash
 pip install -r requirements.txt -i https://pypi.org/simple/
+pip3 install -e . -i https://pypi.org/simple/
 ```
 
 ---
