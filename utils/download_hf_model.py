@@ -7,6 +7,7 @@ import fire
 
 import torch
 from transformers import AutoTokenizer, AutoModelForCausalLM
+from transformers import AutoProcessor, AutoModelForImageTextToText
 from huggingface_hub import login
 
 from utils.init_functions import logger_setup
@@ -58,14 +59,15 @@ def main(
     logger.info(f">>> hf_id = {hf_id}; model_path = {model_path}")
     if os.path.isdir(model_path):
         logger.info(f">>> [START] os.path.isdir(model_path) is True")
-        hf_id = model_path
+        hf_id_local = model_path
     else:
         logger.info(f">>> [START] os.path.isdir(model_path) is False")
+        hf_id_local = hf_id
 
     try:
         # Download the tokenizer
         tokenizer = AutoTokenizer.from_pretrained(
-            hf_id,
+            hf_id_local,
             padding_side="left", truncation_side="left",  # "right" for training, "left" for generating
             cache_dir=cache_dir,
             trust_remote_code=trust_remote_code,
@@ -80,13 +82,27 @@ def main(
 
     try:
         # Download the model
-        model = AutoModelForCausalLM.from_pretrained(
-            hf_id,
-            torch_dtype=torch.float16,  # torch.bfloat16
-            device_map="auto",  # !pip install accelerate
-            cache_dir=cache_dir,
-            trust_remote_code=trust_remote_code,
-        )
+        if "Vision" in hf_id:
+            processor = AutoProcessor.from_pretrained(
+                hf_id_local,
+                trust_remote_code=True,
+                cache_dir=cache_dir,
+            )
+            model = AutoModelForImageTextToText.from_pretrained(
+                hf_id_local,
+                torch_dtype=torch.float16,  # torch.bfloat16
+                device_map="auto",  # !pip install accelerate
+                trust_remote_code=True,
+                cache_dir=cache_dir,
+            )
+        else:
+            model = AutoModelForCausalLM.from_pretrained(
+                hf_id_local,
+                torch_dtype=torch.float16,  # torch.bfloat16
+                device_map="auto",  # !pip install accelerate
+                cache_dir=cache_dir,
+                trust_remote_code=trust_remote_code,
+            )
         total_params = sum(p.numel() for p in model.parameters())
         train_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
         logger.info(f"Number of total parameters: {total_params}")

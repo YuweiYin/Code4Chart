@@ -6,6 +6,7 @@ from typing import Optional
 
 import torch
 from transformers import AutoTokenizer, AutoModelForCausalLM
+from transformers import AutoProcessor, AutoModelForImageTextToText
 
 
 class VLM:
@@ -101,12 +102,19 @@ class VLM:
         # self.model = None
         self.model = self.load_model()
 
+        self.processor = AutoProcessor.from_pretrained(
+            "meta-llama/Llama-3.2-11B-Vision-Instruct",
+            trust_remote_code=True,
+            cache_dir=self.cache_dir,
+        )
+
     def load_model(
             self,
     ):
         # Load the model
         cur_model_path = self.hf_id
-        model = AutoModelForCausalLM.from_pretrained(
+        # model = AutoModelForCausalLM.from_pretrained(
+        model = AutoModelForImageTextToText.from_pretrained(
             cur_model_path,
             torch_dtype=torch.float16,  # torch.bfloat16
             # torch_dtype=torch.float8_e5m2,  # torch.float8
