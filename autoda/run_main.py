@@ -261,7 +261,7 @@ def main(
         bsz=bsz, show_generation=show_generation, debug=debug,
     )
 
-    def_input = DefaultInputs()
+    def_input = DefaultInputs(project_root_dir=project_root_dir)
 
     if interactive:
         # Get the filepath of the data csv file

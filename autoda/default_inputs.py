@@ -1,42 +1,54 @@
-from typing import Dict, List
+import os
+from typing import Optional, Dict, List
 
 
 class DefaultInputs:
 
     def __init__(
             self,
+            project_root_dir: Optional[str] = None,
     ):
+        # Data and checkpoint directory
+        self.project_root_dir = project_root_dir
+        self.home_dir = os.path.expanduser("~")
+        self.data_dir = os.path.join(project_root_dir, "data/autoda")
+        # self.ckpt_dir = os.path.join(project_root_dir, "ckpt/autoda")
+        os.makedirs(self.data_dir, exist_ok=True)
+        # os.makedirs(self.ckpt_dir, exist_ok=True)
+
         # Tabular datasets:
         # https://www.kaggle.com/datasets?sort=votes
         # // https://huggingface.co/datasets/TIGER-Lab/MMLU-Pro
         self.data_csv_list = [
             # https://www.kaggle.com/datasets/imdevskp/corona-virus-report
-            "data/COVID-19_Dataset.csv",
+            os.path.join(self.data_dir, "COVID-19_Dataset.csv"),
             # https://www.kaggle.com/datasets/mlg-ulb/creditcardfraud
-            # "data/Credit_Card_Fraud_Detection.csv",
+            # os.path.join("Credit_Card_Fraud_Detection.csv"),
             # https://www.kaggle.com/datasets/START-UMD/gtd
-            "data/Global_Terrorism_Database.csv",
+            os.path.join(self.data_dir, "Global_Terrorism_Database.csv"),
             # https://www.kaggle.com/datasets/uciml/iris
-            "data/Iris_Species.csv",
+            os.path.join(self.data_dir, "Iris_Species.csv"),
             # https://www.kaggle.com/datasets/shivamb/netflix-shows
-            "data/Netflix_Movies_and_TV_Shows.csv",
+            os.path.join(self.data_dir, "Netflix_Movies_and_TV_Shows.csv"),
             # https://www.kaggle.com/datasets/dgomonov/new-york-city-airbnb-open-data
-            "data/New_York_City_Airbnb_Open_Data_2019.csv",
+            os.path.join(self.data_dir, "New_York_City_Airbnb_Open_Data_2019.csv"),
             # https://www.kaggle.com/datasets/fedesoriano/stroke-prediction-dataset
-            "data/Stroke_Prediction_Dataset.csv",
+            os.path.join(self.data_dir, "Stroke_Prediction_Dataset.csv"),
             # https://www.kaggle.com/datasets/spscientist/students-performance-in-exams
-            "data/Students_Performance_in_Exams.csv",
+            os.path.join(self.data_dir, "Students_Performance_in_Exams.csv"),
             # https://www.kaggle.com/datasets/russellyates88/suicide-rates-overview-1985-to-2016
-            "data/Suicide_Rates_Overview_1985_to_2016.csv",
+            os.path.join(self.data_dir, "Suicide_Rates_Overview_1985_to_2016.csv"),
             # https://www.kaggle.com/datasets/tmdb/tmdb-movie-metadata
-            "data/TMDB_5000_Movie_Dataset.csv",
+            os.path.join(self.data_dir, "TMDB_5000_Movie_Dataset.csv"),
             # https://www.kaggle.com/datasets/unsdsn/world-happiness
-            # "data/World_Happiness_Report_2015.csv",
-            # "data/World_Happiness_Report_2016.csv",
-            # "data/World_Happiness_Report_2017.csv",
-            # "data/World_Happiness_Report_2018.csv",
-            "data/World_Happiness_Report_2019.csv",
+            # os.path.join(self.data_dir, "World_Happiness_Report_2015.csv"),
+            # os.path.join(self.data_dir, "World_Happiness_Report_2016.csv"),
+            # os.path.join(self.data_dir, "World_Happiness_Report_2017.csv"),
+            # os.path.join(self.data_dir, "World_Happiness_Report_2018.csv"),
+            os.path.join(self.data_dir, "World_Happiness_Report_2019.csv"),
         ]
+        for csv_path in self.data_csv_list:
+            assert os.path.isfile(csv_path), f"Assertion Error: csv file does not exist: {csv_path}"
         self.data_csv_dict = {csv_idx: csv_path for csv_idx, csv_path in enumerate(self.data_csv_list, start=1)}
         self.data_csv_names = [csv_path.split("/")[-1].split(".")[0].replace("_", " ").strip()
                                for csv_path in self.data_csv_list]
