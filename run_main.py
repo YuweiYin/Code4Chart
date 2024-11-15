@@ -27,7 +27,6 @@ class AutoDA:
             logger,
             cuda_dict: dict,
             cache_dir: Optional[str] = None,
-            data_dir: str = os.path.join(os.path.expanduser("~"), "data/auto_da/"),
             project_root_dir: Optional[str] = None,
             hf_id_text_llm: str = "meta-llama/Llama-3.1-8B-Instruct",
             hf_id_code_llm: str = "meta-llama/CodeLlama-7b-Instruct-hf",
@@ -43,7 +42,6 @@ class AutoDA:
         :param logger: The logger to show logs.
         :param cuda_dict: The cuda/GPU information dictionary.
         :param cache_dir: The root directory of the cache.
-        :param data_dir: The directory of the data root.
         :param project_root_dir: The directory of the project root.
         :param hf_id_text_llm: The Hugging Face model ID of Text LLM. Format: ORGANIZATION_NAME/MODEL_NAME
         :param hf_id_code_llm: The Hugging Face model ID of Code LLM. Format: ORGANIZATION_NAME/MODEL_NAME
@@ -57,21 +55,35 @@ class AutoDA:
         self.verbose = verbose
         self.logger = logger
         self.cuda_dict = cuda_dict
+        self.cache_dir = cache_dir
+        self.project_root_dir = project_root_dir
+        self.home_dir = os.path.expanduser("~")
+        self.bsz = bsz
+        self.show_generation = show_generation
         self.debug = debug
+        self.hf_id_text_llm = hf_id_text_llm
+        self.hf_id_code_llm = hf_id_code_llm
+        self.hf_id_vlm = hf_id_vlm
+
+        # Data and checkpoint directory
+        self.data_dir = os.path.join(project_root_dir, "data/autoda")
+        self.ckpt_dir = os.path.join(project_root_dir, "ckpt/autoda")
+        os.makedirs(self.data_dir, exist_ok=True)
+        os.makedirs(self.ckpt_dir, exist_ok=True)
 
         self.text_llm_model = TextLLM(
             verbose=verbose, logger=logger, cuda_dict=cuda_dict,
-            cache_dir=cache_dir, data_dir=data_dir, project_root_dir=project_root_dir,
+            cache_dir=cache_dir, project_root_dir=project_root_dir,
             hf_id=hf_id_text_llm, bsz=bsz, show_generation=show_generation, debug=debug,
         )
         self.code_llm_model = CodeLLM(
             verbose=verbose, logger=logger, cuda_dict=cuda_dict,
-            cache_dir=cache_dir, data_dir=data_dir, project_root_dir=project_root_dir,
+            cache_dir=cache_dir, project_root_dir=project_root_dir,
             hf_id=hf_id_code_llm, bsz=bsz, show_generation=show_generation, debug=debug,
         )
         self.vlm_model = VLM(
             verbose=verbose, logger=logger, cuda_dict=cuda_dict,
-            cache_dir=cache_dir, data_dir=data_dir, project_root_dir=project_root_dir,
+            cache_dir=cache_dir, project_root_dir=project_root_dir,
             hf_id=hf_id_vlm, bsz=bsz, show_generation=show_generation, debug=debug,
         )
 
@@ -203,13 +215,13 @@ def main(
     seed: int = 42,
     cuda: Optional[str] = None,
     cache_dir: Optional[str] = None,
-    data_dir: str = os.path.join(os.path.expanduser("~"), "data/auto_da/"),
     project_root_dir: Optional[str] = None,
     hf_id_text_llm: str = "meta-llama/Llama-3.1-8B-Instruct",
     hf_id_code_llm: str = "meta-llama/CodeLlama-7b-Instruct-hf",
     hf_id_vlm: str = "meta-llama/Llama-3.2-11B-Vision-Instruct",
     bsz: int = 1,
     show_generation: bool = False,
+    interactive: bool = False,
     debug: bool = False,
     **kwargs
 ) -> None:
@@ -220,13 +232,13 @@ def main(
     :param seed: Random seed of all modules.
     :param cuda: To specify CUDA GPU devices, e.g., "0" OR "0,1". Default: None -- Use CPU or all available GPUs.
     :param cache_dir: The root directory of the cache.
-    :param data_dir: The directory of the data root.
     :param project_root_dir: The directory of the project root.
     :param hf_id_text_llm: The Hugging Face model ID of Text LLM. Format: ORGANIZATION_NAME/MODEL_NAME
     :param hf_id_code_llm: The Hugging Face model ID of Code LLM. Format: ORGANIZATION_NAME/MODEL_NAME
     :param hf_id_vlm: The Hugging Face model ID of VLM. Format: ORGANIZATION_NAME/MODEL_NAME
     :param bsz: The batch size.
     :param show_generation: Whether to show outputs during generation.
+    :param interactive: Interactive model (accepting user inputs).
     :param debug: Debugging / developing mode.
     :return: None.
     """
@@ -243,49 +255,54 @@ def main(
 
     auto_da = AutoDA(
         verbose=verbose, logger=logger, cuda_dict=cuda_dict,
-        cache_dir=cache_dir, data_dir=data_dir, project_root_dir=project_root_dir,
+        cache_dir=cache_dir, project_root_dir=project_root_dir,
         hf_id_text_llm=hf_id_text_llm, hf_id_code_llm=hf_id_code_llm, hf_id_vlm=hf_id_vlm,
         bsz=bsz, show_generation=show_generation, debug=debug,
     )
 
     def_input = DefaultInputs()
 
-    # Get the filepath of the data csv file
-    input_data_csv_path = input("\nPlease input your data csv filepath:\n"
-                                "Press Enter to choose from example datasets.")
-    input_data_csv_path = input_data_csv_path.strip()
-    if len(input_data_csv_path) == 0:
-        input_data_csv_id = input(
-            "\n" + "\n".join(f"{k}: {v}" for k, v in def_input.data_csv_dict.items()) + "\nPlease input a number: ")
-        input_data_csv_id = input_data_csv_id.strip()
-        try:
-            input_data_csv_id = int(input_data_csv_id)
-            input_data_csv_path = def_input.data_csv_dict[input_data_csv_id]
-        except Exception as e:
-            print(e)
-            sys.exit(1)
-    assert os.path.isfile(input_data_csv_path), f"Assertion Error: Path does not exist: {input_data_csv_path}"
+    if interactive:
+        # Get the filepath of the data csv file
+        input_data_csv_path = input("\nPlease input your data csv filepath:\n"
+                                    "Press Enter to choose from example datasets.")
+        input_data_csv_path = input_data_csv_path.strip()
+        if len(input_data_csv_path) == 0:
+            input_data_csv_id = input(
+                "\n" + "\n".join(f"{k}: {v}" for k, v in def_input.data_csv_dict.items()) +
+                "\nPlease input a number: ")
+            input_data_csv_id = input_data_csv_id.strip()
+            try:
+                input_data_csv_id = int(input_data_csv_id)
+                input_data_csv_path = def_input.data_csv_dict[input_data_csv_id]
+            except Exception as e:
+                print(e)
+                sys.exit(1)
+        assert os.path.isfile(input_data_csv_path), f"Assertion Error: Path does not exist: {input_data_csv_path}"
 
-    # Get the data analysis requirement
-    input_user_da_req = input("\nPlease input your data analysis requirements:\n"
-                              "Press Enter to get more specified data analysis suggestions.")
-    input_user_da_req = input_user_da_req.strip()
-    # if len(input_user_da_req) == 0:
-    #     input_user_da_req = input(
-    #         "\n" + "\n".join(f"{k}: {v['question']}" for k, v in def_input.da_req_all_dict.items()) +
-    #         "\nPlease input a number (Press Enter to get more specified suggestions): ")
-    #     input_user_da_req = input_user_da_req.strip()
-    #     if len(input_user_da_req) == 0:
-    #         input_user_da_req = ""
-    #         pass
-    #     else:
-    #         try:
-    #             input_user_da_req_id = int(input_user_da_req)
-    #             input_user_da_req = def_input.da_req_all_dict[input_user_da_req_id]
-    #         except Exception as e:
-    #             print(e)
-    #             sys.exit(1)
-    input_user_da_req = input_user_da_req.strip()
+        # Get the data analysis requirement
+        input_user_da_req = input("\nPlease input your data analysis requirements:\n"
+                                  "Press Enter to get more specified data analysis suggestions.")
+        input_user_da_req = input_user_da_req.strip()
+        # if len(input_user_da_req) == 0:
+        #     input_user_da_req = input(
+        #         "\n" + "\n".join(f"{k}: {v['question']}" for k, v in def_input.da_req_all_dict.items()) +
+        #         "\nPlease input a number (Press Enter to get more specified suggestions): ")
+        #     input_user_da_req = input_user_da_req.strip()
+        #     if len(input_user_da_req) == 0:
+        #         input_user_da_req = ""
+        #         pass
+        #     else:
+        #         try:
+        #             input_user_da_req_id = int(input_user_da_req)
+        #             input_user_da_req = def_input.da_req_all_dict[input_user_da_req_id]
+        #         except Exception as e:
+        #             print(e)
+        #             sys.exit(1)
+        input_user_da_req = input_user_da_req.strip()
+    else:
+        input_data_csv_path = def_input.data_csv_dict[3]  # "data/Iris_Species.csv"
+        input_user_da_req = ""  # Let the Text LLM to provide data analysis requirements
 
     auto_da.run(data_csv_path=input_data_csv_path, user_da_req=input_user_da_req)
 

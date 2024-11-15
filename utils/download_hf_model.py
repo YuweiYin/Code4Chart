@@ -83,6 +83,7 @@ def main(
     try:
         # Download the model
         if "Vision" in hf_id:
+            logger.info(f"Download AutoModelForImageTextToText VLMs (with the processor): {hf_id_local}")
             processor = AutoProcessor.from_pretrained(
                 hf_id_local,
                 trust_remote_code=True,
@@ -96,6 +97,7 @@ def main(
                 cache_dir=cache_dir,
             )
         else:
+            logger.info(f"Download AutoModelForCausalLM Models: {hf_id_local}")
             model = AutoModelForCausalLM.from_pretrained(
                 hf_id_local,
                 torch_dtype=torch.float16,  # torch.bfloat16

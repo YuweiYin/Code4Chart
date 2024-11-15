@@ -17,7 +17,6 @@ class VLM:
             logger,
             cuda_dict: dict,
             cache_dir: Optional[str] = None,
-            data_dir: str = os.path.join(os.path.expanduser("~"), "data/auto_da/"),
             project_root_dir: Optional[str] = None,
             hf_id: str = "meta-llama/Llama-3.2-11B-Vision-Instruct",
             bsz: int = 1,
@@ -31,7 +30,6 @@ class VLM:
         :param logger: The logger to show logs.
         :param cuda_dict: The cuda/GPU information dictionary.
         :param cache_dir: The root directory of the cache.
-        :param data_dir: The directory of the data root.
         :param project_root_dir: The directory of the project root.
         :param hf_id: ORGANIZATION_NAME/MODEL_NAME, e.g., "listen2you002/ChartLlama-13b"
         :param bsz: The batch size.
@@ -47,10 +45,8 @@ class VLM:
         self.verbose = verbose
         self.logger = logger
         self.cuda_dict = cuda_dict
-        self.data_dir = cache_dir
-        self.data_dir = data_dir
+        self.cache_dir = cache_dir
         self.project_root_dir = project_root_dir
-        self.ckpt_dir = os.path.join(project_root_dir, "ckpt/auto_da")
         self.home_dir = os.path.expanduser("~")
         self.hf_id = hf_id
         self.hf_name = "--".join(hf_id.split("/"))
@@ -58,7 +54,9 @@ class VLM:
         self.show_generation = show_generation  # If True, show outputs during generation
         self.debug = debug
 
-        # Data directory
+        # Data and checkpoint directory
+        self.data_dir = os.path.join(project_root_dir, "data/autoda")
+        self.ckpt_dir = os.path.join(project_root_dir, "ckpt/autoda")
         os.makedirs(self.data_dir, exist_ok=True)
         os.makedirs(self.ckpt_dir, exist_ok=True)
 
