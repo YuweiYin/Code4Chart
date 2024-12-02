@@ -1,7 +1,7 @@
 # Code4Chart
 
-* Does Plot Code Improve Chart Understanding for Vision-Language Models?
-* <del>Automated Data Analysis via Multimodal Large Language Models</del>
+* Does The Plotting Code Improve Chart Understanding for Vision-Language Models?
+* <del>AutoDA: Automated Data Analysis via Multimodal Large Language Models</del>
 * <del>Code, Chart, and Caption: A Synthetic Dataset for Chart Understanding and Generation</del>
 
 ---
