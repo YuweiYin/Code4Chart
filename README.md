@@ -9,6 +9,10 @@
 ## Python Environment
 
 ```bash
+#python3 -m venv c4c
+conda create -n c4c -y python=3.10
+conda activate c4c
+
 pip3 install -r requirements.txt -i https://pypi.org/simple/
 pip3 install -e . -i https://pypi.org/simple/
 ```

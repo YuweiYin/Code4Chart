@@ -16,14 +16,14 @@ import fire
 # from huggingface_hub import login as hf_login
 # from datasets import load_dataset, DatasetDict, Dataset
 
-from autoda.text_llm import TextLLM
-from autoda.code_llm import CodeLLM
-from autoda.vlm import VLM
-from autoda.default_inputs import DefaultInputs
+from code4chart.text_llm import TextLLM
+from code4chart.code_llm import CodeLLM
+from code4chart.vlm import VLM
+from code4chart.default_inputs import DefaultInputs
 from utils.init_functions import logger_setup, cuda_setup, random_setup
 
 
-class AutoDA:
+class Code4Chart:
 
     def __init__(
             self,
@@ -70,8 +70,8 @@ class AutoDA:
         self.hf_id_vlm = hf_id_vlm
 
         # Data and checkpoint directory
-        self.data_dir = os.path.join(project_root_dir, "data/autoda")
-        self.ckpt_dir = os.path.join(project_root_dir, "ckpt/autoda")
+        self.data_dir = os.path.join(project_root_dir, "data/code4chart")
+        self.ckpt_dir = os.path.join(project_root_dir, "ckpt/code4chart")
         os.makedirs(self.data_dir, exist_ok=True)
         os.makedirs(self.ckpt_dir, exist_ok=True)
 
@@ -247,14 +247,14 @@ def main(
     timer_start = time.perf_counter()
 
     # Setup of the logger, CUDA gpus, and random seed
-    logger = logger_setup("AutoDA_MLLM")
+    logger = logger_setup("Code4Chart")
     cuda_dict = cuda_setup(cuda=cuda, logger=logger, verbose=verbose)
     random_setup(seed=seed, has_cuda=cuda_dict["has_cuda"])
     logger.info(f">>> cuda_dict:\n{cuda_dict}")
 
     # hf_login(token="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")
 
-    auto_da = AutoDA(
+    auto_da = Code4Chart(
         verbose=verbose, logger=logger, cuda_dict=cuda_dict,
         cache_dir=cache_dir, project_root_dir=project_root_dir,
         hf_id_text_llm=hf_id_text_llm, hf_id_code_llm=hf_id_code_llm, hf_id_vlm=hf_id_vlm,

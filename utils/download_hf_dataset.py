@@ -19,11 +19,9 @@ def main(
 ) -> None:
     """
     Download Hugging Face models and tokenizers to the local cache directory.
-    "${HOME}/.cache/huggingface/"
-    "${HOME}/scratch/.cache/huggingface"
     "${HOME}/projects/def-carenini/yuweiyin/.cache/huggingface/"
 
-    :param hf_id: HuggingFace dataset id (ORGANIZATION_NAME/DATASET_NAME), e.g., "yuweiyin/BookIntent"
+    :param hf_id: HuggingFace dataset id (ORGANIZATION_NAME/DATASET_NAME)
     :param subset: Name of the dataset subset, e.g., "authors" or "characters"
     :param cache_dir: The root directory of the cache, e.g., "${HOME}/.cache/huggingface/"
     :param trust_remote_code: Whether to allow for datasets defined on the Hub using a dataset script.

@@ -21,8 +21,6 @@ def main(
 ) -> None:
     """
     Download Hugging Face models and tokenizers to the local cache directory.
-    "${HOME}/.cache/huggingface/"
-    "${HOME}/scratch/.cache/huggingface"
     "${HOME}/projects/def-carenini/yuweiyin/.cache/huggingface/"
 
     :param hf_id: ORGANIZATION_NAME/MODEL_NAME, e.g., "openai-community/gpt2"

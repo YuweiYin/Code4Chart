@@ -11,8 +11,8 @@ class DefaultInputs:
         # Data and checkpoint directory
         self.project_root_dir = project_root_dir
         self.home_dir = os.path.expanduser("~")
-        self.data_dir = os.path.join(project_root_dir, "data/autoda")
-        # self.ckpt_dir = os.path.join(project_root_dir, "ckpt/autoda")
+        self.data_dir = os.path.join(project_root_dir, "data/code4chart")
+        # self.ckpt_dir = os.path.join(project_root_dir, "ckpt/code4chart")
         os.makedirs(self.data_dir, exist_ok=True)
         # os.makedirs(self.ckpt_dir, exist_ok=True)
 
