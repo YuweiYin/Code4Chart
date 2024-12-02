@@ -6,7 +6,7 @@ def get_requirements(path: str):
 
 
 setup(
-    name="autoda",
+    name="code4chart",
     version="0.0.1",
     packages=find_packages(),
     install_requires=get_requirements("requirements.txt"),
