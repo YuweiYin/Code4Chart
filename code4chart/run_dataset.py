@@ -96,19 +96,17 @@ class Code4ChartDataset:
 
     def step1_get_metadata(
             self,
-            data_csv_path_list: List[str] = None,
     ) -> str:
         # Load the tabular data and run basic analysis (e.g., using Pandas to get some row and column information)
-        metadata = dict({})  # Dict[str, Any]
+        metadata = []  # List[Dict[str, Any]]
 
         # Write the data_csv_path and metadata into jsonl files
-        res_fp = "metadata.jsonl"
+        metadata_fp = os.path.join(self.data_dir, "metadata.jsonl")
 
-        return res_fp
+        return metadata_fp
 
     def step2_analyze_da_reqs(
             self,
-            data_csv_path_list: List[str] = None,
     ) -> str:
         # For each da_req, we use Text2Text LLMs to analyze the requirement, provide some solutions or steps,
         #   and give the proper chart types & specifications so that
@@ -117,12 +115,21 @@ class Code4ChartDataset:
         #   e.g., DracoGPT https://arxiv.org/abs/2408.06845
         #   find pre-defined/existing DA tasks/requirements in Draco 2 https://arxiv.org/abs/2308.14247
         da_reqs = []  # List[Dict[str, Any]]
+
         # Load "metadata.jsonl"
+        metadata_fp = os.path.join(self.data_dir, "metadata.jsonl")
+
+        # Load the Text LLM
+        # self.text_llm_model = TextLLM(
+        #     verbose=verbose, logger=logger, cuda_dict=cuda_dict,
+        #     cache_dir=cache_dir, project_root_dir=project_root_dir,
+        #     hf_id=hf_id_text_llm, bsz=bsz, show_generation=show_generation, debug=debug,
+        # )
 
         # Write the data_csv_path and da_reqs into jsonl files
-        res_fp = "da_reqs.jsonl"
+        da_reqs_fp = os.path.join(self.data_dir, "da_reqs.jsonl")
 
-        return res_fp
+        return da_reqs_fp
 
     def step3_gen_vis_code(
             self,
@@ -134,11 +141,20 @@ class Code4ChartDataset:
 
         # Get self.data_csv_path_list
         # Load "metadata.jsonl" and "da_reqs.jsonl"
+        metadata_fp = os.path.join(self.data_dir, "metadata.jsonl")
+        da_reqs_fp = os.path.join(self.data_dir, "da_reqs.jsonl")
+
+        # Load the Code LLM
+        # self.code_llm_model = CodeLLM(
+        #     verbose=verbose, logger=logger, cuda_dict=cuda_dict,
+        #     cache_dir=cache_dir, project_root_dir=project_root_dir,
+        #     hf_id=hf_id_code_llm, bsz=bsz, show_generation=show_generation, debug=debug,
+        # )
 
         # Write the data_csv_path and vis_code into jsonl files
-        res_fp = "vis_code.jsonl"
+        vis_code_fp = os.path.join(self.data_dir, "vis_code.jsonl")
 
-        return res_fp
+        return vis_code_fp
 
     def step4_exec_vis_code(
             self,
@@ -150,6 +166,7 @@ class Code4ChartDataset:
 
         # Get self.data_csv_path_list
         # Load "vis_code.jsonl"
+        vis_code_fp = os.path.join(self.data_dir, "vis_code.jsonl")
 
         # exec(open("file.py").read())
         #
@@ -161,9 +178,9 @@ class Code4ChartDataset:
         # subprocess.run(["python3", "script2.py"])
 
         # Write the data_csv_path, chart_path, and chart_base64 into jsonl files
-        res_fp = "chart_plot.jsonl"
+        chart_image_fp = os.path.join(self.data_dir, "chart_image.jsonl")
 
-        return res_fp
+        return chart_image_fp
 
     def step5_chart_cap(
             self,
@@ -171,23 +188,34 @@ class Code4ChartDataset:
         # Input all information to Chart LLMs and obtain chart captions/descriptions and relevant analysis/insights
         # Here, "chart captions" faithfully/objectively describe the observations in the chart,
         #   while the "relevant analysis" is further insights
-        chart_captions = []  # List[str]
-        # chart_insights = []  # List[str]
+        chart_caption = []  # List[str]
+        # chart_insight = []  # List[str]
 
         # Get self.data_csv_path_list
-        # Load "metadata.jsonl", "da_reqs.jsonl", "vis_code.jsonl", and "chart_plot.jsonl"
+        # Load "metadata.jsonl", "da_reqs.jsonl", "vis_code.jsonl", and "chart_image.jsonl"
+        metadata_fp = os.path.join(self.data_dir, "metadata.jsonl")
+        da_reqs_fp = os.path.join(self.data_dir, "da_reqs.jsonl")
+        vis_code_fp = os.path.join(self.data_dir, "vis_code.jsonl")
+        chart_image_fp = os.path.join(self.data_dir, "chart_image.jsonl")
 
-        # assert len(chart_captions) == len(chart_insights)
+        # Load the Vision-language Model (Multimodal LLM)
+        # self.vlm_model = VLM(
+        #     verbose=verbose, logger=logger, cuda_dict=cuda_dict,
+        #     cache_dir=cache_dir, project_root_dir=project_root_dir,
+        #     hf_id=hf_id_vlm, bsz=bsz, show_generation=show_generation, debug=debug,
+        # )
+
+        # assert len(chart_caption) == len(chart_insight)
         # chart_analysis = [{
         #     "caption": caption,
         #     "insight": insight,
-        # } for caption, insight in zip(chart_captions, chart_insights)]  # List[Dict[str, Any]]
+        # } for caption, insight in zip(chart_caption, chart_insight)]  # List[Dict[str, Any]]
 
-        # Write the data_csv_path and chart_captions into jsonl files
-        # res_fp = "chart_analysis.jsonl"
-        res_fp = "chart_captions.jsonl"
+        # Write the data_csv_path and chart_caption into jsonl files
+        # chart_analysis_fp = os.path.join(self.data_dir, "chart_analysis.jsonl")
+        chart_caption_fp = os.path.join(self.data_dir, "chart_caption.jsonl")
 
-        return res_fp
+        return chart_caption_fp
 
     def step6_overall_analysis(
             self,
@@ -196,12 +224,23 @@ class Code4ChartDataset:
         overall_analysis = []  # List[str]
 
         # Get self.data_csv_path_list
-        # Load "metadata.jsonl", "da_reqs.jsonl", "vis_code.jsonl", and "chart_captions.jsonl"
+        # Load "metadata.jsonl", "da_reqs.jsonl", "vis_code.jsonl", and "chart_caption.jsonl"
+        metadata_fp = os.path.join(self.data_dir, "metadata.jsonl")
+        da_reqs_fp = os.path.join(self.data_dir, "da_reqs.jsonl")
+        vis_code_fp = os.path.join(self.data_dir, "vis_code.jsonl")
+        chart_caption_fp = os.path.join(self.data_dir, "chart_caption.jsonl")
+
+        # Load the Text LLM
+        # self.text_llm_model = TextLLM(
+        #     verbose=verbose, logger=logger, cuda_dict=cuda_dict,
+        #     cache_dir=cache_dir, project_root_dir=project_root_dir,
+        #     hf_id=hf_id_text_llm, bsz=bsz, show_generation=show_generation, debug=debug,
+        # )
 
         # Write the data_csv_path and overall_analysis into jsonl files
-        res_fp = "overall_analysis.jsonl"
+        overall_analysis_fp = os.path.join(self.data_dir, "overall_analysis.jsonl")
 
-        return res_fp
+        return overall_analysis_fp
 
     def step7_chart_qa(
             self,
@@ -213,11 +252,17 @@ class Code4ChartDataset:
         chart_answer = []  # List[int] -> each entry: the index of correct answer in each option list
 
         # Get self.data_csv_path_list
-        # Load "metadata.jsonl", "da_reqs.jsonl", "vis_code.jsonl", "chart_plot.jsonl",
-        #   "chart_captions.jsonl", and "overall_analysis.jsonl"
+        # Load "metadata.jsonl", "da_reqs.jsonl", "vis_code.jsonl", "chart_image.jsonl",
+        #   "chart_caption.jsonl", and "overall_analysis.jsonl"
+        metadata_fp = os.path.join(self.data_dir, "metadata.jsonl")
+        da_reqs_fp = os.path.join(self.data_dir, "da_reqs.jsonl")
+        vis_code_fp = os.path.join(self.data_dir, "vis_code.jsonl")
+        chart_image_fp = os.path.join(self.data_dir, "chart_image.jsonl")
+        chart_caption_fp = os.path.join(self.data_dir, "chart_caption.jsonl")
+        overall_analysis_fp = os.path.join(self.data_dir, "overall_analysis.jsonl")
 
         # Write each chart QA example into jsonl files
-        res_fp = "c4c_qa.jsonl"
+        res_fp = os.path.join(self.data_dir, "c4c_qa.jsonl")
 
         # To upload to Hugging Face datasets
 
@@ -233,11 +278,17 @@ class Code4ChartDataset:
         chart_answer = []  # List[int] -> each entry: the index of correct answer in each option list
 
         # Get self.data_csv_path_list
-        # Load "metadata.jsonl", "da_reqs.jsonl", "vis_code.jsonl", "chart_plot.jsonl",
-        #   "chart_captions.jsonl", and "overall_analysis.jsonl"
+        # Load "metadata.jsonl", "da_reqs.jsonl", "vis_code.jsonl", "chart_image.jsonl",
+        #   "chart_caption.jsonl", and "overall_analysis.jsonl"
+        metadata_fp = os.path.join(self.data_dir, "metadata.jsonl")
+        da_reqs_fp = os.path.join(self.data_dir, "da_reqs.jsonl")
+        vis_code_fp = os.path.join(self.data_dir, "vis_code.jsonl")
+        chart_image_fp = os.path.join(self.data_dir, "chart_image.jsonl")
+        chart_caption_fp = os.path.join(self.data_dir, "chart_caption.jsonl")
+        overall_analysis_fp = os.path.join(self.data_dir, "overall_analysis.jsonl")
 
         # Write each chart captioning example into jsonl files
-        res_fp = "c4c_cap.jsonl"
+        res_fp = os.path.join(self.data_dir, "c4c_cap.jsonl")
 
         # To upload to Hugging Face datasets
 
