@@ -1,11 +1,12 @@
 import os
 # import sys
-# import json
+import json
 import time
 from typing import Optional, List, Dict, Tuple, Any
 
 import fire
-# import numpy as np
+import numpy as np
+import pandas as pd
 
 # import base64
 # from PIL import Image
@@ -21,6 +22,7 @@ from code4chart.code_llm import CodeLLM
 from code4chart.vlm import VLM
 from code4chart.default_inputs import DefaultInputs
 from utils.init_functions import logger_setup, cuda_setup, random_setup
+from utils.numpy_encoder import NumpyEncoder
 
 
 class Code4ChartDataset:
@@ -30,7 +32,7 @@ class Code4ChartDataset:
             verbose: bool,
             logger,
             cuda_dict: dict,
-            data_csv_path_list: List[str],
+            datasets_info: List[Dict[str, Any]],
             cache_dir: Optional[str] = None,
             project_root_dir: Optional[str] = None,
             hf_id_text_llm: str = "meta-llama/Llama-3.1-8B-Instruct",
@@ -72,11 +74,16 @@ class Code4ChartDataset:
         self.hf_id_vlm = hf_id_vlm
 
         # Data and checkpoint directory
-        self.data_csv_path_list = data_csv_path_list
+        self.datasets_info = datasets_info
         self.data_dir = os.path.join(project_root_dir, "data/code4chart")
         self.ckpt_dir = os.path.join(project_root_dir, "ckpt/code4chart")
         os.makedirs(self.data_dir, exist_ok=True)
         os.makedirs(self.ckpt_dir, exist_ok=True)
+
+        self.data_dir_raw = os.path.join(self.data_dir, "raw")
+        self.data_dir_process = os.path.join(self.data_dir, "process")
+        os.makedirs(self.data_dir_raw, exist_ok=True)
+        os.makedirs(self.data_dir_process, exist_ok=True)
 
         # self.text_llm_model = TextLLM(
         #     verbose=verbose, logger=logger, cuda_dict=cuda_dict,
@@ -100,9 +107,107 @@ class Code4ChartDataset:
         # Load the tabular data and run basic analysis (e.g., using Pandas to get some row and column information)
         metadata = []  # List[Dict[str, Any]]
 
-        # Write the data_csv_path and metadata into jsonl files
-        metadata_fp = os.path.join(self.data_dir, "metadata.jsonl")
+        # Get the basic statistics on the dataset
+        for ds in self.datasets_info:
+            ds_metadata = dict()
 
+            # 1. Dataset-wise:
+            #   # of examples (rows), # of features (cols)
+            ds_id, ds_url, ds_desc = ds["id"], ds["url"], ds["description"]
+            ds_fp, ds_fn, ds_name = ds["filepath"], ds["filename"], ds["name"]
+            assert os.path.isfile(ds_fp)
+            df = pd.read_csv(ds_fp)
+            num_row, num_col = df.shape
+            ds_metadata["num_row"] = num_row
+            ds_metadata["num_col"] = num_col
+
+            feat_list = list(df.columns)
+            ds_metadata["features"] = []
+            for feat in feat_list:
+                # 2. Feature-wise:
+                #   the feature name, datatype, # of miss/valid/unique values, the max/min/mean/std of numerical values
+                cur_feat_dict = dict()
+                cur_feat_dict["name"] = feat
+
+                df_feat = df[feat]
+                num_total = len(df_feat)
+                num_miss = int(df_feat.isna().sum())
+                # num_valid = num_row - num_miss
+                df_feat = df_feat.dropna(axis=0)
+                num_valid = len(df_feat)
+                assert num_total == num_miss + num_valid
+                num_unique = len(df_feat.unique())
+
+                cur_feat_dict["num_total"] = num_total
+                cur_feat_dict["num_miss"] = num_miss
+                cur_feat_dict["num_valid"] = num_valid
+                cur_feat_dict["num_unique"] = num_unique
+
+                # Convert the dtype of the current feature col, and do statistics on numerical data
+                numerical_stat = dict()
+                cur_dtype = "object"
+                astype_flag = False
+                try:
+                    df_feat = df_feat.astype("float32")
+                    astype_flag = True
+                    cur_dtype = "float32"
+                    numerical_stat = {
+                        "num": num_valid,
+                        "min": np.min(df_feat).item(),
+                        "max": np.max(df_feat).item(),
+                        "mean": np.mean(df_feat).item(),
+                        "std": np.std(df_feat).item(),
+                    }
+                except ValueError:
+                    pass
+
+                if not astype_flag:
+                    try:
+                        df_feat = df_feat.astype("int64")
+                        astype_flag = True
+                        cur_dtype = "int64"
+                        numerical_stat = {
+                            "num": num_valid,
+                            "min": np.min(df_feat).item(),
+                            "max": np.max(df_feat).item(),
+                            "mean": np.mean(df_feat).item(),
+                            "std": np.std(df_feat).item(),
+                        }
+                    except ValueError:
+                        pass
+
+                if not astype_flag:
+                    try:
+                        df_feat = df_feat.astype("string")
+                        # df_feat = df_feat.astype(str)
+                        astype_flag = True
+                        cur_dtype = "str"
+                    except ValueError:
+                        pass
+
+                # if not astype_flag:
+                #     pass
+                # cur_dtype = df_feat.dtype
+
+                cur_feat_dict["dtype"] = cur_dtype
+                cur_feat_dict["numerical_stat"] = numerical_stat
+
+                # Save the metadata of the current feature
+                ds_metadata["features"].append(cur_feat_dict)
+
+            # Save the metadata of the current dataset
+            metadata.append(ds_metadata)
+
+        # Write the data_csv_path and metadata into jsonl files
+        metadata_fp = os.path.join(self.data_dir_process, "metadata.jsonl")
+        write_cnt = 0
+        with open(metadata_fp, "w", encoding="utf-8") as fp_out:
+            for _item in metadata:
+                fp_out.write(json.dumps(_item, cls=NumpyEncoder) + "\n")
+                write_cnt += 1
+
+        if self.verbose:
+            self.logger.info(f">>> write_cnt = {write_cnt} to file: {metadata_fp}")
         return metadata_fp
 
     def step2_analyze_da_reqs(
@@ -117,7 +222,7 @@ class Code4ChartDataset:
         da_reqs = []  # List[Dict[str, Any]]
 
         # Load "metadata.jsonl"
-        metadata_fp = os.path.join(self.data_dir, "metadata.jsonl")
+        metadata_fp = os.path.join(self.data_dir_process, "metadata.jsonl")
 
         # Load the Text LLM
         # self.text_llm_model = TextLLM(
@@ -127,7 +232,7 @@ class Code4ChartDataset:
         # )
 
         # Write the data_csv_path and da_reqs into jsonl files
-        da_reqs_fp = os.path.join(self.data_dir, "da_reqs.jsonl")
+        da_reqs_fp = os.path.join(self.data_dir_process, "da_reqs.jsonl")
 
         return da_reqs_fp
 
@@ -141,8 +246,8 @@ class Code4ChartDataset:
 
         # Get self.data_csv_path_list
         # Load "metadata.jsonl" and "da_reqs.jsonl"
-        metadata_fp = os.path.join(self.data_dir, "metadata.jsonl")
-        da_reqs_fp = os.path.join(self.data_dir, "da_reqs.jsonl")
+        metadata_fp = os.path.join(self.data_dir_process, "metadata.jsonl")
+        da_reqs_fp = os.path.join(self.data_dir_process, "da_reqs.jsonl")
 
         # Load the Code LLM
         # self.code_llm_model = CodeLLM(
@@ -152,7 +257,7 @@ class Code4ChartDataset:
         # )
 
         # Write the data_csv_path and vis_code into jsonl files
-        vis_code_fp = os.path.join(self.data_dir, "vis_code.jsonl")
+        vis_code_fp = os.path.join(self.data_dir_process, "vis_code.jsonl")
 
         return vis_code_fp
 
@@ -166,7 +271,7 @@ class Code4ChartDataset:
 
         # Get self.data_csv_path_list
         # Load "vis_code.jsonl"
-        vis_code_fp = os.path.join(self.data_dir, "vis_code.jsonl")
+        vis_code_fp = os.path.join(self.data_dir_process, "vis_code.jsonl")
 
         # exec(open("file.py").read())
         #
@@ -178,7 +283,7 @@ class Code4ChartDataset:
         # subprocess.run(["python3", "script2.py"])
 
         # Write the data_csv_path, chart_path, and chart_base64 into jsonl files
-        chart_image_fp = os.path.join(self.data_dir, "chart_image.jsonl")
+        chart_image_fp = os.path.join(self.data_dir_process, "chart_image.jsonl")
 
         return chart_image_fp
 
@@ -193,10 +298,10 @@ class Code4ChartDataset:
 
         # Get self.data_csv_path_list
         # Load "metadata.jsonl", "da_reqs.jsonl", "vis_code.jsonl", and "chart_image.jsonl"
-        metadata_fp = os.path.join(self.data_dir, "metadata.jsonl")
-        da_reqs_fp = os.path.join(self.data_dir, "da_reqs.jsonl")
-        vis_code_fp = os.path.join(self.data_dir, "vis_code.jsonl")
-        chart_image_fp = os.path.join(self.data_dir, "chart_image.jsonl")
+        metadata_fp = os.path.join(self.data_dir_process, "metadata.jsonl")
+        da_reqs_fp = os.path.join(self.data_dir_process, "da_reqs.jsonl")
+        vis_code_fp = os.path.join(self.data_dir_process, "vis_code.jsonl")
+        chart_image_fp = os.path.join(self.data_dir_process, "chart_image.jsonl")
 
         # Load the Vision-language Model (Multimodal LLM)
         # self.vlm_model = VLM(
@@ -212,8 +317,8 @@ class Code4ChartDataset:
         # } for caption, insight in zip(chart_caption, chart_insight)]  # List[Dict[str, Any]]
 
         # Write the data_csv_path and chart_caption into jsonl files
-        # chart_analysis_fp = os.path.join(self.data_dir, "chart_analysis.jsonl")
-        chart_caption_fp = os.path.join(self.data_dir, "chart_caption.jsonl")
+        # chart_analysis_fp = os.path.join(self.data_dir_process, "chart_analysis.jsonl")
+        chart_caption_fp = os.path.join(self.data_dir_process, "chart_caption.jsonl")
 
         return chart_caption_fp
 
@@ -225,10 +330,10 @@ class Code4ChartDataset:
 
         # Get self.data_csv_path_list
         # Load "metadata.jsonl", "da_reqs.jsonl", "vis_code.jsonl", and "chart_caption.jsonl"
-        metadata_fp = os.path.join(self.data_dir, "metadata.jsonl")
-        da_reqs_fp = os.path.join(self.data_dir, "da_reqs.jsonl")
-        vis_code_fp = os.path.join(self.data_dir, "vis_code.jsonl")
-        chart_caption_fp = os.path.join(self.data_dir, "chart_caption.jsonl")
+        metadata_fp = os.path.join(self.data_dir_process, "metadata.jsonl")
+        da_reqs_fp = os.path.join(self.data_dir_process, "da_reqs.jsonl")
+        vis_code_fp = os.path.join(self.data_dir_process, "vis_code.jsonl")
+        chart_caption_fp = os.path.join(self.data_dir_process, "chart_caption.jsonl")
 
         # Load the Text LLM
         # self.text_llm_model = TextLLM(
@@ -238,7 +343,7 @@ class Code4ChartDataset:
         # )
 
         # Write the data_csv_path and overall_analysis into jsonl files
-        overall_analysis_fp = os.path.join(self.data_dir, "overall_analysis.jsonl")
+        overall_analysis_fp = os.path.join(self.data_dir_process, "overall_analysis.jsonl")
 
         return overall_analysis_fp
 
@@ -254,15 +359,15 @@ class Code4ChartDataset:
         # Get self.data_csv_path_list
         # Load "metadata.jsonl", "da_reqs.jsonl", "vis_code.jsonl", "chart_image.jsonl",
         #   "chart_caption.jsonl", and "overall_analysis.jsonl"
-        metadata_fp = os.path.join(self.data_dir, "metadata.jsonl")
-        da_reqs_fp = os.path.join(self.data_dir, "da_reqs.jsonl")
-        vis_code_fp = os.path.join(self.data_dir, "vis_code.jsonl")
-        chart_image_fp = os.path.join(self.data_dir, "chart_image.jsonl")
-        chart_caption_fp = os.path.join(self.data_dir, "chart_caption.jsonl")
-        overall_analysis_fp = os.path.join(self.data_dir, "overall_analysis.jsonl")
+        metadata_fp = os.path.join(self.data_dir_process, "metadata.jsonl")
+        da_reqs_fp = os.path.join(self.data_dir_process, "da_reqs.jsonl")
+        vis_code_fp = os.path.join(self.data_dir_process, "vis_code.jsonl")
+        chart_image_fp = os.path.join(self.data_dir_process, "chart_image.jsonl")
+        chart_caption_fp = os.path.join(self.data_dir_process, "chart_caption.jsonl")
+        overall_analysis_fp = os.path.join(self.data_dir_process, "overall_analysis.jsonl")
 
         # Write each chart QA example into jsonl files
-        res_fp = os.path.join(self.data_dir, "c4c_qa.jsonl")
+        res_fp = os.path.join(self.data_dir_process, "c4c_qa.jsonl")
 
         # To upload to Hugging Face datasets
 
@@ -280,15 +385,15 @@ class Code4ChartDataset:
         # Get self.data_csv_path_list
         # Load "metadata.jsonl", "da_reqs.jsonl", "vis_code.jsonl", "chart_image.jsonl",
         #   "chart_caption.jsonl", and "overall_analysis.jsonl"
-        metadata_fp = os.path.join(self.data_dir, "metadata.jsonl")
-        da_reqs_fp = os.path.join(self.data_dir, "da_reqs.jsonl")
-        vis_code_fp = os.path.join(self.data_dir, "vis_code.jsonl")
-        chart_image_fp = os.path.join(self.data_dir, "chart_image.jsonl")
-        chart_caption_fp = os.path.join(self.data_dir, "chart_caption.jsonl")
-        overall_analysis_fp = os.path.join(self.data_dir, "overall_analysis.jsonl")
+        metadata_fp = os.path.join(self.data_dir_process, "metadata.jsonl")
+        da_reqs_fp = os.path.join(self.data_dir_process, "da_reqs.jsonl")
+        vis_code_fp = os.path.join(self.data_dir_process, "vis_code.jsonl")
+        chart_image_fp = os.path.join(self.data_dir_process, "chart_image.jsonl")
+        chart_caption_fp = os.path.join(self.data_dir_process, "chart_caption.jsonl")
+        overall_analysis_fp = os.path.join(self.data_dir_process, "overall_analysis.jsonl")
 
         # Write each chart captioning example into jsonl files
-        res_fp = os.path.join(self.data_dir, "c4c_cap.jsonl")
+        res_fp = os.path.join(self.data_dir_process, "c4c_cap.jsonl")
 
         # To upload to Hugging Face datasets
 
@@ -344,7 +449,7 @@ def main(
         verbose=verbose,
         logger=logger,
         cuda_dict=cuda_dict,
-        data_csv_path_list=def_input.data_csv_list,
+        datasets_info=def_input.datasets_info,
         cache_dir=cache_dir,
         project_root_dir=project_root_dir,
         hf_id_text_llm=hf_id_text_llm,
