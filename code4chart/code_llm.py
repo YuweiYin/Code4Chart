@@ -118,7 +118,9 @@ class CodeLLM:
         )
         # model = model.to(device=self.cuda_dict["device"])
         # list(model.state_dict().keys())
+
         model.generation_config.pad_token_id = self.tokenizer_gen.pad_token_id  # eos_token_id
+
         # model.resize_token_embeddings(len(self.tokenizer_train))  # if added new special tokens (Option 1)
         # model.train()
 

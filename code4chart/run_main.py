@@ -40,7 +40,7 @@ class Code4Chart:
             debug: bool = False,
     ):
         """
-        Automated Data Analysis via Multimodal Large Language Models
+        Does The Plotting Code Improve Chart Understanding for Vision-Language Models?
 
         :param verbose: Verbose mode: show logs.
         :param logger: The logger to show logs.
@@ -212,6 +212,7 @@ class Code4Chart:
 
 
 def main(
+    task: int = 0,
     verbose: bool = False,
     seed: int = 42,
     cuda: Optional[str] = None,
@@ -229,6 +230,7 @@ def main(
     """
     Run the whole data analysis pipeline.
 
+    :param task: the task of the current run session.
     :param verbose: Verbose mode: show logs.
     :param seed: Random seed of all modules.
     :param cuda: To specify CUDA GPU devices, e.g., "0" OR "0,1". Default: None -- Use CPU or all available GPUs.
@@ -254,7 +256,7 @@ def main(
 
     # hf_login(token="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")
 
-    auto_da = Code4Chart(
+    c4c = Code4Chart(
         verbose=verbose, logger=logger, cuda_dict=cuda_dict,
         cache_dir=cache_dir, project_root_dir=project_root_dir,
         hf_id_text_llm=hf_id_text_llm, hf_id_code_llm=hf_id_code_llm, hf_id_vlm=hf_id_vlm,
@@ -305,7 +307,12 @@ def main(
         input_data_csv_path = def_input.data_csv_dict[3]  # "data/Iris_Species.csv"
         input_user_da_req = ""  # Let the Text LLM to provide data analysis requirements
 
-    auto_da.run(data_csv_path=input_data_csv_path, user_da_req=input_user_da_req)
+    task = int(task)
+    match task:
+        case 1:
+            c4c.run(data_csv_path=input_data_csv_path, user_da_req=input_user_da_req)
+        case _:
+            raise ValueError(f"ValueError: task = {task}")
 
     timer_end = time.perf_counter()
     logger.info("Total Running Time: %.1f sec (%.1f min)" % (timer_end - timer_start, (timer_end - timer_start) / 60))

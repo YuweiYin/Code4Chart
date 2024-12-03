@@ -123,7 +123,10 @@ class VLM:
         )
         # model = model.to(device=self.cuda_dict["device"])
         # list(model.state_dict().keys())
-        model.generation_config.pad_token_id = self.tokenizer_gen.pad_token_id  # eos_token_id
+
+        # model.generation_config.pad_token_id = self.tokenizer_gen.pad_token_id  # eos_token_id
+        # model.language_model.generation_config.pad_token_id = self.tokenizer_gen.pad_token_id
+
         # model.resize_token_embeddings(len(self.tokenizer_train))  # if added new special tokens (Option 1)
         # model.train()
 
@@ -138,7 +141,7 @@ class VLM:
         total_params = sum(p.numel() for p in model.parameters())
         train_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
         if self.verbose:
-            self.logger.info(f"Number of total parameters ({cur_model_path}): {total_params}")
+            self.logger.info(f"Number of total parameters ({cur_model_path}): {total_params}")  # 10,670,220,835
             self.logger.info(f"Number of trainable parameters (cur_model_path): {train_params}")
 
         return model
