@@ -337,6 +337,7 @@ Each data analysis requirement should include a visualization instruction and a 
             req_list = cur_reqs_dict["da_reqs"]
             # req_prompt_list = cur_reqs_dict["prompts"]
             code_prompt_list = []
+            vis_data_list = []
             assert len(req_list) == len(metadata_dict["features"]) + 1
             for req, feat_dict in zip(req_list[1:], metadata_dict["features"]):
                 # Here, we only deal with each column (feature) as the whole table can be too large.
@@ -365,33 +366,31 @@ Each data analysis requirement should include a visualization instruction and a 
 - Max: {numerical_stat["max"]:.2f}
 - Mean: {numerical_stat["mean"]:.2f}
 - Std: {numerical_stat["std"]:.2f}
+                    """.strip()
 
-## Data Column Values:
-{data_feat}
-
-Based on the above dataset information and the following data analysis requirement, \
-generate an executable Python3 code using the matplotlib and numpy packages to plot a chart and save the figure.
-
+                cur_code_prompt += "\n\n" + f"""
 ## Data Analysis Requirement:
 {req}
 
+Based on the above dataset information and data analysis requirement, \
+generate an executable Python3 code using the matplotlib, numpy, and pandas packages \
+to plot a chart and save the figure. Assume you can access the target data column (x) by the following Python3 code:
+```python
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+
+data = pd.read_csv("{metadata_dict["filepath"]}")
+x = data["{feat_dict["name"]}"].tolist()
+```
+
 ## Python3 Code for Chart Plotting:
-                    """.strip()
-                else:
-                    cur_code_prompt += "\n" + f"""
-## Data Column Values:
-{data_feat}
-
-Based on the above dataset information and the following data analysis requirement, \
-generate an executable Python3 code using the matplotlib and numpy packages to plot a chart and save the figure.
-
-## Data Analysis Requirement:
-{req}
-
-## Python3 Code for Chart Plotting:
-                    """.strip()
+                """.strip()
+                # ## Data Column Values:
+                # {data_feat}
 
                 code_prompt_list.append(cur_code_prompt)
+                vis_data_list.append(data_feat)
 
             vis_code_list = []
             for prompt in code_prompt_list:
@@ -403,6 +402,7 @@ generate an executable Python3 code using the matplotlib and numpy packages to p
                 output_text = gen_dict["output_text"][0].strip()
                 vis_code_list.append(output_text)
 
+            cur_vis_code_dict["vis_data"] = vis_data_list
             cur_vis_code_dict["prompts"] = code_prompt_list
             cur_vis_code_dict["vis_code"] = vis_code_list
             vis_code.append(cur_vis_code_dict)
@@ -577,7 +577,7 @@ def main(
     **kwargs
 ) -> None:
     """
-    Run the whole data analysis pipeline.
+    Run the whole data analysis pipeline (Data-DA-Code-Chart-Caption dataset construction).
 
     :param task: the task of the current run session.
     :param verbose: Verbose mode: show logs.
