@@ -234,7 +234,7 @@ class Code4ChartDataset:
             prompt_list = []
             req_list = []
             prompt_overall = f"""
-Please construct a data analysis requirement based on the dataset information as follows. \
+Please construct one data analysis requirement based on the dataset information as follows. \
 Each data analysis requirement should include a visualization instruction, a specific chart type for visualization, \
 and related data table columns (features).
 
@@ -264,9 +264,8 @@ and related data table columns (features).
                 cur_dtype, numerical_stat = feat_dict["dtype"], feat_dict["numerical_stat"]
 
                 prompt_feature = f"""
-Please construct a data analysis requirement based on the feature information as follows. \
-Each data analysis requirement should include a visualization instruction, a specific chart type for visualization, \
-and related data table columns (features).
+Please construct one data analysis requirement based on the feature information as follows. \
+Each data analysis requirement should include a visualization instruction and a specific chart type for visualization.
 
 ## Dataset Name: {metadata_dict["name"]}
 
@@ -294,7 +293,7 @@ and related data table columns (features).
             for prompt in prompt_list:
                 gen_dict = text_llm.run_generation(
                     prompts=[prompt], model=text_llm.model, tokenizer=text_llm.tokenizer_gen,
-                    need_tokenize=True, max_new_tokens=100,
+                    need_tokenize=True, max_new_tokens=512,
                     temperature=0.1, top_p=0.1,  # Be more deterministic when choosing an option
                 )
                 output_text = gen_dict["output_text"][0].strip()
