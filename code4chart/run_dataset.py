@@ -351,9 +351,6 @@ Each data analysis requirement should include a visualization instruction and a 
                 data_feat = df_feat.tolist()
 
                 cur_code_prompt = f"""
-Please construct one data analysis requirement based on the feature information as follows. \
-Each data analysis requirement should include a visualization instruction and a specific chart type for visualization.
-
 ## Dataset Name: {metadata_dict["name"]}
 ## Feature Information:
 - Feature Name: {feat_dict["name"]}
@@ -362,7 +359,7 @@ Each data analysis requirement should include a visualization instruction and a 
 - Number of unique feature values: {num_unique}
                 """.strip()
                 if isinstance(numerical_stat, dict) and len(numerical_stat) > 0:
-                    cur_code_prompt += "\n\n" + f"""
+                    cur_code_prompt += "\n" + f"""
 ## Numerical Values Statistics:
 - Min: {numerical_stat["min"]:.2f}
 - Max: {numerical_stat["max"]:.2f}
@@ -372,15 +369,21 @@ Each data analysis requirement should include a visualization instruction and a 
 ## Data Column Values:
 {data_feat}
 
+Based on the above dataset information and the following data analysis requirement, \
+generate an executable Python3 code using the matplotlib and numpy packages to plot a chart and save the figure.
+
 ## Data Analysis Requirement:
 {req}
 
 ## Python3 Code for Chart Plotting:
                     """.strip()
                 else:
-                    cur_code_prompt += "\n\n" + f"""
+                    cur_code_prompt += "\n" + f"""
 ## Data Column Values:
 {data_feat}
+
+Based on the above dataset information and the following data analysis requirement, \
+generate an executable Python3 code using the matplotlib and numpy packages to plot a chart and save the figure.
 
 ## Data Analysis Requirement:
 {req}
