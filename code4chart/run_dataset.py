@@ -70,6 +70,7 @@ class Code4ChartDataset:
         self.project_root_dir = project_root_dir
         self.home_dir = os.path.expanduser("~")
         self.bsz = bsz
+        self.max_seq_len = max_seq_len
         self.show_generation = show_generation
         self.debug = debug
         self.hf_id_text_llm = hf_id_text_llm
@@ -377,7 +378,8 @@ Data Analysis Requirement:
 
 ## Task: Based on the above dataset information and data analysis requirement, \
 generate executable Python3 code using the matplotlib, numpy, and pandas packages \
-to plot a chart and save the figure. Please be concise and only generate executable Python3 code. \
+to plot a chart and save the figure. Please only generate executable Python3 code and then stop generation. \
+Be concise, clear, and short. \
 Assume you can access the data table and target column (list) by the following Python3 code:
 ```python
 import matplotlib.pyplot as plt
