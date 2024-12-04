@@ -313,7 +313,7 @@ Each data analysis requirement should include a visualization instruction and a 
         da_reqs_fp = os.path.join(self.data_dir_process, "da_reqs.jsonl")
         write_cnt = 0
         with open(da_reqs_fp, "w", encoding="utf-8") as fp_out:
-            for _item in da_reqs_fp:
+            for _item in da_reqs:
                 fp_out.write(json.dumps(_item, cls=NumpyEncoder) + "\n")
                 write_cnt += 1
 
@@ -327,23 +327,49 @@ Each data analysis requirement should include a visualization instruction and a 
         # Input: data_csv_path: str, metadata: Dict[str, Any], da_reqs: List[Dict[str, Any]]
         # Generate visualization code (Python3, using matplotlib/seaborn library) per da_req using Code LLMs
         # TODO: Consider expanding key attributes of matplotlib functions (show the default values)
-        vis_code = []  # List[str], Python3 matplotlib code
 
-        # Get self.datasets_info
-        # Load "metadata.jsonl" and "da_reqs.jsonl"
+        # Load the metadata and da_reqs
         metadata_fp = os.path.join(self.data_dir_process, "metadata.jsonl")
         da_reqs_fp = os.path.join(self.data_dir_process, "da_reqs.jsonl")
+        with open(metadata_fp, "r", encoding="utf-8") as fp_in:
+            metadata = [json.loads(line.strip()) for line in fp_in]
+        with open(da_reqs_fp, "r", encoding="utf-8") as fp_in:
+            da_reqs = [json.loads(line.strip()) for line in fp_in]
+        assert isinstance(metadata, list) and isinstance(da_reqs, list) and len(metadata) == len(da_reqs)
 
         # Load the Code LLM
-        # self.code_llm_model = CodeLLM(
-        #     verbose=verbose, logger=logger, cuda_dict=cuda_dict,
-        #     cache_dir=cache_dir, project_root_dir=project_root_dir,
-        #     hf_id=hf_id_code_llm, bsz=bsz, show_generation=show_generation, debug=debug,
-        # )
+        code_llm = CodeLLM(
+            verbose=self.verbose, logger=self.logger, cuda_dict=self.cuda_dict,
+            cache_dir=self.cache_dir, project_root_dir=self.project_root_dir,
+            hf_id=self.hf_id_code_llm, bsz=self.bsz,
+            show_generation=self.show_generation, debug=self.debug,
+        )
+
+        vis_code = []  # List[str], Python3 matplotlib code
+        for metadata_dict, cur_reqs_dict in zip(metadata, da_reqs):
+            # Based on the metadata and da_reqs, ask the Code LLM to generate visualization code (Python3 matplotlib).
+            cur_vis_code_dict = dict()
+            cur_vis_code_dict["id"] = metadata_dict["id"]
+            if self.verbose:
+                self.logger.info(f">>> [id={metadata_dict['id']}] Dataset: {metadata_dict['name']}")
+
+            req_list = cur_reqs_dict["da_reqs"]
+            # req_prompt_list = cur_reqs_dict["prompts"]
+            code_prompt_list = []
+            vis_code_list = []
+            for req in req_list:
+                pass
 
         # Write the data_csv_path and vis_code into jsonl files
         vis_code_fp = os.path.join(self.data_dir_process, "vis_code.jsonl")
+        write_cnt = 0
+        with open(vis_code_fp, "w", encoding="utf-8") as fp_out:
+            for _item in vis_code:
+                fp_out.write(json.dumps(_item, cls=NumpyEncoder) + "\n")
+                write_cnt += 1
 
+        if self.verbose:
+            self.logger.info(f">>> write_cnt = {write_cnt} to file: {vis_code_fp}")
         return vis_code_fp
 
     def step4_exec_vis_code(
