@@ -428,12 +428,17 @@ Python3 Code for Chart Plotting:
             self.logger.info(f">>> write_cnt = {write_cnt} to file: {vis_code_fp}")
         return vis_code_fp
 
-    def step4_exec_vis_code(
+    def step4_vis_code_postprocess(
             self,
     ) -> str:
-        # Execute the generated visualization code (Python3) and plot the chart figures
-        # TODO: For now, we need postprocessing (after step 3) to make sure the generated code is executable
-        #   (via extracting the code snippet from the generated content).
+        # Save the generated visualization code (Python3) into py files and then
+        #   perform manual post-processing to make sure only Python code (and comments) remains:
+        #   1. Extract the code snippet from the generated content;
+        #   2. Ensure the csv data loading path is correct;
+        #   3. Change both `plt.show()` and `plt.savefig(...)` to `plt.show()`,
+        #     and in the next step, it will be replaced to `plt.savefig(x)`, where x is a proper chart filepath
+        # We do not perform extra post-processing to make sure the code is executable.
+        #   If it is not, we will skip exec this code for now.
 
         # Load the metadata and visualization code
         metadata_fp = os.path.join(self.data_dir_process, "metadata.jsonl")
@@ -444,9 +449,63 @@ Python3 Code for Chart Plotting:
             vis_code = [json.loads(line.strip()) for line in fp_in]
         assert isinstance(metadata, list) and isinstance(vis_code, list) and len(metadata) == len(vis_code)
 
+        vis_code_post = []  # List[Dict[str, Any]]
+        for metadata_dict, cur_vis_code_dict in zip(metadata, vis_code):
+            # Based on the metadata and da_reqs, ask the Code LLM to generate visualization code (Python3 matplotlib).
+            if self.verbose:
+                self.logger.info(f">>> [id={metadata_dict['id']}] Dataset: {metadata_dict['name']}")
+
+            vis_feat_list = cur_vis_code_dict["vis_feat"]
+            code_prompt_list = cur_vis_code_dict["prompts"]
+            vis_code_list = cur_vis_code_dict["vis_code"]
+
+            assert len(vis_feat_list) == len(vis_code_list) == len(code_prompt_list) == len(metadata_dict["features"])
+            cur_code_save_dir = os.path.join(self.data_dir_process, "chart_code", str(metadata_dict["id"]))
+            os.makedirs(cur_code_save_dir, exist_ok=True)
+            code_id = 0
+            cur_vis_code_dict["code_filepath"] = []
+            for feat_name, cur_vis_code, cur_code_prompt, feat_dict in zip(
+                    vis_feat_list, vis_code_list, code_prompt_list, metadata_dict["features"]):
+                code_id += 1
+                cur_code_save_fp = os.path.join(
+                    cur_code_save_dir, f"{code_id}-{feat_name.replace('/', '_').strip()}.py")
+                # cur_code_str = cur_vis_code
+                cur_code_str = cur_code_prompt + cur_vis_code  # We consider both the prompt and the generated vis code
+                with open(cur_code_save_fp, "w", encoding="utf-8") as fp_out:
+                    fp_out.write(cur_code_str + "\n")
+                cur_vis_code_dict["code_filepath"].append(cur_code_save_fp)
+
+            vis_code_post.append(cur_vis_code_dict)
+
+        # Write the chart figures info into jsonl files
+        vis_code_post_fp = os.path.join(self.data_dir_process, "vis_code_post.jsonl")
+        write_cnt = 0
+        with open(vis_code_post_fp, "w", encoding="utf-8") as fp_out:
+            for _item in vis_code_post:
+                fp_out.write(json.dumps(_item, cls=NumpyEncoder) + "\n")
+                write_cnt += 1
+
+        if self.verbose:
+            self.logger.info(f">>> write_cnt = {write_cnt} to file: {vis_code_post_fp}")
+        return vis_code_post_fp
+
+    def step5_exec_vis_code(
+            self,
+    ) -> str:
+        # Execute the generated Python3 visualization code (after post-processing) and plot the chart figures
+
+        # Load the metadata and visualization code
+        metadata_fp = os.path.join(self.data_dir_process, "metadata.jsonl")
+        vis_code_post_fp = os.path.join(self.data_dir_process, "vis_code_post.jsonl")
+        with open(metadata_fp, "r", encoding="utf-8") as fp_in:
+            metadata = [json.loads(line.strip()) for line in fp_in]
+        with open(vis_code_post_fp, "r", encoding="utf-8") as fp_in:
+            vis_code_post = [json.loads(line.strip()) for line in fp_in]
+        assert isinstance(metadata, list) and isinstance(vis_code_post, list) and len(metadata) == len(vis_code_post)
+
         chart_figures = []  # List[Dict[str, Any]]
         # chart_base64 = []  # List[Base64]
-        for metadata_dict, cur_vis_code_dict in zip(metadata, vis_code):
+        for metadata_dict, cur_vis_code_dict in zip(metadata, vis_code_post):
             # Based on the metadata and da_reqs, ask the Code LLM to generate visualization code (Python3 matplotlib).
             cur_chart = dict()
             cur_chart["id"] = metadata_dict["id"]
@@ -458,26 +517,31 @@ Python3 Code for Chart Plotting:
 
             vis_feat_list = cur_vis_code_dict["vis_feat"]
             # code_prompt_list = cur_vis_code_dict["prompts"]
-            vis_code_list = cur_vis_code_dict["vis_code"]
+            # vis_code_list = cur_vis_code_dict["vis_code"]
+            code_filepath = cur_vis_code_dict["code_filepath"]
 
-            assert len(vis_feat_list) == len(vis_code_list) == len(metadata_dict["features"])
-            cur_fig_save_dir = os.path.join(self.data_dir_process, "chart_fig", str(metadata_dict["id"]))
+            assert len(vis_feat_list) == len(code_filepath) == len(metadata_dict["features"])
+            cur_fig_save_dir = os.path.join(self.data_dir_process, "chart_figure", str(metadata_dict["id"]))
             os.makedirs(cur_fig_save_dir, exist_ok=True)
             fig_id = 0
             cur_chart["chart_filepath"] = []
-            for feat_name, cur_vis_code, feat_dict in zip(vis_feat_list, vis_code_list, metadata_dict["features"]):
+            for feat_name, vis_code_fp, feat_dict in zip(vis_feat_list, code_filepath, metadata_dict["features"]):
                 fig_id += 1
                 cur_fig_save_fp = os.path.join(
                     cur_fig_save_dir, f"{fig_id}-{feat_name.replace('/', '_').strip()}.png")
-                if "plt.show()" in cur_vis_code:  # Save the figure instead of showing it
-                    cur_vis_code.replace("plt.show()", f"plt.savefig({cur_fig_save_fp})")
+                # if "plt.show()" in cur_vis_code:  # Save the figure instead of showing it
+                #     cur_vis_code.replace("plt.show()", f"plt.savefig({cur_fig_save_fp})")
                 try:
-                    exec(cur_vis_code)
+                    assert os.path.isfile(vis_code_fp), f"Assertion Error: File does not exist {vis_code_fp}"
+                    with open(vis_code_fp, "r", encoding="utf-8") as fp_in:
+                        exec(fp_in.read())
                     cur_chart["path"].append(cur_fig_save_fp)
                     assert os.path.isfile(cur_fig_save_fp)
                 except Exception as e:
                     if self.verbose:
                         self.logger.info(e)
+                        self.logger.info(f">>> >>> Miss file: {cur_fig_save_fp}")
+                    continue
 
             chart_figures.append(cur_chart)
 
@@ -493,7 +557,7 @@ Python3 Code for Chart Plotting:
             self.logger.info(f">>> write_cnt = {write_cnt} to file: {chart_figures_fp}")
         return chart_figures_fp
 
-    def step5_chart_cap(
+    def step6_chart_cap(
             self,
     ) -> str:
         # For each chart, we use Vision-language models (VLMs) to generate the chart captions (descriptions).
@@ -662,7 +726,7 @@ Please be concise and only generate the caption:
 
         return chart_captions_fp
 
-    def step6_overall_analysis(
+    def step7_overall_analysis(
             self,
     ) -> str:
         # [Optional] Input all information to Text2Text LLMs and obtain the overall analysis for each table
@@ -687,7 +751,7 @@ Please be concise and only generate the caption:
 
         return overall_analysis_fp
 
-    def step7_chart_qa(
+    def step8_chart_qa(
             self,
     ) -> str:
         # Input all information to Text2Text LLMs and construct a chart QA evaluation benchmark
@@ -713,7 +777,7 @@ Please be concise and only generate the caption:
 
         return res_fp
 
-    def step8_chart_cap(
+    def step9_chart_cap(
             self,
     ) -> str:
         # Input all information to Text2Text LLMs and construct a chart captioning evaluation benchmark
@@ -739,14 +803,14 @@ Please be concise and only generate the caption:
 
         return res_fp
 
-    def step9_chart_qa_edit_chart(
+    def step10_chart_qa_edit_chart(
             self,
     ) -> str:
         # TODO: Do minor modification of the chart figures in our chart QA benchmark for robustness experiments.
         #   Slightly change the chart figures by editing the visualization code.
         pass
 
-    def step10_chart_qa_edit_question(
+    def step11_chart_qa_edit_question(
             self,
     ) -> str:
         # TODO: Do minor modification of the questions in our chart QA benchmark for robustness experiments.
@@ -826,19 +890,21 @@ def main(
         case 3:
             c4c_data.step3_gen_vis_code()
         case 4:
-            c4c_data.step4_exec_vis_code()
+            c4c_data.step4_vis_code_postprocess()
         case 5:
-            c4c_data.step5_chart_cap()
+            c4c_data.step5_exec_vis_code()
         case 6:
-            c4c_data.step6_overall_analysis()
+            c4c_data.step6_chart_cap()
         case 7:
-            c4c_data.step7_chart_qa()
+            c4c_data.step7_overall_analysis()
         case 8:
-            c4c_data.step8_chart_cap()
+            c4c_data.step8_chart_qa()
         case 9:
-            c4c_data.step9_chart_qa_edit_chart()
+            c4c_data.step9_chart_cap()
         case 10:
-            c4c_data.step10_chart_qa_edit_question()
+            c4c_data.step10_chart_qa_edit_chart()
+        case 11:
+            c4c_data.step11_chart_qa_edit_question()
         case _:
             raise ValueError(f"ValueError: task = {task}")
 
