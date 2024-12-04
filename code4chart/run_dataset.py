@@ -245,11 +245,11 @@ class Code4ChartDataset:
                 cur_dtype, numerical_stat = feat_dict["dtype"], feat_dict["numerical_stat"]
 
                 prompt_feature = f"""
-## Dataset Information:
+Dataset Information:
 - Dataset Name: {metadata_dict["name"]}
 - All Features: {", ".join([x["name"] for x in metadata_dict["features"]])}
 
-## Current Feature Information:
+Current Feature Information:
 - Feature Name: {feat_dict["name"]}
 - Data Type: {cur_dtype}
 - Number of all rows (feature values): {num_valid}
@@ -261,16 +261,14 @@ class Code4ChartDataset:
 - Max of Feature Values: {numerical_stat["max"]:.2f}
 - Mean of Feature Values: {numerical_stat["mean"]:.2f}
 - Std of Feature Values: {numerical_stat["std"]:.2f}
+                    """.strip()
 
+                prompt_feature += "\n\n" + f"""
 ## Task: Please construct one data analysis requirement based on the dataset and feature information above. \
-Each data analysis requirement should include a visualization instruction and a specific chart type for visualization. \
+The requirement should include a visualization instruction and specify a chart type for visualization. \
 The requirement is to ask models to generate Python3 code using the matplotlib, numpy, and pandas packages \
 to plot a chart and save the figure. Be concise, clear, and short.
-
-## Data analysis requirement:
-                    """.strip()
-                else:
-                    prompt_feature += "\n\n## Data analysis requirement:"
+                """.strip()
 
                 prompt_list.append(prompt_feature)
 
@@ -341,8 +339,8 @@ to plot a chart and save the figure. Be concise, clear, and short.
             # req_prompt_list = cur_reqs_dict["prompts"]
             code_prompt_list = []
             vis_data_list = []
-            assert len(req_list) == len(metadata_dict["features"])
-            for req, feat_dict in zip(req_list, metadata_dict["features"]):
+            assert len(req_list) == len(metadata_dict["features"]) + 1
+            for req, feat_dict in zip(req_list[1:], metadata_dict["features"]):
                 # Here, we only deal with each column (feature) as the whole table can be too large.
                 #   TODO: future work: deal with the whole table
                 if self.verbose:
@@ -355,11 +353,11 @@ to plot a chart and save the figure. Be concise, clear, and short.
                 data_feat = df_feat.tolist()
 
                 cur_code_prompt = f"""
-## Dataset Information:
+Dataset Information:
 - Dataset Name: {metadata_dict["name"]}
 - All Features: {", ".join([x["name"] for x in metadata_dict["features"]])}
 
-## Current Feature Information:
+Current Feature Information:
 - Feature Name: {feat_dict["name"]}
 - Data Type: {cur_dtype}
 - Number of all rows (feature values): {num_valid}
@@ -374,7 +372,7 @@ to plot a chart and save the figure. Be concise, clear, and short.
                     """.strip()
 
                 cur_code_prompt += "\n\n" + f"""
-## Data Analysis Requirement:
+Data Analysis Requirement:
 {req}
 
 ## Task: Based on the above dataset information and data analysis requirement, \
@@ -390,7 +388,7 @@ data = pd.read_csv("{metadata_dict["filepath"]}")
 column = data["{feat_dict["name"]}"].tolist()
 ```
 
-## Python3 Code for Chart Plotting:
+Python3 Code for Chart Plotting:
                 """.strip()
                 # ## Data Column Values:
                 # {data_feat}
