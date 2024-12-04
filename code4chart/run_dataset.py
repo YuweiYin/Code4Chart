@@ -2,7 +2,7 @@ import os
 import sys
 import json
 import time
-from typing import Optional, List, Dict, Tuple, Any
+from typing import Optional, List, Dict, Any
 
 import fire
 import numpy as np
@@ -649,15 +649,15 @@ Python3 Code for Chart Plotting:
 
         # Load the metadata, vis_code, and chart figures
         metadata_fp = os.path.join(self.data_dir_process, "metadata.jsonl")
-        vis_code_fp = os.path.join(self.data_dir_process, "vis_code.jsonl")
+        vis_code_post_fp = os.path.join(self.data_dir_process, "vis_code_post.jsonl")
         chart_figures_fp = os.path.join(self.data_dir_process, "chart_figures.jsonl")
         with open(metadata_fp, "r", encoding="utf-8") as fp_in:
             metadata = [json.loads(line.strip()) for line in fp_in]
-        with open(vis_code_fp, "r", encoding="utf-8") as fp_in:
-            vis_code = [json.loads(line.strip()) for line in fp_in]
+        with open(vis_code_post_fp, "r", encoding="utf-8") as fp_in:
+            vis_code_post = [json.loads(line.strip()) for line in fp_in]
         with open(chart_figures_fp, "r", encoding="utf-8") as fp_in:
             chart_figures = [json.loads(line.strip()) for line in fp_in]
-        assert len(metadata) == len(vis_code) == len(chart_figures)
+        assert len(metadata) == len(vis_code_post) == len(chart_figures)
 
         # Load the Vision-language Model (Multimodal LLM)
         vlm_model = VLM(
@@ -669,7 +669,7 @@ Python3 Code for Chart Plotting:
 
         chart_captions = []  # List[Dict[str, Any]]
         done_cnt_all, miss_cnt_all = 0, 0
-        for metadata_dict, cur_vis_code_dict, cur_chart in zip(metadata, vis_code, chart_figures):
+        for metadata_dict, cur_vis_code_dict, cur_chart in zip(metadata, vis_code_post, chart_figures):
             cur_chart_cap_dict = dict()
             cur_chart_cap_dict["id"] = metadata_dict["id"]
             if self.verbose:
@@ -739,26 +739,20 @@ Please be concise and only generate the chart caption:
                     },
                 ]
                 # Base64 string to bytes to image
-                try:
-                    # assert os.path.isfile(cur_chart_fp)
-                    # cur_images = [Image.open(cur_chart_fp)]
-                    cur_images = [Image.open(BytesIO(base64.b64decode(cur_fig_base64.encode("utf-8"))))]
-                    cur_prompts = vlm_model.processor.apply_chat_template(cur_messages, add_generation_prompt=True)
-                    if isinstance(cur_prompts, str):
-                        cur_prompts = [cur_prompts]
-                    assert isinstance(cur_prompts, list)
-                    cap_prompt_image_list.append((cur_prompts, cur_images))
-                except Exception as e:
-                    if self.verbose:
-                        self.logger.info(e)
-                    cap_prompt_image_list.append((None, None))
-                    continue
+                # assert os.path.isfile(cur_chart_fp)
+                # cur_images = [Image.open(cur_chart_fp)]
+                cur_images = [Image.open(BytesIO(base64.b64decode(cur_fig_base64.encode("utf-8"))))]
+                cur_prompts = vlm_model.processor.apply_chat_template(cur_messages, add_generation_prompt=True)
+                if isinstance(cur_prompts, str):
+                    cur_prompts = [cur_prompts]
+                assert isinstance(cur_prompts, list)
+                cap_prompt_image_list.append((cur_prompts, cur_images))
 
             cur_caption_list = []
             done_cnt, miss_cnt = 0, 0
             for cur_prompts, cur_images in cap_prompt_image_list:
                 if cur_prompts is None or cur_images is None:
-                    cur_caption_list.append("")
+                    cur_caption_list.append(None)
                     miss_cnt += 1
                     continue
 
@@ -908,13 +902,85 @@ Please be concise and only generate the conclusion:
 
         if self.verbose:
             self.logger.info(f">>> write_cnt = {write_cnt} to file: {overall_analysis_fp}")
-        # Total Running Time: 538.2 sec (9.0 min)
+        # Total Running Time: 569.7 sec (9.5 min)
         return overall_analysis_fp
 
     def step8_merge_all_info(
             self,
     ) -> str:
-        pass
+        metadata_fp = os.path.join(self.data_dir_process, "metadata.jsonl")  # Step 1
+        da_reqs_fp = os.path.join(self.data_dir_process, "da_reqs.jsonl")  # Step 2
+        # vis_code_fp = os.path.join(self.data_dir_process, "vis_code.jsonl")  # Step 3
+        vis_code_post_fp = os.path.join(self.data_dir_process, "vis_code_post.jsonl")  # Step 4
+        chart_figures_fp = os.path.join(self.data_dir_process, "chart_figures.jsonl")  # Step 5
+        chart_captions_fp = os.path.join(self.data_dir_process, "chart_captions.jsonl")  # Step 6
+        overall_analysis_fp = os.path.join(self.data_dir_process, "overall_analysis.jsonl")  # Step 7
+
+        with open(metadata_fp, "r", encoding="utf-8") as fp_in:
+            metadata = [json.loads(line.strip()) for line in fp_in]
+        with open(da_reqs_fp, "r", encoding="utf-8") as fp_in:
+            da_reqs = [json.loads(line.strip()) for line in fp_in]
+        # with open(vis_code_fp, "r", encoding="utf-8") as fp_in:
+        #     vis_code = [json.loads(line.strip()) for line in fp_in]
+        with open(vis_code_post_fp, "r", encoding="utf-8") as fp_in:
+            vis_code_post = [json.loads(line.strip()) for line in fp_in]
+        with open(chart_figures_fp, "r", encoding="utf-8") as fp_in:
+            chart_figures = [json.loads(line.strip()) for line in fp_in]
+        with open(chart_captions_fp, "r", encoding="utf-8") as fp_in:
+            chart_captions = [json.loads(line.strip()) for line in fp_in]
+        with open(overall_analysis_fp, "r", encoding="utf-8") as fp_in:
+            overall_analysis = [json.loads(line.strip()) for line in fp_in]
+        assert (len(metadata) == len(da_reqs) == len(vis_code_post) ==
+                len(chart_figures) == len(chart_captions) == len(overall_analysis))
+
+        all_info = []  # List[Dict[str, Any]] cur_vis_code_dict, cur_chart
+        for metadata_dict, da_reqs_dict, vis_code_dict, chart_fig_dict, chart_cap_dict, analysis_dict in zip(
+                metadata, da_reqs, vis_code_post, chart_figures, chart_captions, overall_analysis):
+            cur_info_dict = dict()
+            if self.verbose:
+                self.logger.info(f">>> [id={metadata_dict['id']}] Dataset: {metadata_dict['name']}")
+
+            cur_info_dict["id"] = metadata_dict["id"]
+            cur_info_dict["url"] = metadata_dict["url"]
+            cur_info_dict["name"] = metadata_dict["name"]
+            cur_info_dict["description"] = metadata_dict["description"]
+            cur_info_dict["filename"] = metadata_dict["filename"]
+            cur_info_dict["filepath"] = metadata_dict["filepath"]
+            cur_info_dict["num_row"] = metadata_dict["num_row"]
+            cur_info_dict["num_col"] = metadata_dict["num_col"]
+            cur_info_dict["features"] = metadata_dict["features"]
+
+            cur_info_dict["da_reqs"] = da_reqs_dict["da_reqs"]
+            # cur_info_dict["da_reqs_prompts"] = da_reqs_dict["prompts"]
+
+            cur_info_dict["vis_code_raw"] = vis_code_dict["vis_code"]
+            cur_info_dict["vis_code_features"] = vis_code_dict["vis_feat"]
+            # cur_info_dict["vis_code_prompts"] = vis_code_dict["prompts"]
+            cur_info_dict["vis_code_filepath"] = vis_code_dict["code_filepath"]
+
+            cur_info_dict["vis_code_clean"] = chart_fig_dict["vis_code"]
+            cur_info_dict["vis_code_stat"] = chart_fig_dict["code_stat"]
+            cur_info_dict["chart_figure_base64"] = chart_fig_dict["fig_base64"]
+            cur_info_dict["chart_figure_filepath"] = chart_fig_dict["fig_filepath"]
+
+            cur_info_dict["captions"] = chart_cap_dict["captions"]
+
+            cur_info_dict["analysis"] = analysis_dict["overall_analysis"]
+            # cur_info_dict["analysis_prompts"] = analysis_dict["analysis_prompt"]
+
+            all_info.append(cur_info_dict)
+
+        # Write all the info into jsonl files
+        all_info_fp = os.path.join(self.data_dir_process, "all_info.jsonl")
+        write_cnt = 0
+        with open(all_info_fp, "w", encoding="utf-8") as fp_out:
+            for _item in all_info:
+                fp_out.write(json.dumps(_item, cls=NumpyEncoder) + "\n")
+                write_cnt += 1
+
+        if self.verbose:
+            self.logger.info(f">>> write_cnt = {write_cnt} to file: {all_info_fp}")
+        return all_info_fp
 
     def step9_chart_qa_task(
             self,
