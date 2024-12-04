@@ -803,13 +803,13 @@ Please be concise and only generate the caption:
                 input_text = vlm_model.processor.batch_decode(
                     cur_inputs["input_ids"], skip_special_tokens=True, clean_up_tokenization_spaces=True)
 
-                if self.debug:
-                    self.logger.info(f">>> len(cur_prompts) = {len(cur_prompts)}")
-                    self.logger.info(f">>> len(input_text) = {len(input_text)}")
-                    self.logger.info(f">>> len(output_text) = {len(output_text)}")
-                    self.logger.info(f">>> cur_prompts = {cur_prompts}")
-                    self.logger.info(f">>> input_text = {input_text}")
-                    self.logger.info(f">>> output_text = {output_text}")
+                # if self.debug:
+                #     self.logger.info(f">>> len(cur_prompts) = {len(cur_prompts)}")
+                #     self.logger.info(f">>> len(input_text) = {len(input_text)}")
+                #     self.logger.info(f">>> len(output_text) = {len(output_text)}")
+                #     self.logger.info(f">>> cur_prompts = {cur_prompts}")
+                #     self.logger.info(f">>> input_text = {input_text}")
+                #     self.logger.info(f">>> output_text = {output_text}")
 
                 assert len(input_text) == len(cur_prompts) == len(output_text)
                 output_text_pure = []
