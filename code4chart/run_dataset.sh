@@ -2,7 +2,7 @@
 
 PARAM=$1
 
-IFS=","  # Set "," as the delimiter
+IFS=";"  # Set "," as the delimiter
 read -ra PARAM_ARRAY <<< "${PARAM}"
 
 #echo ${#PARAM_ARRAY[@]}
