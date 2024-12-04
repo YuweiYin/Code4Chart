@@ -667,41 +667,9 @@ Python3 Code for Chart Plotting:
             show_generation=self.show_generation, debug=self.debug,
         )
 
-        # # Test code: VLM generation
-        # cur_messages = [
-        #     {
-        #         "role": "user",
-        #         "content": [
-        #             {"type": "image"},
-        #             {"type": "text", "text": "Please generate a caption or description of the chart."},
-        #         ]
-        #     },
-        # ]
-        # assert os.path.isfile("test_image.png")
-        # cur_images = [Image.open("test_image.png")]
-        # cur_prompts = vlm_model.processor.apply_chat_template(cur_messages, add_generation_prompt=True)
-        # cur_inputs = vlm_model.processor(
-        #     text=cur_prompts, images=cur_images, return_tensors="pt").to(vlm_model.model.device)
-        # with torch.no_grad():
-        #     output_ids = vlm_model.model.generate(**cur_inputs, max_new_tokens=512)
-        # output_text = vlm_model.processor.batch_decode(
-        #     output_ids, skip_special_tokens=True, clean_up_tokenization_spaces=True)
-        # input_text = vlm_model.processor.batch_decode(
-        #     cur_inputs["input_ids"], skip_special_tokens=True, clean_up_tokenization_spaces=True)
-        # assert len(input_text) == len(cur_prompts) == len(output_text)
-        # output_text_pure = []
-        # for _input, _prompt, _output in zip(input_text, cur_prompts, output_text):
-        #     output_pure = _output[len(_input):]
-        #     output_text_pure.append(output_pure)
-        #     if self.verbose and self.show_generation:
-        #         self.logger.info("================================== >>> output <<<")
-        #         self.logger.info(output_pure)
-        # self.logger.info(output_text_pure[0].strip())
-
         chart_captions = []  # List[Dict[str, Any]]
         done_cnt_all, miss_cnt_all = 0, 0
         for metadata_dict, cur_vis_code_dict, cur_chart in zip(metadata, vis_code, chart_figures):
-            # Based on the metadata and da_reqs, ask the Code LLM to generate visualization code (Python3 matplotlib).
             cur_chart_cap_dict = dict()
             cur_chart_cap_dict["id"] = metadata_dict["id"]
             if self.verbose:
