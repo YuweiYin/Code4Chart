@@ -426,6 +426,7 @@ Python3 Code for Chart Plotting:
 
         if self.verbose:
             self.logger.info(f">>> write_cnt = {write_cnt} to file: {vis_code_fp}")
+        # Total Running Time: 2190.3 sec (36.5 min)
         return vis_code_fp
 
     def step4_vis_code_postprocess(
@@ -464,6 +465,7 @@ Python3 Code for Chart Plotting:
             os.makedirs(cur_code_save_dir, exist_ok=True)
             code_id = 0
             cur_vis_code_dict["code_filepath"] = []
+            cur_vis_code_dict["code_id"] = []
             for feat_name, cur_vis_code, cur_code_prompt, feat_dict in zip(
                     vis_feat_list, vis_code_list, code_prompt_list, metadata_dict["features"]):
                 code_id += 1
@@ -474,6 +476,7 @@ Python3 Code for Chart Plotting:
                 with open(cur_code_save_fp, "w", encoding="utf-8") as fp_out:
                     fp_out.write(cur_code_str + "\n")
                 cur_vis_code_dict["code_filepath"].append(cur_code_save_fp)
+                cur_vis_code_dict["code_id"].append(code_id)
 
             vis_code_post.append(cur_vis_code_dict)
 
@@ -524,23 +527,46 @@ Python3 Code for Chart Plotting:
             cur_fig_save_dir = os.path.join(self.data_dir_process, "chart_figure", str(metadata_dict["id"]))
             os.makedirs(cur_fig_save_dir, exist_ok=True)
             fig_id = 0
-            cur_chart["chart_filepath"] = []
+            cur_chart["fig_filepath"] = []
+            cur_chart["fig_id"] = []
             for feat_name, vis_code_fp, feat_dict in zip(vis_feat_list, code_filepath, metadata_dict["features"]):
                 fig_id += 1
                 cur_fig_save_fp = os.path.join(
                     cur_fig_save_dir, f"{fig_id}-{feat_name.replace('/', '_').strip()}.png")
-                # if "plt.show()" in cur_vis_code:  # Save the figure instead of showing it
-                #     cur_vis_code.replace("plt.show()", f"plt.savefig({cur_fig_save_fp})")
+
+                assert os.path.isfile(vis_code_fp), f"Assertion Error: File does not exist {vis_code_fp}"
+                with open(vis_code_fp, "r", encoding="utf-8") as fp_in:
+                    # exec(fp_in.read())
+                    code_lines = fp_in.readlines()
+                new_code_lines = []
+                has_savefig = False
+                for cur_line in code_lines:
+                    if "pd.read_csv" in cur_line:  # Make sure the csv filepath is correct
+                        # new_line = f"data = pd.read_csv('{cur_csv_path}')\ndf = data\n"
+                        new_line = f"data = pd.read_csv('{cur_csv_path}')\n"
+                    elif "plt.savefig" in cur_line:  # Make sure the savefig filepath is correct
+                        new_line = f"plt.savefig('{cur_fig_save_fp}', dpi=300, bbox_inches='tight')\n"
+                        has_savefig = True
+                    elif "plt.show" in cur_line:  # Do not show the figure
+                        new_line = "\n"
+                    elif "```" in cur_line:  # Clear the markdown lines
+                        new_line = "\n"
+                    else:
+                        new_line = cur_line
+                    new_code_lines.append(new_line)
+                if not has_savefig:  # Make sure we save the figure
+                    new_code_lines.append(f"plt.savefig('{cur_fig_save_fp}', dpi=300, bbox_inches='tight')\n")
+                new_code = "".join(new_code_lines)
+
                 try:
-                    assert os.path.isfile(vis_code_fp), f"Assertion Error: File does not exist {vis_code_fp}"
-                    with open(vis_code_fp, "r", encoding="utf-8") as fp_in:
-                        exec(fp_in.read())
-                    cur_chart["path"].append(cur_fig_save_fp)
+                    exec(new_code)
                     assert os.path.isfile(cur_fig_save_fp)
+                    cur_chart["vis_code"].append(new_code)
+                    cur_chart["fig_filepath"].append(cur_fig_save_fp)
+                    cur_chart["fig_id"].append(fig_id)
                 except Exception as e:
                     if self.verbose:
-                        self.logger.info(e)
-                        self.logger.info(f">>> >>> Miss file: {cur_fig_save_fp}")
+                        self.logger.info(f">>> >>> Miss file: {cur_fig_save_fp}\nException: {e}")
                     continue
 
             chart_figures.append(cur_chart)
@@ -561,6 +587,9 @@ Python3 Code for Chart Plotting:
             self,
     ) -> str:
         # For each chart, we use Vision-language models (VLMs) to generate the chart captions (descriptions).
+        # TODO: future work: the raw data is not provided in the prompt or generated code
+        #   since there are too many values in a column,
+        #   but maybe it is helpful for the VLMs to perform chart understanding, especially for knowing the numbers
 
         # Load the metadata, vis_code, and chart figures
         metadata_fp = os.path.join(self.data_dir_process, "metadata.jsonl")
