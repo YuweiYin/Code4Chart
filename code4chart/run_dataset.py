@@ -39,6 +39,7 @@ class Code4ChartDataset:
             hf_id_code_llm: str = "meta-llama/CodeLlama-7b-Instruct-hf",
             hf_id_vlm: str = "meta-llama/Llama-3.2-11B-Vision-Instruct",
             bsz: int = 1,
+            max_seq_len: int = 512,
             show_generation: bool = False,
             debug: bool = False,
     ):
@@ -48,13 +49,14 @@ class Code4ChartDataset:
         :param verbose: Verbose mode: show logs.
         :param logger: The logger to show logs.
         :param cuda_dict: The cuda/GPU information dictionary.
-        :param data_csv_path_list: The list of data csv paths.
+        :param datasets_info: The list of data csv paths.
         :param cache_dir: The root directory of the cache.
         :param project_root_dir: The directory of the project root.
         :param hf_id_text_llm: The Hugging Face model ID of Text LLM. Format: ORGANIZATION_NAME/MODEL_NAME
         :param hf_id_code_llm: The Hugging Face model ID of Code LLM. Format: ORGANIZATION_NAME/MODEL_NAME
         :param hf_id_vlm: The Hugging Face model ID of VLM. Format: ORGANIZATION_NAME/MODEL_NAME
         :param bsz: The batch size.
+        :param max_seq_len: The maximum sequence length for padding/truncation.
         :param show_generation: Whether to show outputs during generation.
         :param debug: Debugging / developing mode.
         :return: None.
@@ -116,6 +118,14 @@ class Code4ChartDataset:
             ds_id, ds_url, ds_desc = ds["id"], ds["url"], ds["description"]
             ds_fp, ds_fn, ds_name = ds["filepath"], ds["filename"], ds["name"]
             assert os.path.isfile(ds_fp)
+
+            ds_metadata["id"] = ds_id
+            ds_metadata["url"] = ds_url
+            ds_metadata["description"] = ds_desc
+            ds_metadata["filepath"] = ds_fp
+            ds_metadata["filename"] = ds_fn
+            ds_metadata["name"] = ds_name
+
             df = pd.read_csv(ds_fp)
             num_row, num_col = df.shape
             ds_metadata["num_row"] = num_row
@@ -219,21 +229,109 @@ class Code4ChartDataset:
         # TODO: there are some recent related work about using LLMs to analyze DA tasks,
         #   e.g., DracoGPT https://arxiv.org/abs/2408.06845
         #   find pre-defined/existing DA tasks/requirements in Draco 2 https://arxiv.org/abs/2308.14247
-        da_reqs = []  # List[Dict[str, Any]]
 
-        # Load "metadata.jsonl"
+        # Load the metadata
         metadata_fp = os.path.join(self.data_dir_process, "metadata.jsonl")
+        with open(metadata_fp, "r", encoding="utf-8") as fp_in:
+            metadata = [json.loads(line.strip()) for line in fp_in]
 
         # Load the Text LLM
-        # self.text_llm_model = TextLLM(
-        #     verbose=verbose, logger=logger, cuda_dict=cuda_dict,
-        #     cache_dir=cache_dir, project_root_dir=project_root_dir,
-        #     hf_id=hf_id_text_llm, bsz=bsz, show_generation=show_generation, debug=debug,
-        # )
+        text_llm = TextLLM(
+            verbose=self.verbose, logger=self.logger, cuda_dict=self.cuda_dict,
+            cache_dir=self.cache_dir, project_root_dir=self.project_root_dir,
+            hf_id=self.hf_id_text_llm, bsz=self.bsz, show_generation=self.show_generation, debug=self.debug,
+        )
+
+        da_reqs = []  # List[Dict[str, Any]]
+        for metadata_dict in metadata:
+            # Based on the metadata of the datasets, ask the Text LLM to generate some reasonable
+            #   data analysis requirements (da_reqs) and corresponding visualization chart (chart type).
+            cur_reqs_dict = dict()
+            cur_reqs_dict["id"] = metadata_dict["id"]
+
+            prompt_list = []
+            req_list = []
+            prompt_overall = f"""
+Please construct a data analysis requirement based on the dataset information as follows. \
+Each data analysis requirement should include a visualization instruction, a specific chart type for visualization, \
+and related data table columns (features).
+
+## Dataset Name: {metadata_dict["name"]}
+
+## Dataset Description:
+{metadata_dict["description"]}
+
+## Dataset Statistics:
+- Number of rows (dataset size): {metadata_dict["num_row"]}
+- Number of columns (features): {metadata_dict["num_col"]}
+
+## Dataset Features (Columns):
+- Feature Names: {", ".join([feat_dict["name"] for feat_dict in metadata_dict["features"]])}
+- Feature Data Types: {", ".join([feat_dict["dtype"] for feat_dict in metadata_dict["features"]])}
+
+## Data analysis requirement:
+            """.strip()
+
+            prompt_list.append(prompt_overall)
+
+            for feat_dict in metadata_dict["features"]:
+                # Here, we only use the non-NAN information of one single feature
+                #   TODO: future work: analyze multiple features (such as the correlation between two features)
+                # num_total, num_miss = feat_dict["num_total"], feat_dict["num_miss"]
+                num_valid, num_unique = feat_dict["num_valid"], feat_dict["num_unique"]
+                cur_dtype, numerical_stat = feat_dict["dtype"], feat_dict["numerical_stat"]
+
+                prompt_feature = f"""
+Please construct a data analysis requirement based on the feature information as follows. \
+Each data analysis requirement should include a visualization instruction, a specific chart type for visualization, \
+and related data table columns (features).
+
+## Dataset Name: {metadata_dict["name"]}
+
+## Feature Information:
+- Feature Name: {feat_dict["name"]}
+- Data Type: {cur_dtype}
+- Number of all rows (feature values): {num_valid}
+- Number of unique feature values: {num_unique}
+                """.strip()
+                if isinstance(numerical_stat, dict) and len(numerical_stat) > 0:
+                    prompt_feature += "\n\n" + f"""
+## Numerical Values Statistics:
+- Min: {numerical_stat["min"]:.2f}
+- Max: {numerical_stat["max"]:.2f}
+- Mean: {numerical_stat["mean"]:.2f}
+- Std: {numerical_stat["std"]:.2f}
+
+## Data analysis requirement:
+                    """.strip()
+                else:
+                    prompt_feature += "\n\n## Data analysis requirement:"
+
+                prompt_list.append(prompt_feature)
+
+            for prompt in prompt_list:
+                gen_dict = text_llm.run_generation(
+                    prompts=[prompt], model=text_llm.model, tokenizer=text_llm.tokenizer_gen,
+                    need_tokenize=True, max_new_tokens=100,
+                    temperature=0.1, top_p=0.1,  # Be more deterministic when choosing an option
+                )
+                output_text = gen_dict["output_text"][0].strip()
+                req_list.append(output_text)  # TODO: save the prompt too
+
+            cur_reqs_dict["prompts"] = prompt_list
+            cur_reqs_dict["da_reqs"] = req_list
+            da_reqs.append(cur_reqs_dict)
 
         # Write the data_csv_path and da_reqs into jsonl files
         da_reqs_fp = os.path.join(self.data_dir_process, "da_reqs.jsonl")
+        write_cnt = 0
+        with open(da_reqs_fp, "w", encoding="utf-8") as fp_out:
+            for _item in da_reqs_fp:
+                fp_out.write(json.dumps(_item, cls=NumpyEncoder) + "\n")
+                write_cnt += 1
 
+        if self.verbose:
+            self.logger.info(f">>> write_cnt = {write_cnt} to file: {da_reqs_fp}")
         return da_reqs_fp
 
     def step3_gen_vis_code(
@@ -244,7 +342,7 @@ class Code4ChartDataset:
         # TODO: Consider expanding key attributes of matplotlib functions (show the default values)
         vis_code = []  # List[str], Python3 matplotlib code
 
-        # Get self.data_csv_path_list
+        # Get self.datasets_info
         # Load "metadata.jsonl" and "da_reqs.jsonl"
         metadata_fp = os.path.join(self.data_dir_process, "metadata.jsonl")
         da_reqs_fp = os.path.join(self.data_dir_process, "da_reqs.jsonl")
@@ -269,7 +367,7 @@ class Code4ChartDataset:
         chart_path = []  # List[str]
         chart_base64 = []  # List[Base64]
 
-        # Get self.data_csv_path_list
+        # Get self.datasets_info
         # Load "vis_code.jsonl"
         vis_code_fp = os.path.join(self.data_dir_process, "vis_code.jsonl")
 
@@ -296,7 +394,7 @@ class Code4ChartDataset:
         chart_caption = []  # List[str]
         # chart_insight = []  # List[str]
 
-        # Get self.data_csv_path_list
+        # Get self.datasets_info
         # Load "metadata.jsonl", "da_reqs.jsonl", "vis_code.jsonl", and "chart_image.jsonl"
         metadata_fp = os.path.join(self.data_dir_process, "metadata.jsonl")
         da_reqs_fp = os.path.join(self.data_dir_process, "da_reqs.jsonl")
@@ -328,7 +426,7 @@ class Code4ChartDataset:
         # Input all information to Text2Text LLMs and obtain the overall analysis for each table (tabular dataset)
         overall_analysis = []  # List[str]
 
-        # Get self.data_csv_path_list
+        # Get self.datasets_info
         # Load "metadata.jsonl", "da_reqs.jsonl", "vis_code.jsonl", and "chart_caption.jsonl"
         metadata_fp = os.path.join(self.data_dir_process, "metadata.jsonl")
         da_reqs_fp = os.path.join(self.data_dir_process, "da_reqs.jsonl")
@@ -356,7 +454,7 @@ class Code4ChartDataset:
         chart_option = []  # List[List[str]] -> five options, one with correct answer (consider distractors' quality)
         chart_answer = []  # List[int] -> each entry: the index of correct answer in each option list
 
-        # Get self.data_csv_path_list
+        # Get self.datasets_info
         # Load "metadata.jsonl", "da_reqs.jsonl", "vis_code.jsonl", "chart_image.jsonl",
         #   "chart_caption.jsonl", and "overall_analysis.jsonl"
         metadata_fp = os.path.join(self.data_dir_process, "metadata.jsonl")
@@ -382,7 +480,7 @@ class Code4ChartDataset:
         chart_option = []  # List[List[str]] -> five options, one with correct answer (consider distractors' quality)
         chart_answer = []  # List[int] -> each entry: the index of correct answer in each option list
 
-        # Get self.data_csv_path_list
+        # Get self.datasets_info
         # Load "metadata.jsonl", "da_reqs.jsonl", "vis_code.jsonl", "chart_image.jsonl",
         #   "chart_caption.jsonl", and "overall_analysis.jsonl"
         metadata_fp = os.path.join(self.data_dir_process, "metadata.jsonl")
@@ -411,6 +509,7 @@ def main(
     hf_id_code_llm: str = "meta-llama/CodeLlama-7b-Instruct-hf",
     hf_id_vlm: str = "meta-llama/Llama-3.2-11B-Vision-Instruct",
     bsz: int = 1,
+    max_seq_len: int = 512,
     show_generation: bool = False,
     debug: bool = False,
     **kwargs
@@ -428,6 +527,7 @@ def main(
     :param hf_id_code_llm: The Hugging Face model ID of Code LLM. Format: ORGANIZATION_NAME/MODEL_NAME
     :param hf_id_vlm: The Hugging Face model ID of VLM. Format: ORGANIZATION_NAME/MODEL_NAME
     :param bsz: The batch size.
+    :param max_seq_len: The maximum sequence length for padding/truncation.
     :param show_generation: Whether to show outputs during generation.
     :param debug: Debugging / developing mode.
     :return: None.
@@ -456,6 +556,7 @@ def main(
         hf_id_code_llm=hf_id_code_llm,
         hf_id_vlm=hf_id_vlm,
         bsz=bsz,
+        max_seq_len=max_seq_len,
         show_generation=show_generation,
         debug=debug,
     )
