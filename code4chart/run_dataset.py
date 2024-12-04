@@ -892,6 +892,7 @@ Please be concise and only generate the conclusion:
             )
             output_text = gen_dict["output_text"][0].strip()
 
+            cur_analysis_dict["analysis_prompt"] = cur_analysis_prompt
             cur_analysis_dict["overall_analysis"] = output_text
             overall_analysis.append(cur_analysis_dict)
             if self.debug:
