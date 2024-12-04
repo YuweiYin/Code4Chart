@@ -822,7 +822,7 @@ Please be concise and only generate the chart caption:
 
         if self.verbose:
             self.logger.info(f">>> write_cnt = {write_cnt} to file: {chart_captions_fp}")
-        # Total Running Time: 718.8 sec (12.0 min)
+        # Total Running Time: 1433.1 sec (23.9 min)
         return chart_captions_fp
 
     def step7_overall_analysis(
@@ -907,6 +907,7 @@ Please be concise and only generate the conclusion:
 
         if self.verbose:
             self.logger.info(f">>> write_cnt = {write_cnt} to file: {overall_analysis_fp}")
+        # Total Running Time: 538.2 sec (9.0 min)
         return overall_analysis_fp
 
     def step8_merge_all_info(
