@@ -63,8 +63,10 @@ fi
 
 #CUDA="0,1"
 SEED=42
-ROOT_DIR="${HOME}/projects/def-carenini/yuweiyin"
-CACHE_DIR="${ROOT_DIR}/.cache/huggingface/"
+#ROOT_DIR="${HOME}/projects/def-carenini/yuweiyin"
+#CACHE_DIR="${ROOT_DIR}/.cache/huggingface/"
+ROOT_DIR="${HOME}"
+CACHE_DIR="${HOME}/projects/def-carenini/yuweiyin/.cache/huggingface/"
 
 echo -e "TASK: ${TASK}"
 echo -e "BSZ: ${BSZ}"
