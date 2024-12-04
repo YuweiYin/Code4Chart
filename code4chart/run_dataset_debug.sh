@@ -43,7 +43,7 @@ fi
 
 if [[ -z ${MAX_SEQ_LEN} ]]
 then
-  MAX_SEQ_LEN="512"
+  MAX_SEQ_LEN="1024"
 fi
 
 if [[ -z ${TEXT_LLM} ]]
