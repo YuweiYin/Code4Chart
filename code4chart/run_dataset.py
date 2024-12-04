@@ -208,8 +208,8 @@ class Code4ChartDataset:
     def step2_analyze_da_reqs(
             self,
     ) -> str:
-        # For each da_req, we use Text2Text LLMs to analyze the requirement, provide some solutions or steps,
-        #   and give the proper chart types & specifications for the Code LLMs to generate visualization code.
+        # For each dataset, we use Text LLMs to analyze the DA requirement, including visualization instruction
+        #   and chart type specifications for the Code LLMs to generate visualization code later.
 
         # Load the metadata
         metadata_fp = os.path.join(self.data_dir_process, "metadata.jsonl")
@@ -238,8 +238,8 @@ class Code4ChartDataset:
             for feat_dict in metadata_dict["features"]:
                 # Here, we only use the non-NAN information of one single feature
                 #   TODO: future work: analyze multiple features (such as the correlation between two features)
-                if self.verbose:
-                    self.logger.info(f">>> >>> Feature: {feat_dict['name']}")
+                # if self.verbose:
+                #     self.logger.info(f">>> >>> Feature: {feat_dict['name']}")
                 # num_total, num_miss = feat_dict["num_total"], feat_dict["num_miss"]
                 num_valid, num_unique = feat_dict["num_valid"], feat_dict["num_unique"]
                 cur_dtype, numerical_stat = feat_dict["dtype"], feat_dict["numerical_stat"]
@@ -302,9 +302,7 @@ to plot a chart and save the figure. Be concise, clear, and short.
     def step3_gen_vis_code(
             self,
     ) -> str:
-        # Input: data_csv_path: str, metadata: Dict[str, Any], da_reqs: List[Dict[str, Any]]
-        # Generate visualization code (Python3, using matplotlib/seaborn library) per da_req using Code LLMs
-        # TODO: Consider expanding key attributes of matplotlib functions (show the default values)
+        # For each da_req, we use Code LLMs to generate Python3 code to plot charts.
 
         # Load the metadata and da_reqs
         metadata_fp = os.path.join(self.data_dir_process, "metadata.jsonl")
@@ -323,7 +321,7 @@ to plot a chart and save the figure. Be concise, clear, and short.
             show_generation=self.show_generation, debug=self.debug,
         )
 
-        vis_code = []  # List[str], Python3 matplotlib code
+        vis_code = []  # List[Dict[str, Any]], Python3 matplotlib code
         for metadata_dict, cur_reqs_dict in zip(metadata, da_reqs):
             # Based on the metadata and da_reqs, ask the Code LLM to generate visualization code (Python3 matplotlib).
             cur_vis_code_dict = dict()
@@ -331,26 +329,27 @@ to plot a chart and save the figure. Be concise, clear, and short.
             if self.verbose:
                 self.logger.info(f">>> [id={metadata_dict['id']}] Dataset: {metadata_dict['name']}")
 
-            cur_csv_path = metadata_dict["filepath"]
-            assert os.path.isfile(cur_csv_path)
-            df = pd.read_csv(cur_csv_path)
+            # cur_csv_path = metadata_dict["filepath"]
+            # assert os.path.isfile(cur_csv_path)
+            # df = pd.read_csv(cur_csv_path)
 
             req_list = cur_reqs_dict["da_reqs"]
             # req_prompt_list = cur_reqs_dict["prompts"]
             code_prompt_list = []
-            vis_data_list = []
+            # vis_data_list = []
+            vis_feat_list = []
             assert len(req_list) == len(metadata_dict["features"]) + 1
             for req, feat_dict in zip(req_list[1:], metadata_dict["features"]):
                 # Here, we only deal with each column (feature) as the whole table can be too large.
                 #   TODO: future work: deal with the whole table
-                if self.verbose:
-                    self.logger.info(f">>> >>> Feature: {feat_dict['name']}")
+                # if self.verbose:
+                #     self.logger.info(f">>> >>> Feature: {feat_dict['name']}")
                 num_valid, num_unique = feat_dict["num_valid"], feat_dict["num_unique"]
                 cur_dtype, numerical_stat = feat_dict["dtype"], feat_dict["numerical_stat"]
 
-                df_feat = df[feat_dict["name"]]
-                df_feat = df_feat.dropna(axis=0)
-                data_feat = df_feat.tolist()
+                # df_feat = df[feat_dict["name"]]
+                # df_feat = df_feat.dropna(axis=0)
+                # data_feat = df_feat.tolist()
 
                 cur_code_prompt = f"""
 Dataset Information:
@@ -376,15 +375,15 @@ Data Analysis Requirement:
 {req}
 
 ## Task: Based on the above dataset information and data analysis requirement, \
-generate an executable Python3 code using the matplotlib, numpy, and pandas packages \
-to plot a chart and save the figure. Assume you can access the data table and target column (list) \
-by the following Python3 code:
+generate executable Python3 code using the matplotlib, numpy, and pandas packages \
+to plot a chart and save the figure. Please be concise and only generate executable Python3 code. \
+Assume you can access the data table and target column (list) by the following Python3 code:
 ```python
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-data = pd.read_csv("{metadata_dict["filepath"]}")
+data = pd.read_csv("{metadata_dict["filename"]}")
 column = data["{feat_dict["name"]}"].tolist()
 ```
 
@@ -394,7 +393,8 @@ Python3 Code for Chart Plotting:
                 # {data_feat}
 
                 code_prompt_list.append(cur_code_prompt)
-                vis_data_list.append(data_feat)
+                # vis_data_list.append(data_feat)
+                vis_feat_list.append(feat_dict["name"])
 
             vis_code_list = []
             for prompt in code_prompt_list:
@@ -406,7 +406,7 @@ Python3 Code for Chart Plotting:
                 output_text = gen_dict["output_text"][0].strip()
                 vis_code_list.append(output_text)
 
-            cur_vis_code_dict["vis_data"] = vis_data_list
+            cur_vis_code_dict["vis_feat"] = vis_feat_list
             cur_vis_code_dict["prompts"] = code_prompt_list
             cur_vis_code_dict["vis_code"] = vis_code_list
             vis_code.append(cur_vis_code_dict)
@@ -428,14 +428,17 @@ Python3 Code for Chart Plotting:
     def step4_exec_vis_code(
             self,
     ) -> str:
-        # Input: vis_code: List[str]
-        # Execute the visualization code and get the chart figure (the jpg file and its base64 encoding)
-        chart_path = []  # List[str]
-        chart_base64 = []  # List[Base64]
+        # Execute the generated visualization code (Python3) and plot the chart figures
+        # TODO: Maybe we need postprocessing (after step 3) to make sure the generated code is executable
 
-        # Get self.datasets_info
-        # Load "vis_code.jsonl"
+        # Load the metadata and visualization code
+        metadata_fp = os.path.join(self.data_dir_process, "metadata.jsonl")
         vis_code_fp = os.path.join(self.data_dir_process, "vis_code.jsonl")
+        with open(metadata_fp, "r", encoding="utf-8") as fp_in:
+            metadata = [json.loads(line.strip()) for line in fp_in]
+        with open(vis_code_fp, "r", encoding="utf-8") as fp_in:
+            vis_code = [json.loads(line.strip()) for line in fp_in]
+        assert isinstance(metadata, list) and isinstance(vis_code, list) and len(metadata) == len(vis_code)
 
         # exec(open("file.py").read())
         #
@@ -446,10 +449,58 @@ Python3 Code for Chart Plotting:
         # import subprocess
         # subprocess.run(["python3", "script2.py"])
 
-        # Write the data_csv_path, chart_path, and chart_base64 into jsonl files
-        chart_image_fp = os.path.join(self.data_dir_process, "chart_image.jsonl")
+        chart_figures = []  # List[Dict[str, Any]]
+        # chart_base64 = []  # List[Base64]
+        for metadata_dict, cur_vis_code_dict in zip(metadata, vis_code):
+            # Based on the metadata and da_reqs, ask the Code LLM to generate visualization code (Python3 matplotlib).
+            cur_chart = dict()
+            cur_chart["id"] = metadata_dict["id"]
+            if self.verbose:
+                self.logger.info(f">>> [id={metadata_dict['id']}] Dataset: {metadata_dict['name']}")
 
-        return chart_image_fp
+            cur_csv_path = metadata_dict["filepath"]
+            assert os.path.isfile(cur_csv_path)
+            # df = pd.read_csv(cur_csv_path)
+
+            vis_feat_list = cur_vis_code_dict["vis_feat"]
+            # code_prompt_list = cur_vis_code_dict["prompts"]
+            vis_code_list = cur_vis_code_dict["vis_code"]
+
+            # df_feat = df[feat_dict["name"]]
+            # df_feat = df_feat.dropna(axis=0)
+            # data_feat = df_feat.tolist()
+
+            assert len(vis_feat_list) == len(vis_code_list) == len(metadata_dict["features"])
+            cur_fig_save_dir = os.path.join(self.data_dir_process, "chart_fig", str(metadata_dict["id"]))
+            os.makedirs(cur_fig_save_dir, exist_ok=True)
+            fig_id = 0
+            for feat_name, cur_vis_code, feat_dict in zip(vis_feat_list, vis_code_list, metadata_dict["features"]):
+                fig_id += 1
+                cur_fig_save_fp = os.path.join(
+                    cur_fig_save_dir, f"{fig_id}-{feat_name.replace('/', '_').strip()}.png")
+                if "plt.show()" in cur_vis_code:  # Save the figure instead of showing it
+                    cur_vis_code.replace("plt.show()", f"plt.savefig({cur_fig_save_fp})")
+                try:
+                    exec(cur_vis_code)
+                    cur_chart["path"] = cur_fig_save_fp
+                    assert os.path.isfile(cur_fig_save_fp)
+                except Exception as e:
+                    if self.verbose:
+                        self.logger.info(e)
+
+            chart_figures.append(cur_chart)
+
+        # Write the data_csv_path, chart_path, and chart_base64 into jsonl files
+        chart_figures_fp = os.path.join(self.data_dir_process, "chart_figures.jsonl")
+        write_cnt = 0
+        with open(chart_figures_fp, "w", encoding="utf-8") as fp_out:
+            for _item in chart_figures:
+                fp_out.write(json.dumps(_item, cls=NumpyEncoder) + "\n")
+                write_cnt += 1
+
+        if self.verbose:
+            self.logger.info(f">>> write_cnt = {write_cnt} to file: {chart_figures_fp}")
+        return chart_figures_fp
 
     def step5_chart_cap(
             self,
@@ -461,11 +512,11 @@ Python3 Code for Chart Plotting:
         # chart_insight = []  # List[str]
 
         # Get self.datasets_info
-        # Load "metadata.jsonl", "da_reqs.jsonl", "vis_code.jsonl", and "chart_image.jsonl"
+        # Load "metadata.jsonl", "da_reqs.jsonl", "vis_code.jsonl", and "chart_figures.jsonl"
         metadata_fp = os.path.join(self.data_dir_process, "metadata.jsonl")
         da_reqs_fp = os.path.join(self.data_dir_process, "da_reqs.jsonl")
         vis_code_fp = os.path.join(self.data_dir_process, "vis_code.jsonl")
-        chart_image_fp = os.path.join(self.data_dir_process, "chart_image.jsonl")
+        chart_figures_fp = os.path.join(self.data_dir_process, "chart_figures.jsonl")
 
         # Load the Vision-language Model (Multimodal LLM)
         # self.vlm_model = VLM(
@@ -521,12 +572,12 @@ Python3 Code for Chart Plotting:
         chart_answer = []  # List[int] -> each entry: the index of correct answer in each option list
 
         # Get self.datasets_info
-        # Load "metadata.jsonl", "da_reqs.jsonl", "vis_code.jsonl", "chart_image.jsonl",
+        # Load "metadata.jsonl", "da_reqs.jsonl", "vis_code.jsonl", "chart_figures.jsonl",
         #   "chart_caption.jsonl", and "overall_analysis.jsonl"
         metadata_fp = os.path.join(self.data_dir_process, "metadata.jsonl")
         da_reqs_fp = os.path.join(self.data_dir_process, "da_reqs.jsonl")
         vis_code_fp = os.path.join(self.data_dir_process, "vis_code.jsonl")
-        chart_image_fp = os.path.join(self.data_dir_process, "chart_image.jsonl")
+        chart_figures_fp = os.path.join(self.data_dir_process, "chart_figures.jsonl")
         chart_caption_fp = os.path.join(self.data_dir_process, "chart_caption.jsonl")
         overall_analysis_fp = os.path.join(self.data_dir_process, "overall_analysis.jsonl")
 
@@ -547,12 +598,12 @@ Python3 Code for Chart Plotting:
         chart_answer = []  # List[int] -> each entry: the index of correct answer in each option list
 
         # Get self.datasets_info
-        # Load "metadata.jsonl", "da_reqs.jsonl", "vis_code.jsonl", "chart_image.jsonl",
+        # Load "metadata.jsonl", "da_reqs.jsonl", "vis_code.jsonl", "chart_figures.jsonl",
         #   "chart_caption.jsonl", and "overall_analysis.jsonl"
         metadata_fp = os.path.join(self.data_dir_process, "metadata.jsonl")
         da_reqs_fp = os.path.join(self.data_dir_process, "da_reqs.jsonl")
         vis_code_fp = os.path.join(self.data_dir_process, "vis_code.jsonl")
-        chart_image_fp = os.path.join(self.data_dir_process, "chart_image.jsonl")
+        chart_figures_fp = os.path.join(self.data_dir_process, "chart_figures.jsonl")
         chart_caption_fp = os.path.join(self.data_dir_process, "chart_caption.jsonl")
         overall_analysis_fp = os.path.join(self.data_dir_process, "overall_analysis.jsonl")
 
