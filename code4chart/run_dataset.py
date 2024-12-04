@@ -235,34 +235,11 @@ class Code4ChartDataset:
 
             prompt_list = []
             req_list = []
-            prompt_overall = f"""
-Please construct one data analysis requirement based on the dataset information as follows. \
-Each data analysis requirement should include a visualization instruction, a specific chart type for visualization, \
-and related data table columns (features).
-
-## Dataset Name: {metadata_dict["name"]}
-
-## Dataset Description:
-{metadata_dict["description"]}
-
-## Dataset Statistics:
-- Number of rows (dataset size): {metadata_dict["num_row"]}
-- Number of columns (features): {metadata_dict["num_col"]}
-
-## Dataset Features (Columns):
-- Feature Names: {", ".join([feat_dict["name"] for feat_dict in metadata_dict["features"]])}
-- Feature Data Types: {", ".join([feat_dict["dtype"] for feat_dict in metadata_dict["features"]])}
-
-## Data analysis requirement:
-            """.strip()
-
-            prompt_list.append(prompt_overall)
-
             for feat_dict in metadata_dict["features"]:
-                if self.verbose:
-                    self.logger.info(f">>> Feature: {feat_dict['name']}")
                 # Here, we only use the non-NAN information of one single feature
                 #   TODO: future work: analyze multiple features (such as the correlation between two features)
+                if self.verbose:
+                    self.logger.info(f">>> Feature: {feat_dict['name']}")
                 # num_total, num_miss = feat_dict["num_total"], feat_dict["num_miss"]
                 num_valid, num_unique = feat_dict["num_valid"], feat_dict["num_unique"]
                 cur_dtype, numerical_stat = feat_dict["dtype"], feat_dict["numerical_stat"]
@@ -353,12 +330,81 @@ Each data analysis requirement should include a visualization instruction and a 
             if self.verbose:
                 self.logger.info(f">>> [id={metadata_dict['id']}] Dataset: {metadata_dict['name']}")
 
+            cur_csv_path = metadata_dict["filepath"]
+            assert os.path.isfile(cur_csv_path)
+            df = pd.read_csv(cur_csv_path)
+
             req_list = cur_reqs_dict["da_reqs"]
             # req_prompt_list = cur_reqs_dict["prompts"]
             code_prompt_list = []
+            assert len(req_list) == len(metadata_dict["features"]) + 1
+            for req, feat_dict in zip(req_list[1:], metadata_dict["features"]):
+                # Here, we only deal with each column (feature) as the whole table can be too large.
+                #   TODO: future work: deal with the whole table
+                if self.verbose:
+                    self.logger.info(f">>> Feature: {feat_dict['name']}")
+                num_valid, num_unique = feat_dict["num_valid"], feat_dict["num_unique"]
+                cur_dtype, numerical_stat = feat_dict["dtype"], feat_dict["numerical_stat"]
+
+                df_feat = df[feat_dict["name"]]
+                df_feat = df_feat.dropna(axis=0)
+                data_feat = df_feat.tolist()
+
+                cur_code_prompt = f"""
+Please construct one data analysis requirement based on the feature information as follows. \
+Each data analysis requirement should include a visualization instruction and a specific chart type for visualization.
+
+## Dataset Name: {metadata_dict["name"]}
+## Feature Information:
+- Feature Name: {feat_dict["name"]}
+- Data Type: {cur_dtype}
+- Number of all rows (feature values): {num_valid}
+- Number of unique feature values: {num_unique}
+                """.strip()
+                if isinstance(numerical_stat, dict) and len(numerical_stat) > 0:
+                    cur_code_prompt += "\n\n" + f"""
+## Numerical Values Statistics:
+- Min: {numerical_stat["min"]:.2f}
+- Max: {numerical_stat["max"]:.2f}
+- Mean: {numerical_stat["mean"]:.2f}
+- Std: {numerical_stat["std"]:.2f}
+
+## Data Column Values:
+{data_feat}
+
+## Data Analysis Requirement:
+{req}
+
+## Python3 Code for Chart Plotting:
+                    """.strip()
+                else:
+                    cur_code_prompt += "\n\n" + f"""
+## Data Column Values:
+{data_feat}
+
+## Data Analysis Requirement:
+{req}
+
+## Python3 Code for Chart Plotting:
+                    """.strip()
+
+                code_prompt_list.append(cur_code_prompt)
+
             vis_code_list = []
-            for req in req_list:
-                pass
+            for prompt in code_prompt_list:
+                gen_dict = code_llm.run_generation(
+                    prompts=[prompt], model=code_llm.model, tokenizer=code_llm.tokenizer_gen,
+                    need_tokenize=True, max_new_tokens=512,
+                    temperature=0.1, top_p=0.1,  # Be more deterministic when choosing an option
+                )
+                output_text = gen_dict["output_text"][0].strip()
+                vis_code_list.append(output_text)
+
+            cur_vis_code_dict["prompts"] = code_prompt_list
+            cur_vis_code_dict["vis_code"] = vis_code_list
+            vis_code.append(cur_vis_code_dict)
+            if self.debug:
+                sys.exit(0)
 
         # Write the data_csv_path and vis_code into jsonl files
         vis_code_fp = os.path.join(self.data_dir_process, "vis_code.jsonl")
