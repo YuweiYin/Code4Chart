@@ -230,6 +230,8 @@ class Code4ChartDataset:
             #   data analysis requirements (da_reqs) and corresponding visualization chart (chart type).
             cur_reqs_dict = dict()
             cur_reqs_dict["id"] = metadata_dict["id"]
+            if self.verbose:
+                self.logger.info(f">>> [id={metadata_dict['id']}] Dataset: {metadata_dict['name']}")
 
             prompt_list = []
             req_list = []
@@ -257,6 +259,8 @@ and related data table columns (features).
             prompt_list.append(prompt_overall)
 
             for feat_dict in metadata_dict["features"]:
+                if self.verbose:
+                    self.logger.info(f">>> Feature: {feat_dict['name']}")
                 # Here, we only use the non-NAN information of one single feature
                 #   TODO: future work: analyze multiple features (such as the correlation between two features)
                 # num_total, num_miss = feat_dict["num_total"], feat_dict["num_miss"]
