@@ -23,7 +23,7 @@ from code4chart.default_inputs import DefaultInputs
 from code4chart.init_functions import logger_setup, cuda_setup, random_setup
 
 
-class Code4ChartExp:
+class Code4ChartExpEdit:
 
     def __init__(
             self,
@@ -147,7 +147,7 @@ def main(
     **kwargs
 ) -> None:
     """
-    Run the experiment on the chart QA and chart captioning tasks with or without code as input.
+    Run the (robustness) experiment on the edited chart QA and chart captioning tasks with or without code as input.
 
     :param task: the task of the current run session.
     :param verbose: Verbose mode: show logs.
@@ -175,7 +175,7 @@ def main(
 
     # hf_login(token="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")
 
-    c4c_exp = Code4ChartExp(
+    c4c_exp = Code4ChartExpEdit(
         verbose=verbose,
         logger=logger,
         cuda_dict=cuda_dict,

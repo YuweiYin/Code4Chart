@@ -77,8 +77,8 @@ echo -e "VLM: ${VLM}"
 echo -e "ROOT_DIR: ${ROOT_DIR}"
 echo -e "CACHE_DIR: ${CACHE_DIR}"
 
-echo -e "\n >>> python3 run_dataset.py --task ${TASK}"
-python3 run_dataset.py \
+echo -e "\n >>> python3 run_experiment.py --task ${TASK}"
+python3 run_experiment.py \
   --task "${TASK}" \
   --cache_dir "${CACHE_DIR}" \
   --project_root_dir "${ROOT_DIR}" \
@@ -90,5 +90,6 @@ python3 run_dataset.py \
   --hf_id_vlm "${VLM}" \
   --verbose
 
+# --interactive
 # --show_generation
 # --debug
