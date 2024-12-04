@@ -776,6 +776,9 @@ Please be concise and only generate the caption:
                     # cur_images = [Image.open(cur_chart_fp)]
                     cur_images = [Image.open(BytesIO(base64.b64decode(cur_fig_base64.encode("utf-8"))))]
                     cur_prompts = vlm_model.processor.apply_chat_template(cur_messages, add_generation_prompt=True)
+                    if isinstance(cur_prompts, str):
+                        cur_prompts = [cur_prompts]
+                    assert isinstance(cur_prompts, list)
                     cap_prompt_image_list.append((cur_prompts, cur_images))
                 except Exception as e:
                     if self.verbose:
