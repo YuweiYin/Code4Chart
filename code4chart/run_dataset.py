@@ -239,7 +239,7 @@ class Code4ChartDataset:
                 # Here, we only use the non-NAN information of one single feature
                 #   TODO: future work: analyze multiple features (such as the correlation between two features)
                 if self.verbose:
-                    self.logger.info(f">>> Feature: {feat_dict['name']}")
+                    self.logger.info(f">>> >>> Feature: {feat_dict['name']}")
                 # num_total, num_miss = feat_dict["num_total"], feat_dict["num_miss"]
                 num_valid, num_unique = feat_dict["num_valid"], feat_dict["num_unique"]
                 cur_dtype, numerical_stat = feat_dict["dtype"], feat_dict["numerical_stat"]
@@ -342,7 +342,7 @@ Each data analysis requirement should include a visualization instruction and a 
                 # Here, we only deal with each column (feature) as the whole table can be too large.
                 #   TODO: future work: deal with the whole table
                 if self.verbose:
-                    self.logger.info(f">>> Feature: {feat_dict['name']}")
+                    self.logger.info(f">>> >>> Feature: {feat_dict['name']}")
                 num_valid, num_unique = feat_dict["num_valid"], feat_dict["num_unique"]
                 cur_dtype, numerical_stat = feat_dict["dtype"], feat_dict["numerical_stat"]
 
