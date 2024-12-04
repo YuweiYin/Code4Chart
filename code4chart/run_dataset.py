@@ -22,8 +22,8 @@ from code4chart.code_llm import CodeLLM
 from code4chart.vlm import VLM
 from code4chart.default_inputs import DefaultInputs
 
-from ..utils.init_functions import logger_setup, cuda_setup, random_setup
-from ..utils.numpy_encoder import NumpyEncoder
+from .init_functions import logger_setup, cuda_setup, random_setup
+from .numpy_encoder import NumpyEncoder
 
 
 class Code4ChartDataset:
