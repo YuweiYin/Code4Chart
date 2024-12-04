@@ -36,7 +36,8 @@ python3 download_hf_model.py --trust_remote_code --verbose --cache_dir "${CACHE_
 ## Dataset Construction
 
 ```bash
-bash run_dataset.sh "1;1;512;meta-llama/Llama-3.1-8B-Instruct;meta-llama/CodeLlama-7b-Instruct-hf;meta-llama/Llama-3.2-11B-Vision-Instruct"
+# Please make sure the "ROOT_DIR" and "CACHE_DIR" variables are correct paths
+bash run_dataset.sh "1"
 ```
 
 ---
