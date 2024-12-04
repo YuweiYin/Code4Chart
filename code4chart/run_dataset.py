@@ -8,9 +8,9 @@ import fire
 import numpy as np
 import pandas as pd
 
-# import base64
-# from PIL import Image
-# from io import BytesIO
+import base64
+from PIL import Image
+from io import BytesIO
 
 # import torch
 # from transformers import AutoTokenizer, AutoModelForCausalLM
@@ -193,7 +193,7 @@ class Code4ChartDataset:
             # Save the metadata of the current dataset
             metadata.append(ds_metadata)
 
-        # Write the data_csv_path and metadata into jsonl files
+        # Write the metadata into jsonl files
         metadata_fp = os.path.join(self.data_dir_process, "metadata.jsonl")
         write_cnt = 0
         with open(metadata_fp, "w", encoding="utf-8") as fp_out:
@@ -287,7 +287,7 @@ to plot a chart and save the figure. Be concise, clear, and short.
             if self.debug:
                 sys.exit(0)
 
-        # Write the data_csv_path and da_reqs into jsonl files
+        # Write the data analysis requirements into jsonl files
         da_reqs_fp = os.path.join(self.data_dir_process, "da_reqs.jsonl")
         write_cnt = 0
         with open(da_reqs_fp, "w", encoding="utf-8") as fp_out:
@@ -297,6 +297,7 @@ to plot a chart and save the figure. Be concise, clear, and short.
 
         if self.verbose:
             self.logger.info(f">>> write_cnt = {write_cnt} to file: {da_reqs_fp}")
+        # Total Running Time: 2653.8 sec (44.2 min)
         return da_reqs_fp
 
     def step3_gen_vis_code(
@@ -338,8 +339,8 @@ to plot a chart and save the figure. Be concise, clear, and short.
             code_prompt_list = []
             # vis_data_list = []
             vis_feat_list = []
-            assert len(req_list) == len(metadata_dict["features"]) + 1
-            for req, feat_dict in zip(req_list[1:], metadata_dict["features"]):
+            assert len(req_list) == len(metadata_dict["features"])
+            for req, feat_dict in zip(req_list, metadata_dict["features"]):
                 # Here, we only deal with each column (feature) as the whole table can be too large.
                 #   TODO: future work: deal with the whole table
                 # if self.verbose:
@@ -413,7 +414,7 @@ Python3 Code for Chart Plotting:
             if self.debug:
                 sys.exit(0)
 
-        # Write the data_csv_path and vis_code into jsonl files
+        # Write the visualization code into jsonl files
         vis_code_fp = os.path.join(self.data_dir_process, "vis_code.jsonl")
         write_cnt = 0
         with open(vis_code_fp, "w", encoding="utf-8") as fp_out:
@@ -474,6 +475,7 @@ Python3 Code for Chart Plotting:
             cur_fig_save_dir = os.path.join(self.data_dir_process, "chart_fig", str(metadata_dict["id"]))
             os.makedirs(cur_fig_save_dir, exist_ok=True)
             fig_id = 0
+            cur_chart["chart_filepath"] = []
             for feat_name, cur_vis_code, feat_dict in zip(vis_feat_list, vis_code_list, metadata_dict["features"]):
                 fig_id += 1
                 cur_fig_save_fp = os.path.join(
@@ -482,7 +484,7 @@ Python3 Code for Chart Plotting:
                     cur_vis_code.replace("plt.show()", f"plt.savefig({cur_fig_save_fp})")
                 try:
                     exec(cur_vis_code)
-                    cur_chart["path"] = cur_fig_save_fp
+                    cur_chart["path"].append(cur_fig_save_fp)
                     assert os.path.isfile(cur_fig_save_fp)
                 except Exception as e:
                     if self.verbose:
@@ -490,7 +492,7 @@ Python3 Code for Chart Plotting:
 
             chart_figures.append(cur_chart)
 
-        # Write the data_csv_path, chart_path, and chart_base64 into jsonl files
+        # Write the chart figures info into jsonl files
         chart_figures_fp = os.path.join(self.data_dir_process, "chart_figures.jsonl")
         write_cnt = 0
         with open(chart_figures_fp, "w", encoding="utf-8") as fp_out:
@@ -505,37 +507,110 @@ Python3 Code for Chart Plotting:
     def step5_chart_cap(
             self,
     ) -> str:
-        # Input all information to Chart LLMs and obtain chart captions/descriptions and relevant analysis/insights
-        # Here, "chart captions" faithfully/objectively describe the observations in the chart,
-        #   while the "relevant analysis" is further insights
-        chart_caption = []  # List[str]
-        # chart_insight = []  # List[str]
+        # For each chart, we use Vision-language models (VLMs) to generate the chart captions (descriptions).
 
-        # Get self.datasets_info
-        # Load "metadata.jsonl", "da_reqs.jsonl", "vis_code.jsonl", and "chart_figures.jsonl"
+        # Load the metadata, vis_code, and chart figures
         metadata_fp = os.path.join(self.data_dir_process, "metadata.jsonl")
-        da_reqs_fp = os.path.join(self.data_dir_process, "da_reqs.jsonl")
         vis_code_fp = os.path.join(self.data_dir_process, "vis_code.jsonl")
         chart_figures_fp = os.path.join(self.data_dir_process, "chart_figures.jsonl")
+        with open(metadata_fp, "r", encoding="utf-8") as fp_in:
+            metadata = [json.loads(line.strip()) for line in fp_in]
+        with open(vis_code_fp, "r", encoding="utf-8") as fp_in:
+            vis_code = [json.loads(line.strip()) for line in fp_in]
+        with open(chart_figures_fp, "r", encoding="utf-8") as fp_in:
+            chart_figures = [json.loads(line.strip()) for line in fp_in]
+        assert len(metadata) == len(vis_code) == len(chart_figures)
 
         # Load the Vision-language Model (Multimodal LLM)
-        # self.vlm_model = VLM(
-        #     verbose=verbose, logger=logger, cuda_dict=cuda_dict,
-        #     cache_dir=cache_dir, project_root_dir=project_root_dir,
-        #     hf_id=hf_id_vlm, bsz=bsz, show_generation=show_generation, debug=debug,
-        # )
+        vlm_model = VLM(
+            verbose=self.verbose, logger=self.logger, cuda_dict=self.cuda_dict,
+            cache_dir=self.cache_dir, project_root_dir=self.project_root_dir,
+            hf_id=self.hf_id_vlm, bsz=self.bsz,
+            show_generation=self.show_generation, debug=self.debug,
+        )
 
-        # assert len(chart_caption) == len(chart_insight)
-        # chart_analysis = [{
-        #     "caption": caption,
-        #     "insight": insight,
-        # } for caption, insight in zip(chart_caption, chart_insight)]  # List[Dict[str, Any]]
+        chart_captions = []  # List[Dict[str, Any]]
+        for metadata_dict, cur_vis_code_dict, cur_chart in zip(metadata, vis_code, chart_figures):
+            # Based on the metadata and da_reqs, ask the Code LLM to generate visualization code (Python3 matplotlib).
+            cur_chart_cap_dict = dict()
+            cur_chart_cap_dict["id"] = metadata_dict["id"]
+            if self.verbose:
+                self.logger.info(f">>> [id={metadata_dict['id']}] Dataset: {metadata_dict['name']}")
 
-        # Write the data_csv_path and chart_caption into jsonl files
-        # chart_analysis_fp = os.path.join(self.data_dir_process, "chart_analysis.jsonl")
-        chart_caption_fp = os.path.join(self.data_dir_process, "chart_caption.jsonl")
+            vis_feat_list = cur_vis_code_dict["vis_feat"]
+            # code_prompt_list = cur_vis_code_dict["prompts"]
+            vis_code_list = cur_vis_code_dict["vis_code"]
+            chart_fp_list = cur_chart["chart_filepath"]
 
-        return chart_caption_fp
+            assert len(vis_feat_list) == len(vis_code_list) == len(chart_fp_list) == len(metadata_dict["features"])
+            fig_id = 0
+            cap_prompt_list = []
+            for feat_name, cur_vis_code, cur_chart_fp, feat_dict in zip(
+                    vis_feat_list, vis_code_list, chart_fp_list, metadata_dict["features"]):
+                fig_id += 1
+                # if self.verbose:
+                #     self.logger.info(f">>> >>> Feature: {feat_dict['name']}")
+                num_valid, num_unique = feat_dict["num_valid"], feat_dict["num_unique"]
+                cur_dtype, numerical_stat = feat_dict["dtype"], feat_dict["numerical_stat"]
+
+                # df_feat = df[feat_dict["name"]]
+                # df_feat = df_feat.dropna(axis=0)
+                # data_feat = df_feat.tolist()
+
+                cur_cap_prompt = f"""
+Dataset Information:
+- Dataset Name: {metadata_dict["name"]}
+- All Features: {", ".join([x["name"] for x in metadata_dict["features"]])}
+
+Current Feature Information:
+- Feature Name: {feat_dict["name"]}
+- Data Type: {cur_dtype}
+- Number of all rows (feature values): {num_valid}
+- Number of unique feature values: {num_unique}
+                            """.strip()
+                if isinstance(numerical_stat, dict) and len(numerical_stat) > 0:
+                    cur_cap_prompt += "\n" + f"""
+- Min of Feature Values: {numerical_stat["min"]:.2f}
+- Max of Feature Values: {numerical_stat["max"]:.2f}
+- Mean of Feature Values: {numerical_stat["mean"]:.2f}
+- Std of Feature Values: {numerical_stat["std"]:.2f}
+                                """.strip()
+
+                cur_cap_prompt += "\n\n" + f"""
+## Task: Based on the above dataset information (text) and the chart figure (image), \
+generate a caption or description of the chart. \
+Please be concise and only generate the caption:
+                            """.strip()
+
+                cap_prompt_list.append(cur_cap_prompt)
+
+            cur_caption_list = []
+            for prompt in cap_prompt_list:
+                gen_dict = vlm_model.run_generation(
+                    prompts=[prompt], model=vlm_model.model, tokenizer=vlm_model.tokenizer_gen,
+                    need_tokenize=True, max_new_tokens=512,
+                    temperature=0.1, top_p=0.1,  # Be more deterministic when choosing an option
+                )
+                output_text = gen_dict["output_text"][0].strip()
+                cur_caption_list.append(output_text)
+
+            cur_chart_cap_dict["captions"] = cur_caption_list
+            chart_captions.append(cur_chart_cap_dict)
+            if self.debug:
+                sys.exit(0)
+
+        # Write the chart captions into jsonl files
+        chart_captions_fp = os.path.join(self.data_dir_process, "chart_captions.jsonl")
+        write_cnt = 0
+        with open(chart_captions_fp, "w", encoding="utf-8") as fp_out:
+            for _item in chart_captions:
+                fp_out.write(json.dumps(_item, cls=NumpyEncoder) + "\n")
+                write_cnt += 1
+
+        if self.verbose:
+            self.logger.info(f">>> write_cnt = {write_cnt} to file: {chart_captions_fp}")
+
+        return chart_captions_fp
 
     def step6_overall_analysis(
             self,
@@ -544,11 +619,11 @@ Python3 Code for Chart Plotting:
         overall_analysis = []  # List[str]
 
         # Get self.datasets_info
-        # Load "metadata.jsonl", "da_reqs.jsonl", "vis_code.jsonl", and "chart_caption.jsonl"
+        # Load "metadata.jsonl", "da_reqs.jsonl", "vis_code.jsonl", and "chart_captions.jsonl"
         metadata_fp = os.path.join(self.data_dir_process, "metadata.jsonl")
         da_reqs_fp = os.path.join(self.data_dir_process, "da_reqs.jsonl")
         vis_code_fp = os.path.join(self.data_dir_process, "vis_code.jsonl")
-        chart_caption_fp = os.path.join(self.data_dir_process, "chart_caption.jsonl")
+        chart_captions_fp = os.path.join(self.data_dir_process, "chart_captions.jsonl")
 
         # Load the Text LLM
         # self.text_llm_model = TextLLM(
@@ -573,12 +648,12 @@ Python3 Code for Chart Plotting:
 
         # Get self.datasets_info
         # Load "metadata.jsonl", "da_reqs.jsonl", "vis_code.jsonl", "chart_figures.jsonl",
-        #   "chart_caption.jsonl", and "overall_analysis.jsonl"
+        #   "chart_captions.jsonl", and "overall_analysis.jsonl"
         metadata_fp = os.path.join(self.data_dir_process, "metadata.jsonl")
         da_reqs_fp = os.path.join(self.data_dir_process, "da_reqs.jsonl")
         vis_code_fp = os.path.join(self.data_dir_process, "vis_code.jsonl")
         chart_figures_fp = os.path.join(self.data_dir_process, "chart_figures.jsonl")
-        chart_caption_fp = os.path.join(self.data_dir_process, "chart_caption.jsonl")
+        chart_captions_fp = os.path.join(self.data_dir_process, "chart_captions.jsonl")
         overall_analysis_fp = os.path.join(self.data_dir_process, "overall_analysis.jsonl")
 
         # Write each chart QA example into jsonl files
@@ -599,12 +674,12 @@ Python3 Code for Chart Plotting:
 
         # Get self.datasets_info
         # Load "metadata.jsonl", "da_reqs.jsonl", "vis_code.jsonl", "chart_figures.jsonl",
-        #   "chart_caption.jsonl", and "overall_analysis.jsonl"
+        #   "chart_captions.jsonl", and "overall_analysis.jsonl"
         metadata_fp = os.path.join(self.data_dir_process, "metadata.jsonl")
         da_reqs_fp = os.path.join(self.data_dir_process, "da_reqs.jsonl")
         vis_code_fp = os.path.join(self.data_dir_process, "vis_code.jsonl")
         chart_figures_fp = os.path.join(self.data_dir_process, "chart_figures.jsonl")
-        chart_caption_fp = os.path.join(self.data_dir_process, "chart_caption.jsonl")
+        chart_captions_fp = os.path.join(self.data_dir_process, "chart_captions.jsonl")
         overall_analysis_fp = os.path.join(self.data_dir_process, "overall_analysis.jsonl")
 
         # Write each chart captioning example into jsonl files
