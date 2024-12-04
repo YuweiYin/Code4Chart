@@ -40,6 +40,8 @@ python3 download_hf_model.py --trust_remote_code --verbose --cache_dir "${CACHE_
 bash run_dataset.sh "1"
 bash run_dataset.sh "2"
 bash run_dataset.sh "3"
+bash run_dataset.sh "4"
+bash run_dataset.sh "5"
 ```
 
 ---

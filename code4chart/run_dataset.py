@@ -508,6 +508,8 @@ Python3 Code for Chart Plotting:
 
         chart_figures = []  # List[Dict[str, Any]]
         # chart_base64 = []  # List[Base64]
+        done_cnt_all, miss_cnt_all = 0, 0
+        num_python_all, num_empty_all, num_comments_all = [], [], []
         for metadata_dict, cur_vis_code_dict in zip(metadata, vis_code_post):
             # Based on the metadata and da_reqs, ask the Code LLM to generate visualization code (Python3 matplotlib).
             cur_chart = dict()
@@ -527,8 +529,12 @@ Python3 Code for Chart Plotting:
             cur_fig_save_dir = os.path.join(self.data_dir_process, "chart_figure", str(metadata_dict["id"]))
             os.makedirs(cur_fig_save_dir, exist_ok=True)
             fig_id = 0
-            cur_chart["fig_filepath"] = []
             cur_chart["fig_id"] = []
+            cur_chart["fig_filepath"] = []
+            cur_chart["fig_base64"] = []
+            cur_chart["vis_code"] = []
+            cur_chart["code_stat"] = []
+            done_cnt, miss_cnt = 0, 0
             for feat_name, vis_code_fp, feat_dict in zip(vis_feat_list, code_filepath, metadata_dict["features"]):
                 fig_id += 1
                 cur_fig_save_fp = os.path.join(
@@ -557,19 +563,66 @@ Python3 Code for Chart Plotting:
                 if not has_savefig:  # Make sure we save the figure
                     new_code_lines.append(f"plt.savefig('{cur_fig_save_fp}', dpi=300, bbox_inches='tight')\n")
                 new_code = "".join(new_code_lines)
+                cur_chart["vis_code"].append(new_code)
+                cur_chart["fig_id"].append(fig_id)
+                cur_chart["fig_filepath"].append(cur_fig_save_fp)
+
+                # Code statistics (the number of Python code lines, empty lines, and comment lines)
+                num_python, num_empty, num_comments = 0, 0, 0
+                for new_line in new_code_lines:
+                    new_line = new_line.strip()
+                    if len(new_line) == 0:
+                        num_empty += 1
+                    elif new_line.startswith("#"):
+                        num_comments += 1
+                    else:
+                        num_python += 1
+                cur_chart["code_stat"].append({
+                    "num_python": num_python,
+                    "num_empty": num_empty,
+                    "num_comments": num_comments,
+                })
+                num_python_all.append(num_python)
+                num_empty_all.append(num_empty)
+                num_comments_all.append(num_comments)
 
                 try:
                     exec(new_code)
                     assert os.path.isfile(cur_fig_save_fp)
-                    cur_chart["vis_code"].append(new_code)
-                    cur_chart["fig_filepath"].append(cur_fig_save_fp)
-                    cur_chart["fig_id"].append(fig_id)
+
+                    # Base64 encoding
+                    with open(cur_fig_save_fp, "rb") as img_fp_in:
+                        img_base64 = base64.b64encode(img_fp_in.read())
+                    img_base64_str = img_base64.decode("utf-8")
+                    cur_chart["fig_base64"].append(img_base64_str)
+
+                    # # Base64 string to bytes to image
+                    # img_base64_bytes = img_base64_str.encode("utf-8")
+                    # im = Image.open(BytesIO(base64.b64decode(img_base64_bytes)))
+                    # im.save("test_image.png", "PNG")
+
+                    done_cnt += 1
                 except Exception as e:
                     if self.verbose:
-                        self.logger.info(f">>> >>> Miss file: {cur_fig_save_fp}\nException: {e}")
+                        self.logger.info(f">>> >>> Exception: {e} --- Miss file: {cur_fig_save_fp}")
+                    cur_chart["fig_base64"].append("")
+                    miss_cnt += 1
                     continue
 
+            done_cnt_all += done_cnt
+            miss_cnt_all += miss_cnt
+            if self.verbose:
+                self.logger.info(f">>> >>> Done [id={metadata_dict['id']}] Dataset: {metadata_dict['name']}. "
+                                 f"done_cnt={done_cnt}, miss_cnt={miss_cnt}")
             chart_figures.append(cur_chart)
+
+        # Done all, show statistics
+        if self.verbose:
+            self.logger.info(f">>> >>> Done All. Statistics: "
+                             f"done_cnt_all={done_cnt_all}, miss_cnt_all={miss_cnt_all}; "
+                             f"avg_num_python={np.mean(num_python_all)}, "
+                             f"avg_num_empty={np.mean(num_empty_all)}, "
+                             f"avg_num_comments={np.mean(num_comments_all)}")
 
         # Write the chart figures info into jsonl files
         chart_figures_fp = os.path.join(self.data_dir_process, "chart_figures.jsonl")
@@ -611,7 +664,7 @@ Python3 Code for Chart Plotting:
             show_generation=self.show_generation, debug=self.debug,
         )
 
-        # # Test code
+        # # Test code: VLM generation
         # cur_messages = [
         #     {
         #         "role": "user",
@@ -621,8 +674,8 @@ Python3 Code for Chart Plotting:
         #         ]
         #     },
         # ]
-        # assert os.path.isfile("long_distribution.png")
-        # cur_images = [Image.open("long_distribution.png")]
+        # assert os.path.isfile("test_image.png")
+        # cur_images = [Image.open("test_image.png")]
         # cur_prompts = vlm_model.processor.apply_chat_template(cur_messages, add_generation_prompt=True)
         # cur_inputs = vlm_model.processor(
         #     text=cur_prompts, images=cur_images, return_tensors="pt").to(vlm_model.model.device)
@@ -780,7 +833,12 @@ Please be concise and only generate the caption:
 
         return overall_analysis_fp
 
-    def step8_chart_qa(
+    def step8_merge_all_info(
+            self,
+    ) -> str:
+        pass
+
+    def step9_chart_qa(
             self,
     ) -> str:
         # Input all information to Text2Text LLMs and construct a chart QA evaluation benchmark
@@ -806,7 +864,7 @@ Please be concise and only generate the caption:
 
         return res_fp
 
-    def step9_chart_cap(
+    def step10_chart_cap(
             self,
     ) -> str:
         # Input all information to Text2Text LLMs and construct a chart captioning evaluation benchmark
@@ -832,14 +890,14 @@ Please be concise and only generate the caption:
 
         return res_fp
 
-    def step10_chart_qa_edit_chart(
+    def step11_chart_qa_edit_chart(
             self,
     ) -> str:
         # TODO: Do minor modification of the chart figures in our chart QA benchmark for robustness experiments.
         #   Slightly change the chart figures by editing the visualization code.
         pass
 
-    def step11_chart_qa_edit_question(
+    def step12_chart_qa_edit_question(
             self,
     ) -> str:
         # TODO: Do minor modification of the questions in our chart QA benchmark for robustness experiments.
@@ -927,13 +985,15 @@ def main(
         case 7:
             c4c_data.step7_overall_analysis()
         case 8:
-            c4c_data.step8_chart_qa()
+            c4c_data.step8_merge_all_info()
         case 9:
-            c4c_data.step9_chart_cap()
+            c4c_data.step9_chart_qa()
         case 10:
-            c4c_data.step10_chart_qa_edit_chart()
+            c4c_data.step10_chart_cap()
         case 11:
-            c4c_data.step11_chart_qa_edit_question()
+            c4c_data.step11_chart_qa_edit_chart()
+        case 11:
+            c4c_data.step12_chart_qa_edit_question()
         case _:
             raise ValueError(f"ValueError: task = {task}")
 
