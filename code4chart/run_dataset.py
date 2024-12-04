@@ -12,7 +12,7 @@ import base64
 from PIL import Image
 from io import BytesIO
 
-# import torch
+import torch
 # from transformers import AutoTokenizer, AutoModelForCausalLM
 # from huggingface_hub import login as hf_login
 # from datasets import load_dataset, DatasetDict, Dataset
@@ -433,6 +433,7 @@ Python3 Code for Chart Plotting:
     ) -> str:
         # Execute the generated visualization code (Python3) and plot the chart figures
         # TODO: Maybe we need postprocessing (after step 3) to make sure the generated code is executable
+        #   or to extract the code snippet from the generated content
 
         # Load the metadata and visualization code
         metadata_fp = os.path.join(self.data_dir_process, "metadata.jsonl")
@@ -442,15 +443,6 @@ Python3 Code for Chart Plotting:
         with open(vis_code_fp, "r", encoding="utf-8") as fp_in:
             vis_code = [json.loads(line.strip()) for line in fp_in]
         assert isinstance(metadata, list) and isinstance(vis_code, list) and len(metadata) == len(vis_code)
-
-        # exec(open("file.py").read())
-        #
-        # filepath = "script2.py"
-        # with open(filepath) as fp_in:
-        #     exec(fp_in.read())
-        #
-        # import subprocess
-        # subprocess.run(["python3", "script2.py"])
 
         chart_figures = []  # List[Dict[str, Any]]
         # chart_base64 = []  # List[Base64]
@@ -463,15 +455,10 @@ Python3 Code for Chart Plotting:
 
             cur_csv_path = metadata_dict["filepath"]
             assert os.path.isfile(cur_csv_path)
-            # df = pd.read_csv(cur_csv_path)
 
             vis_feat_list = cur_vis_code_dict["vis_feat"]
             # code_prompt_list = cur_vis_code_dict["prompts"]
             vis_code_list = cur_vis_code_dict["vis_code"]
-
-            # df_feat = df[feat_dict["name"]]
-            # df_feat = df_feat.dropna(axis=0)
-            # data_feat = df_feat.tolist()
 
             assert len(vis_feat_list) == len(vis_code_list) == len(metadata_dict["features"])
             cur_fig_save_dir = os.path.join(self.data_dir_process, "chart_fig", str(metadata_dict["id"]))
@@ -531,6 +518,37 @@ Python3 Code for Chart Plotting:
             show_generation=self.show_generation, debug=self.debug,
         )
 
+        # # Test code
+        # cur_messages = [
+        #     {
+        #         "role": "user",
+        #         "content": [
+        #             {"type": "image"},
+        #             {"type": "text", "text": "Please generate a caption or description of the chart."},
+        #         ]
+        #     },
+        # ]
+        # assert os.path.isfile("long_distribution.png")
+        # cur_images = [Image.open("long_distribution.png")]
+        # cur_prompts = vlm_model.processor.apply_chat_template(cur_messages, add_generation_prompt=True)
+        # cur_inputs = vlm_model.processor(
+        #     text=cur_prompts, images=cur_images, return_tensors="pt").to(vlm_model.model.device)
+        # with torch.no_grad():
+        #     output_ids = vlm_model.model.generate(**cur_inputs, max_new_tokens=512)
+        # output_text = vlm_model.processor.batch_decode(
+        #     output_ids, skip_special_tokens=True, clean_up_tokenization_spaces=True)
+        # input_text = vlm_model.processor.batch_decode(
+        #     cur_inputs["input_ids"], skip_special_tokens=True, clean_up_tokenization_spaces=True)
+        # assert len(input_text) == len(cur_prompts) == len(output_text)
+        # output_text_pure = []
+        # for _input, _prompt, _output in zip(input_text, cur_prompts, output_text):
+        #     output_pure = _output[len(_input):]
+        #     output_text_pure.append(output_pure)
+        #     if self.verbose and self.show_generation:
+        #         self.logger.info("================================== >>> output <<<")
+        #         self.logger.info(output_pure)
+        # self.logger.info(output_text_pure[0].strip())
+
         chart_captions = []  # List[Dict[str, Any]]
         for metadata_dict, cur_vis_code_dict, cur_chart in zip(metadata, vis_code, chart_figures):
             # Based on the metadata and da_reqs, ask the Code LLM to generate visualization code (Python3 matplotlib).
@@ -546,7 +564,7 @@ Python3 Code for Chart Plotting:
 
             assert len(vis_feat_list) == len(vis_code_list) == len(chart_fp_list) == len(metadata_dict["features"])
             fig_id = 0
-            cap_prompt_list = []
+            cap_prompt_image_list = []
             for feat_name, cur_vis_code, cur_chart_fp, feat_dict in zip(
                     vis_feat_list, vis_code_list, chart_fp_list, metadata_dict["features"]):
                 fig_id += 1
@@ -584,17 +602,47 @@ generate a caption or description of the chart. \
 Please be concise and only generate the caption:
                             """.strip()
 
-                cap_prompt_list.append(cur_cap_prompt)
+                cur_messages = [
+                    {
+                        "role": "user",
+                        "content": [
+                            {"type": "image"},
+                            {"type": "text", "text": cur_cap_prompt},
+                        ]
+                    },
+                ]
+                assert os.path.isfile(cur_chart_fp)
+                cur_images = [Image.open(cur_chart_fp)]
+                cur_prompts = vlm_model.processor.apply_chat_template(cur_messages, add_generation_prompt=True)
+                cap_prompt_image_list.append((cur_prompts, cur_images))
 
             cur_caption_list = []
-            for prompt in cap_prompt_list:
-                gen_dict = vlm_model.run_generation(
-                    prompts=[prompt], model=vlm_model.model, tokenizer=vlm_model.tokenizer_gen,
-                    need_tokenize=True, max_new_tokens=512,
-                    temperature=0.1, top_p=0.1,  # Be more deterministic when choosing an option
-                )
-                output_text = gen_dict["output_text"][0].strip()
-                cur_caption_list.append(output_text)
+            for cur_prompts, cur_images in cap_prompt_image_list:
+                cur_inputs = vlm_model.processor(
+                    text=cur_prompts, images=cur_images, return_tensors="pt").to(vlm_model.model.device)
+
+                with torch.no_grad():
+                    output_ids = vlm_model.model.generate(**cur_inputs, max_new_tokens=512)
+                output_text = vlm_model.processor.batch_decode(
+                    output_ids, skip_special_tokens=True, clean_up_tokenization_spaces=True)
+                input_text = vlm_model.processor.batch_decode(
+                    cur_inputs["input_ids"], skip_special_tokens=True, clean_up_tokenization_spaces=True)
+
+                assert len(input_text) == len(cur_prompts) == len(output_text)
+                output_text_pure = []
+                for _input, _prompt, _output in zip(input_text, cur_prompts, output_text):
+                    output_pure = _output[len(_input):]
+                    output_text_pure.append(output_pure)
+                    if self.verbose and self.show_generation:
+                        # self.logger.info(f"\n\n\n================================== >>> [Batch: {cur_batch}] <<<\n")
+                        # self.logger.info("================================== >>> input (raw) <<<")
+                        # self.logger.info(_input)
+                        # self.logger.info("================================== >>> prompt <<<")
+                        # self.logger.info(_prompt)
+                        self.logger.info("================================== >>> output <<<")
+                        self.logger.info(output_pure)
+
+                cur_caption_list.append(output_text_pure[0].strip())
 
             cur_chart_cap_dict["captions"] = cur_caption_list
             chart_captions.append(cur_chart_cap_dict)
