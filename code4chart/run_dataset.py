@@ -623,6 +623,8 @@ Python3 Code for Chart Plotting:
                              f"avg_num_python={np.mean(num_python_all)}, "
                              f"avg_num_empty={np.mean(num_empty_all)}, "
                              f"avg_num_comments={np.mean(num_comments_all)}")
+            # Done All. Statistics: done_cnt_all=63, miss_cnt_all=53;
+            # avg_num_python=11.2845, avg_num_empty=4.5948, avg_num_comments=2.6207
 
         # Write the chart figures info into jsonl files
         chart_figures_fp = os.path.join(self.data_dir_process, "chart_figures.jsonl")
@@ -634,9 +636,10 @@ Python3 Code for Chart Plotting:
 
         if self.verbose:
             self.logger.info(f">>> write_cnt = {write_cnt} to file: {chart_figures_fp}")
+        # Total Running Time: 378.2 sec (6.3 min)
         return chart_figures_fp
 
-    def step6_chart_cap(
+    def step6_chart_cap_gen(
             self,
     ) -> str:
         # For each chart, we use Vision-language models (VLMs) to generate the chart captions (descriptions).
@@ -696,6 +699,7 @@ Python3 Code for Chart Plotting:
         # self.logger.info(output_text_pure[0].strip())
 
         chart_captions = []  # List[Dict[str, Any]]
+        done_cnt_all, miss_cnt_all = 0, 0
         for metadata_dict, cur_vis_code_dict, cur_chart in zip(metadata, vis_code, chart_figures):
             # Based on the metadata and da_reqs, ask the Code LLM to generate visualization code (Python3 matplotlib).
             cur_chart_cap_dict = dict()
@@ -706,14 +710,23 @@ Python3 Code for Chart Plotting:
             vis_feat_list = cur_vis_code_dict["vis_feat"]
             # code_prompt_list = cur_vis_code_dict["prompts"]
             vis_code_list = cur_vis_code_dict["vis_code"]
-            chart_fp_list = cur_chart["chart_filepath"]
 
-            assert len(vis_feat_list) == len(vis_code_list) == len(chart_fp_list) == len(metadata_dict["features"])
+            # chart_fig_id_list = cur_chart["fig_id"]
+            # chart_fp_list = cur_chart["fig_filepath"]
+            chart_fig_base64 = cur_chart["fig_base64"]
+            # TODO: future work: consider using code to generate reference captions
+            # chart_vis_code_list = cur_chart["vis_code"]
+            # chart_code_stat_list = cur_chart["code_stat"]
+
+            assert len(vis_feat_list) == len(vis_code_list) == len(chart_fig_base64) == len(metadata_dict["features"])
             fig_id = 0
             cap_prompt_image_list = []
-            for feat_name, cur_vis_code, cur_chart_fp, feat_dict in zip(
-                    vis_feat_list, vis_code_list, chart_fp_list, metadata_dict["features"]):
+            for feat_name, cur_vis_code, cur_fig_base64, feat_dict in zip(
+                    vis_feat_list, vis_code_list, chart_fig_base64, metadata_dict["features"]):
                 fig_id += 1
+                if cur_fig_base64 == "":
+                    cap_prompt_image_list.append((None, None))
+                    continue
                 # if self.verbose:
                 #     self.logger.info(f">>> >>> Feature: {feat_dict['name']}")
                 num_valid, num_unique = feat_dict["num_valid"], feat_dict["num_unique"]
@@ -757,13 +770,26 @@ Please be concise and only generate the caption:
                         ]
                     },
                 ]
-                assert os.path.isfile(cur_chart_fp)
-                cur_images = [Image.open(cur_chart_fp)]
-                cur_prompts = vlm_model.processor.apply_chat_template(cur_messages, add_generation_prompt=True)
-                cap_prompt_image_list.append((cur_prompts, cur_images))
+                # Base64 string to bytes to image
+                try:
+                    # assert os.path.isfile(cur_chart_fp)
+                    # cur_images = [Image.open(cur_chart_fp)]
+                    cur_images = [Image.open(BytesIO(base64.b64decode(cur_fig_base64.encode("utf-8"))))]
+                    cur_prompts = vlm_model.processor.apply_chat_template(cur_messages, add_generation_prompt=True)
+                    cap_prompt_image_list.append((cur_prompts, cur_images))
+                except Exception as e:
+                    if self.verbose:
+                        self.logger.info(e)
+                    cap_prompt_image_list.append((None, None))
+                    continue
 
             cur_caption_list = []
+            done_cnt, miss_cnt = 0, 0
             for cur_prompts, cur_images in cap_prompt_image_list:
+                if cur_prompts is None or cur_images is None:
+                    miss_cnt += 1
+                    continue
+
                 cur_inputs = vlm_model.processor(
                     text=cur_prompts, images=cur_images, return_tensors="pt").to(vlm_model.model.device)
 
@@ -789,11 +815,19 @@ Please be concise and only generate the caption:
                         self.logger.info(output_pure)
 
                 cur_caption_list.append(output_text_pure[0].strip())
+                done_cnt += 1
 
             cur_chart_cap_dict["captions"] = cur_caption_list
             chart_captions.append(cur_chart_cap_dict)
+            done_cnt_all += done_cnt
+            miss_cnt_all += miss_cnt
             if self.debug:
                 sys.exit(0)
+
+        # Done all, show statistics
+        if self.verbose:
+            self.logger.info(f">>> >>> Done All. Statistics: "
+                             f"done_cnt_all={done_cnt_all}, miss_cnt_all={miss_cnt_all}")
 
         # Write the chart captions into jsonl files
         chart_captions_fp = os.path.join(self.data_dir_process, "chart_captions.jsonl")
@@ -838,7 +872,7 @@ Please be concise and only generate the caption:
     ) -> str:
         pass
 
-    def step9_chart_qa(
+    def step9_chart_qa_task(
             self,
     ) -> str:
         # Input all information to Text2Text LLMs and construct a chart QA evaluation benchmark
@@ -864,7 +898,7 @@ Please be concise and only generate the caption:
 
         return res_fp
 
-    def step10_chart_cap(
+    def step10_chart_cap_task(
             self,
     ) -> str:
         # Input all information to Text2Text LLMs and construct a chart captioning evaluation benchmark
@@ -981,15 +1015,15 @@ def main(
         case 5:
             c4c_data.step5_exec_vis_code()
         case 6:
-            c4c_data.step6_chart_cap()
+            c4c_data.step6_chart_cap_gen()
         case 7:
             c4c_data.step7_overall_analysis()
         case 8:
             c4c_data.step8_merge_all_info()
         case 9:
-            c4c_data.step9_chart_qa()
+            c4c_data.step9_chart_qa_task()
         case 10:
-            c4c_data.step10_chart_cap()
+            c4c_data.step10_chart_cap_task()
         case 11:
             c4c_data.step11_chart_qa_edit_chart()
         case 11:
