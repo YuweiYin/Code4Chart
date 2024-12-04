@@ -355,8 +355,11 @@ to plot a chart and save the figure. Be concise, clear, and short.
                 data_feat = df_feat.tolist()
 
                 cur_code_prompt = f"""
-## Dataset Name: {metadata_dict["name"]}
-## Feature Information:
+## Dataset Information:
+- Dataset Name: {metadata_dict["name"]}
+- All Features: {", ".join([x["name"] for x in metadata_dict["features"]])}
+
+## Current Feature Information:
 - Feature Name: {feat_dict["name"]}
 - Data Type: {cur_dtype}
 - Number of all rows (feature values): {num_valid}
@@ -364,11 +367,10 @@ to plot a chart and save the figure. Be concise, clear, and short.
                 """.strip()
                 if isinstance(numerical_stat, dict) and len(numerical_stat) > 0:
                     cur_code_prompt += "\n" + f"""
-## Numerical Values Statistics:
-- Min: {numerical_stat["min"]:.2f}
-- Max: {numerical_stat["max"]:.2f}
-- Mean: {numerical_stat["mean"]:.2f}
-- Std: {numerical_stat["std"]:.2f}
+- Min of Feature Values: {numerical_stat["min"]:.2f}
+- Max of Feature Values: {numerical_stat["max"]:.2f}
+- Mean of Feature Values: {numerical_stat["mean"]:.2f}
+- Std of Feature Values: {numerical_stat["std"]:.2f}
                     """.strip()
 
                 cur_code_prompt += "\n\n" + f"""
@@ -377,14 +379,15 @@ to plot a chart and save the figure. Be concise, clear, and short.
 
 Based on the above dataset information and data analysis requirement, \
 generate an executable Python3 code using the matplotlib, numpy, and pandas packages \
-to plot a chart and save the figure. Assume you can access the target data column (x) by the following Python3 code:
+to plot a chart and save the figure. Assume you can access the data table and target column (list) \
+by the following Python3 code:
 ```python
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
 data = pd.read_csv("{metadata_dict["filepath"]}")
-x = data["{feat_dict["name"]}"].tolist()
+column = data["{feat_dict["name"]}"].tolist()
 ```
 
 ## Python3 Code for Chart Plotting:
