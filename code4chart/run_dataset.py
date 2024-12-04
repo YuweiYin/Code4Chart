@@ -245,24 +245,27 @@ class Code4ChartDataset:
                 cur_dtype, numerical_stat = feat_dict["dtype"], feat_dict["numerical_stat"]
 
                 prompt_feature = f"""
-Please construct one data analysis requirement based on the feature information as follows. \
-Each data analysis requirement should include a visualization instruction and a specific chart type for visualization.
+## Dataset Information:
+- Dataset Name: {metadata_dict["name"]}
+- All Features: {", ".join([x["name"] for x in metadata_dict["features"]])}
 
-## Dataset Name: {metadata_dict["name"]}
-
-## Feature Information:
+## Current Feature Information:
 - Feature Name: {feat_dict["name"]}
 - Data Type: {cur_dtype}
 - Number of all rows (feature values): {num_valid}
 - Number of unique feature values: {num_unique}
                 """.strip()
                 if isinstance(numerical_stat, dict) and len(numerical_stat) > 0:
-                    prompt_feature += "\n\n" + f"""
-## Numerical Values Statistics:
-- Min: {numerical_stat["min"]:.2f}
-- Max: {numerical_stat["max"]:.2f}
-- Mean: {numerical_stat["mean"]:.2f}
-- Std: {numerical_stat["std"]:.2f}
+                    prompt_feature += "\n" + f"""
+- Min of Feature Values: {numerical_stat["min"]:.2f}
+- Max of Feature Values: {numerical_stat["max"]:.2f}
+- Mean of Feature Values: {numerical_stat["mean"]:.2f}
+- Std of Feature Values: {numerical_stat["std"]:.2f}
+
+Please construct one data analysis requirement based on the dataset and feature information above. \
+Each data analysis requirement should include a visualization instruction and a specific chart type for visualization. \
+The requirement is to ask models to generate Python3 code using the matplotlib, numpy, and pandas packages \
+to plot a chart and save the figure. Be concise, clear, and short.
 
 ## Data analysis requirement:
                     """.strip()
@@ -338,8 +341,8 @@ Each data analysis requirement should include a visualization instruction and a 
             # req_prompt_list = cur_reqs_dict["prompts"]
             code_prompt_list = []
             vis_data_list = []
-            assert len(req_list) == len(metadata_dict["features"]) + 1
-            for req, feat_dict in zip(req_list[1:], metadata_dict["features"]):
+            assert len(req_list) == len(metadata_dict["features"])
+            for req, feat_dict in zip(req_list, metadata_dict["features"]):
                 # Here, we only deal with each column (feature) as the whole table can be too large.
                 #   TODO: future work: deal with the whole table
                 if self.verbose:
