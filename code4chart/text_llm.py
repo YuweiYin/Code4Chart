@@ -19,7 +19,7 @@ class TextLLM:
             project_root_dir: Optional[str] = None,
             hf_id: str = "meta-llama/Llama-3.1-8B-Instruct",
             bsz: int = 1,
-            max_seq_len: int = 512,
+            max_seq_len: int = 1024,
             show_generation: bool = False,
             debug: bool = False,
     ):
@@ -166,9 +166,9 @@ class TextLLM:
         if need_tokenize:
             input_ids = tokenizer(
                 prompts,
-                max_length=self.max_seq_len,
-                truncation=True,
-                padding=False,
+                # max_length=self.max_seq_len,
+                # truncation=True,
+                # padding=False,
                 return_tensors="pt",
             ).to(model.device)  # Batch tokenization
         else:

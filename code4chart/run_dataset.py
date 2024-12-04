@@ -701,7 +701,7 @@ def main(
     hf_id_code_llm: str = "meta-llama/CodeLlama-7b-Instruct-hf",
     hf_id_vlm: str = "meta-llama/Llama-3.2-11B-Vision-Instruct",
     bsz: int = 1,
-    max_seq_len: int = 512,
+    max_seq_len: int = 1024,
     show_generation: bool = False,
     debug: bool = False,
     **kwargs

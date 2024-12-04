@@ -170,9 +170,9 @@ class CodeLLM:
         if need_tokenize:
             input_ids = tokenizer(
                 prompts,
-                max_length=self.max_seq_len,
-                truncation=True,
-                padding=False,
+                # max_length=self.max_seq_len,
+                # truncation=True,
+                # padding=False,
                 return_tensors="pt",
             ).to(model.device)  # Batch tokenization
         else:

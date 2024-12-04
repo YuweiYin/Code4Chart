@@ -20,6 +20,7 @@ class VLM:
             project_root_dir: Optional[str] = None,
             hf_id: str = "meta-llama/Llama-3.2-11B-Vision-Instruct",
             bsz: int = 1,
+            max_seq_len: int = 1024,
             show_generation: bool = False,
             debug: bool = False,
     ):
@@ -34,6 +35,7 @@ class VLM:
         :param hf_id: ORGANIZATION_NAME/MODEL_NAME, e.g., "listen2you002/ChartLlama-13b"
         :param bsz: The batch size.
         :param show_generation: Whether to show outputs during generation.
+        :param max_seq_len: The maximum sequence length for padding/truncation.
         :param debug: Debugging / developing mode.
         :return: None.
         """
@@ -51,6 +53,7 @@ class VLM:
         self.hf_id = hf_id
         self.hf_name = "--".join(hf_id.split("/"))
         self.bsz = bsz
+        self.max_seq_len = max_seq_len
         self.show_generation = show_generation  # If True, show outputs during generation
         self.debug = debug
 
@@ -81,27 +84,21 @@ class VLM:
         assert os.path.isdir(self.model_path), f"AssertionError: assert os.path.isdir({self.model_path})"
 
         # Load tokenizer
-        tokenizer_gen = AutoTokenizer.from_pretrained(
-            self.model_path,
-            padding_side="left", truncation_side="left",  # "right" for training, "left" for generating
-            cache_dir=self.cache_dir,
-        )
-        # tokenizer_gen.add_special_tokens({"pad_token": "<|pad_of_text|>"})
-        tokenizer_gen.pad_token = tokenizer_gen.eos_token
-        tokenizer_gen.pad_token_id = tokenizer_gen.eos_token_id
-
+        self.tokenizer_gen = self.load_tokenizer(
+            model_path=self.model_path, padding_side="left", truncation_side="left")  # "left" for generating
         self.terminators_gen = [
-            tokenizer_gen.eos_token_id,
-            # tokenizer_gen.convert_tokens_to_ids("<|eot_id|>")
-            tokenizer_gen.convert_tokens_to_ids(tokenizer_gen.eos_token)
+            self.tokenizer_gen.eos_token_id,
+            # self.tokenizer_gen.convert_tokens_to_ids("<|eot_id|>")
+            self.tokenizer_gen.convert_tokens_to_ids(self.tokenizer_gen.eos_token)
         ]
 
-        self.tokenizer_gen = tokenizer_gen
-        # self.model = None
-        self.model = self.load_model()
+        # Load the model
+        self.model = self.load_model(model_path=self.model_path, tokenizer=self.tokenizer_gen)
+        # self.model.train()
+        # self.model.eval()
 
         self.processor = AutoProcessor.from_pretrained(
-            "meta-llama/Llama-3.2-11B-Vision-Instruct",
+            self.hf_id,
             trust_remote_code=True,
             cache_dir=self.cache_dir,
         )
@@ -190,9 +187,9 @@ class VLM:
         if need_tokenize:
             input_ids = tokenizer(
                 prompts,
-                max_length=self.max_seq_len,
-                truncation=True,
-                padding=False,
+                # max_length=self.max_seq_len,
+                # truncation=True,
+                # padding=False,
                 return_tensors="pt",
             ).to(model.device)  # Batch tokenization
         else:

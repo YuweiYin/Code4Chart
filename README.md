@@ -38,6 +38,8 @@ python3 download_hf_model.py --trust_remote_code --verbose --cache_dir "${CACHE_
 ```bash
 # Please make sure the "ROOT_DIR" and "CACHE_DIR" variables are correct paths
 bash run_dataset.sh "1"
+bash run_dataset.sh "2"
+bash run_dataset.sh "3"
 ```
 
 ---
