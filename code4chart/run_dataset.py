@@ -890,23 +890,25 @@ Please be concise and only generate the chart caption:
             cur_caption_list = cur_chart_cap_dict["captions"]
 
             cur_analysis_prompt = f"""
-Dataset Information:
+## Dataset Information:
 - Dataset name: {metadata_dict["name"]}
 - Dataset Description: {metadata_dict["description"]}
 
-Dataset Statistics:
+## Dataset Statistics:
 - Dataset size (the number of rows): {metadata_dict["num_row"]}
 - The number of columns (features): {metadata_dict["num_col"]}
 - All feature names: {", ".join([x["name"] for x in metadata_dict["features"]])}
 - All feature data types: {", ".join([x["dtype"] for x in metadata_dict["features"]])}
 
-Chart Captions:
+## Chart Captions:
             """.strip()
 
             for cur_caption_text, feat_dict in zip(cur_caption_list, metadata_dict["features"]):
                 if isinstance(cur_caption_text, str) and len(cur_caption_text) > 0:
+                    cur_caption_text = cur_caption_text.replace("\n", " ").strip()
                     cur_analysis_prompt += "\n" + f"""
-- {cur_caption_text.strip()}
+### Chart Caption of Feature \"{feat_dict["name"]}\" (data type: {feat_dict["dtype"]}):
+{cur_caption_text}
                     """.strip()
 
             cur_analysis_prompt += "\n\n" + f"""
@@ -917,7 +919,7 @@ Please be concise and only generate the conclusion:
 
             gen_dict = text_llm.run_generation(
                 prompts=[cur_analysis_prompt], model=text_llm.model, tokenizer=text_llm.tokenizer_gen,
-                need_tokenize=True, max_new_tokens=512,
+                need_tokenize=True, max_new_tokens=1024,
                 temperature=0.1, top_p=0.1,  # Be more deterministic when choosing an option
             )
             output_text = gen_dict["output_text"][0].strip()
