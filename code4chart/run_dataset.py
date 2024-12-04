@@ -758,7 +758,7 @@ Current Feature Information:
                 cur_cap_prompt += "\n\n" + f"""
 ## Task: Based on the above dataset information (text) and the chart figure (image), \
 generate a caption or description of the chart. \
-Please be concise and only generate the caption:
+Please be concise and only generate the chart caption:
                             """.strip()
 
                 cur_messages = [
