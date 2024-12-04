@@ -832,6 +832,9 @@ Please be concise and only generate the caption:
             chart_captions.append(cur_chart_cap_dict)
             done_cnt_all += done_cnt
             miss_cnt_all += miss_cnt
+            if self.verbose:
+                self.logger.info(f">>> >>> Done [id={metadata_dict['id']}] Dataset: {metadata_dict['name']}. "
+                                 f"done_cnt={done_cnt}, miss_cnt={miss_cnt}")
             if self.debug:
                 sys.exit(0)
 
