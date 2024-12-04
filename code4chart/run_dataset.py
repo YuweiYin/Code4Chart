@@ -262,7 +262,7 @@ class Code4ChartDataset:
 - Mean of Feature Values: {numerical_stat["mean"]:.2f}
 - Std of Feature Values: {numerical_stat["std"]:.2f}
 
-Please construct one data analysis requirement based on the dataset and feature information above. \
+## Task: Please construct one data analysis requirement based on the dataset and feature information above. \
 Each data analysis requirement should include a visualization instruction and a specific chart type for visualization. \
 The requirement is to ask models to generate Python3 code using the matplotlib, numpy, and pandas packages \
 to plot a chart and save the figure. Be concise, clear, and short.
@@ -377,7 +377,7 @@ to plot a chart and save the figure. Be concise, clear, and short.
 ## Data Analysis Requirement:
 {req}
 
-Based on the above dataset information and data analysis requirement, \
+## Task: Based on the above dataset information and data analysis requirement, \
 generate an executable Python3 code using the matplotlib, numpy, and pandas packages \
 to plot a chart and save the figure. Assume you can access the data table and target column (list) \
 by the following Python3 code:
