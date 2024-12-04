@@ -21,8 +21,9 @@ from code4chart.text_llm import TextLLM
 from code4chart.code_llm import CodeLLM
 from code4chart.vlm import VLM
 from code4chart.default_inputs import DefaultInputs
-from utils.init_functions import logger_setup, cuda_setup, random_setup
-from utils.numpy_encoder import NumpyEncoder
+
+from ..utils.init_functions import logger_setup, cuda_setup, random_setup
+from ..utils.numpy_encoder import NumpyEncoder
 
 
 class Code4ChartDataset:
@@ -224,11 +225,7 @@ class Code4ChartDataset:
             self,
     ) -> str:
         # For each da_req, we use Text2Text LLMs to analyze the requirement, provide some solutions or steps,
-        #   and give the proper chart types & specifications so that
-        #   we can use Code LLMs to generate corresponding visualization code.
-        # TODO: there are some recent related work about using LLMs to analyze DA tasks,
-        #   e.g., DracoGPT https://arxiv.org/abs/2408.06845
-        #   find pre-defined/existing DA tasks/requirements in Draco 2 https://arxiv.org/abs/2308.14247
+        #   and give the proper chart types & specifications for the Code LLMs to generate visualization code.
 
         # Load the metadata
         metadata_fp = os.path.join(self.data_dir_process, "metadata.jsonl")

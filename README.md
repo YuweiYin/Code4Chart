@@ -33,4 +33,10 @@ python3 utils/download_hf_model.py --trust_remote_code --verbose --cache_dir "${
   --hf_id "meta-llama/Llama-3.2-11B-Vision-Instruct"
 ```
 
+## Dataset Construction
+
+```bash
+bash run_dataset.sh "1;1;512;meta-llama/Llama-3.1-8B-Instruct;meta-llama/CodeLlama-7b-Instruct-hf;meta-llama/Llama-3.2-11B-Vision-Instruct"
+```
+
 ---
