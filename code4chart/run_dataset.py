@@ -432,8 +432,8 @@ Python3 Code for Chart Plotting:
             self,
     ) -> str:
         # Execute the generated visualization code (Python3) and plot the chart figures
-        # TODO: Maybe we need postprocessing (after step 3) to make sure the generated code is executable
-        #   or to extract the code snippet from the generated content
+        # TODO: For now, we need postprocessing (after step 3) to make sure the generated code is executable
+        #   (via extracting the code snippet from the generated content).
 
         # Load the metadata and visualization code
         metadata_fp = os.path.join(self.data_dir_process, "metadata.jsonl")
@@ -665,7 +665,7 @@ Please be concise and only generate the caption:
     def step6_overall_analysis(
             self,
     ) -> str:
-        # Input all information to Text2Text LLMs and obtain the overall analysis for each table (tabular dataset)
+        # [Optional] Input all information to Text2Text LLMs and obtain the overall analysis for each table
         overall_analysis = []  # List[str]
 
         # Get self.datasets_info
@@ -738,6 +738,20 @@ Please be concise and only generate the caption:
         # To upload to Hugging Face datasets
 
         return res_fp
+
+    def step9_chart_qa_edit_chart(
+            self,
+    ) -> str:
+        # TODO: Do minor modification of the chart figures in our chart QA benchmark for robustness experiments.
+        #   Slightly change the chart figures by editing the visualization code.
+        pass
+
+    def step10_chart_qa_edit_question(
+            self,
+    ) -> str:
+        # TODO: Do minor modification of the questions in our chart QA benchmark for robustness experiments.
+        #   Paraphrase the questions using Text LLMs.
+        pass
 
 
 def main(
@@ -821,6 +835,10 @@ def main(
             c4c_data.step7_chart_qa()
         case 8:
             c4c_data.step8_chart_cap()
+        case 9:
+            c4c_data.step9_chart_qa_edit_chart()
+        case 10:
+            c4c_data.step10_chart_qa_edit_question()
         case _:
             raise ValueError(f"ValueError: task = {task}")
 
