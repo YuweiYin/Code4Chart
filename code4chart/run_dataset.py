@@ -1,5 +1,5 @@
 import os
-# import sys
+import sys
 import json
 import time
 from typing import Optional, List, Dict, Tuple, Any
@@ -87,22 +87,6 @@ class Code4ChartDataset:
         self.data_dir_process = os.path.join(self.data_dir, "process")
         os.makedirs(self.data_dir_raw, exist_ok=True)
         os.makedirs(self.data_dir_process, exist_ok=True)
-
-        # self.text_llm_model = TextLLM(
-        #     verbose=verbose, logger=logger, cuda_dict=cuda_dict,
-        #     cache_dir=cache_dir, project_root_dir=project_root_dir,
-        #     hf_id=hf_id_text_llm, bsz=bsz, show_generation=show_generation, debug=debug,
-        # )
-        # self.code_llm_model = CodeLLM(
-        #     verbose=verbose, logger=logger, cuda_dict=cuda_dict,
-        #     cache_dir=cache_dir, project_root_dir=project_root_dir,
-        #     hf_id=hf_id_code_llm, bsz=bsz, show_generation=show_generation, debug=debug,
-        # )
-        # self.vlm_model = VLM(
-        #     verbose=verbose, logger=logger, cuda_dict=cuda_dict,
-        #     cache_dir=cache_dir, project_root_dir=project_root_dir,
-        #     hf_id=hf_id_vlm, bsz=bsz, show_generation=show_generation, debug=debug,
-        # )
 
     def step1_get_metadata(
             self,
@@ -236,7 +220,8 @@ class Code4ChartDataset:
         text_llm = TextLLM(
             verbose=self.verbose, logger=self.logger, cuda_dict=self.cuda_dict,
             cache_dir=self.cache_dir, project_root_dir=self.project_root_dir,
-            hf_id=self.hf_id_text_llm, bsz=self.bsz, show_generation=self.show_generation, debug=self.debug,
+            hf_id=self.hf_id_text_llm, bsz=self.bsz,
+            show_generation=self.show_generation, debug=self.debug,
         )
 
         da_reqs = []  # List[Dict[str, Any]]
@@ -313,11 +298,13 @@ and related data table columns (features).
                     temperature=0.1, top_p=0.1,  # Be more deterministic when choosing an option
                 )
                 output_text = gen_dict["output_text"][0].strip()
-                req_list.append(output_text)  # TODO: save the prompt too
+                req_list.append(output_text)
 
             cur_reqs_dict["prompts"] = prompt_list
             cur_reqs_dict["da_reqs"] = req_list
             da_reqs.append(cur_reqs_dict)
+            if self.debug:
+                sys.exit(0)
 
         # Write the data_csv_path and da_reqs into jsonl files
         da_reqs_fp = os.path.join(self.data_dir_process, "da_reqs.jsonl")
