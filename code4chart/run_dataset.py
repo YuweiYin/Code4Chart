@@ -707,7 +707,7 @@ Python3 Code for Chart Plotting:
             if self.verbose:
                 self.logger.info(f">>> [id={metadata_dict['id']}] Dataset: {metadata_dict['name']}")
 
-            vis_feat_list = cur_vis_code_dict["vis_feat"]
+            # vis_feat_list = cur_vis_code_dict["vis_feat"]
             # code_prompt_list = cur_vis_code_dict["prompts"]
             vis_code_list = cur_vis_code_dict["vis_code"]
 
@@ -718,11 +718,11 @@ Python3 Code for Chart Plotting:
             # chart_vis_code_list = cur_chart["vis_code"]
             # chart_code_stat_list = cur_chart["code_stat"]
 
-            assert len(vis_feat_list) == len(vis_code_list) == len(chart_fig_base64) == len(metadata_dict["features"])
+            assert len(vis_code_list) == len(chart_fig_base64) == len(metadata_dict["features"])
             fig_id = 0
             cap_prompt_image_list = []
-            for feat_name, cur_vis_code, cur_fig_base64, feat_dict in zip(
-                    vis_feat_list, vis_code_list, chart_fig_base64, metadata_dict["features"]):
+            for cur_vis_code, cur_fig_base64, feat_dict in zip(
+                    vis_code_list, chart_fig_base64, metadata_dict["features"]):
                 fig_id += 1
                 if cur_fig_base64 == "":
                     cap_prompt_image_list.append((None, None))
@@ -790,6 +790,7 @@ Please be concise and only generate the chart caption:
             done_cnt, miss_cnt = 0, 0
             for cur_prompts, cur_images in cap_prompt_image_list:
                 if cur_prompts is None or cur_images is None:
+                    cur_caption_list.append("")
                     miss_cnt += 1
                     continue
 
@@ -853,32 +854,89 @@ Please be concise and only generate the chart caption:
 
         if self.verbose:
             self.logger.info(f">>> write_cnt = {write_cnt} to file: {chart_captions_fp}")
-
+        # Total Running Time: 718.8 sec (12.0 min)
         return chart_captions_fp
 
     def step7_overall_analysis(
             self,
     ) -> str:
         # [Optional] Input all information to Text2Text LLMs and obtain the overall analysis for each table
-        overall_analysis = []  # List[str]
 
-        # Get self.datasets_info
-        # Load "metadata.jsonl", "da_reqs.jsonl", "vis_code.jsonl", and "chart_captions.jsonl"
+        # Load the metadata, vis_code, and chart figures
         metadata_fp = os.path.join(self.data_dir_process, "metadata.jsonl")
-        da_reqs_fp = os.path.join(self.data_dir_process, "da_reqs.jsonl")
-        vis_code_fp = os.path.join(self.data_dir_process, "vis_code.jsonl")
         chart_captions_fp = os.path.join(self.data_dir_process, "chart_captions.jsonl")
+        with open(metadata_fp, "r", encoding="utf-8") as fp_in:
+            metadata = [json.loads(line.strip()) for line in fp_in]
+        with open(chart_captions_fp, "r", encoding="utf-8") as fp_in:
+            chart_captions = [json.loads(line.strip()) for line in fp_in]
+        assert len(metadata) == len(chart_captions)
 
         # Load the Text LLM
-        # self.text_llm_model = TextLLM(
-        #     verbose=verbose, logger=logger, cuda_dict=cuda_dict,
-        #     cache_dir=cache_dir, project_root_dir=project_root_dir,
-        #     hf_id=hf_id_text_llm, bsz=bsz, show_generation=show_generation, debug=debug,
-        # )
+        text_llm = TextLLM(
+            verbose=self.verbose, logger=self.logger, cuda_dict=self.cuda_dict,
+            cache_dir=self.cache_dir, project_root_dir=self.project_root_dir,
+            hf_id=self.hf_id_text_llm, bsz=self.bsz,
+            show_generation=self.show_generation, debug=self.debug,
+        )
 
-        # Write the data_csv_path and overall_analysis into jsonl files
+        overall_analysis = []  # List[Dict[str, Any]]
+        for metadata_dict, cur_chart_cap_dict in zip(metadata, chart_captions):
+            # Based on all information we have, ask Text LLMs to generate the overall analysis for each table
+            cur_analysis_dict = dict()
+            cur_analysis_dict["id"] = metadata_dict["id"]
+            if self.verbose:
+                self.logger.info(f">>> [id={metadata_dict['id']}] Dataset: {metadata_dict['name']}")
+
+            cur_caption_list = cur_chart_cap_dict["captions"]
+
+            cur_analysis_prompt = f"""
+Dataset Information:
+- Dataset name: {metadata_dict["name"]}
+- Dataset Description: {metadata_dict["description"]}
+
+Dataset Statistics:
+- Dataset size (the number of rows): {metadata_dict["num_row"]}
+- The number of columns (features): {metadata_dict["num_col"]}
+- All feature names: {", ".join([x["name"] for x in metadata_dict["features"]])}
+- All feature data types: {", ".join([x["dtype"] for x in metadata_dict["features"]])}
+
+Chart Captions:
+            """.strip()
+
+            for cur_caption_text, feat_dict in zip(cur_caption_list, metadata_dict["features"]):
+                if isinstance(cur_caption_text, str) and len(cur_caption_text) > 0:
+                    cur_analysis_prompt += "\n" + f"""
+- {cur_caption_text.strip()}
+                    """.strip()
+
+            cur_analysis_prompt += "\n\n" + f"""
+## Task: Based on the above dataset information and the chart captions (dataset visualization), \
+generate an conclusive overall analysis for this dataset. \
+Please be concise and only generate the conclusion:
+            """.strip()
+
+            gen_dict = text_llm.run_generation(
+                prompts=[cur_analysis_prompt], model=text_llm.model, tokenizer=text_llm.tokenizer_gen,
+                need_tokenize=True, max_new_tokens=512,
+                temperature=0.1, top_p=0.1,  # Be more deterministic when choosing an option
+            )
+            output_text = gen_dict["output_text"][0].strip()
+
+            cur_analysis_dict["overall_analysis"] = output_text
+            overall_analysis.append(cur_analysis_dict)
+            if self.debug:
+                sys.exit(0)
+
+        # Write the overall_analysis into jsonl files
         overall_analysis_fp = os.path.join(self.data_dir_process, "overall_analysis.jsonl")
+        write_cnt = 0
+        with open(overall_analysis_fp, "w", encoding="utf-8") as fp_out:
+            for _item in overall_analysis:
+                fp_out.write(json.dumps(_item, cls=NumpyEncoder) + "\n")
+                write_cnt += 1
 
+        if self.verbose:
+            self.logger.info(f">>> write_cnt = {write_cnt} to file: {overall_analysis_fp}")
         return overall_analysis_fp
 
     def step8_merge_all_info(
