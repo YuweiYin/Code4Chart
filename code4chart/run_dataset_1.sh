@@ -12,21 +12,31 @@ do
   idx=$(( $((idx)) + 1 ))
   # echo -e ">>> idx = ${idx}; val = ${val}"
   if [[ "${idx}" -eq 1 ]]; then
-    TEXT_LLM=${val}
-  fi
-  if [[ "${idx}" -eq 2 ]]; then
-    CODE_LLM=${val}
-  fi
-  if [[ "${idx}" -eq 3 ]]; then
-    VLM=${val}
-  fi
-  if [[ "${idx}" -eq 4 ]]; then
     BSZ=${val}
   fi
-  if [[ "${idx}" -eq 5 ]]; then
+  if [[ "${idx}" -eq 2 ]]; then
     MAX_SEQ_LEN=${val}
   fi
+  if [[ "${idx}" -eq 3 ]]; then
+    TEXT_LLM=${val}
+  fi
+  if [[ "${idx}" -eq 4 ]]; then
+    CODE_LLM=${val}
+  fi
+  if [[ "${idx}" -eq 5 ]]; then
+    VLM=${val}
+  fi
 done
+
+if [[ -z ${BSZ} ]]
+then
+  BSZ="1"
+fi
+
+if [[ -z ${MAX_SEQ_LEN} ]]
+then
+  MAX_SEQ_LEN="512"
+fi
 
 if [[ -z ${TEXT_LLM} ]]
 then
@@ -41,16 +51,6 @@ fi
 if [[ -z ${VLM} ]]
 then
   VLM="meta-llama/Llama-3.2-11B-Vision-Instruct"
-fi
-
-if [[ -z ${BSZ} ]]
-then
-  BSZ="1"
-fi
-
-if [[ -z ${MAX_SEQ_LEN} ]]
-then
-  MAX_SEQ_LEN="512"
 fi
 
 echo -e "TEXT_LLM: ${TEXT_LLM}"
