@@ -40,9 +40,10 @@ class VLM:
         :return: None.
         """
 
+        # https://huggingface.co/meta-llama/Llama-3.2-11B-Vision-Instruct
+        # https://huggingface.co/Qwen/Qwen2-VL-7B-Instruct
         # https://llava-vl.github.io/   "liuhaotian/llava-v1.5-7b"
         # https://github.com/tingxueronghua/ChartLlama-code   "listen2you002/ChartLlama-13b"
-        # https://huggingface.co/meta-llama/Llama-3.2-11B-Vision-Instruct
 
         self.verbose = verbose
         self.logger = logger
@@ -98,7 +99,7 @@ class VLM:
         # self.model.eval()
 
         self.processor = AutoProcessor.from_pretrained(
-            self.hf_id,
+            self.model_path,
             trust_remote_code=True,
             cache_dir=self.cache_dir,
         )

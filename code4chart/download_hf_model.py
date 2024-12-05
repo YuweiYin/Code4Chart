@@ -80,7 +80,7 @@ def main(
 
     try:
         # Download the model
-        if "Vision" in hf_id:
+        if "Vision" in hf_id or "Qwen2-VL" in hf_id or "llava" in hf_id:
             logger.info(f"Download AutoModelForImageTextToText VLMs (with the processor): {hf_id_local}")
             processor = AutoProcessor.from_pretrained(
                 hf_id_local,
