@@ -77,7 +77,7 @@ echo -e "VLM: ${VLM}"
 echo -e "ROOT_DIR: ${ROOT_DIR}"
 echo -e "CACHE_DIR: ${CACHE_DIR}"
 
-echo -e "\n >>> python3 run_experiment.py --task ${TASK}"
+echo -e "\n >>> python3 run_experiment.py --task ${TASK} (baseline)"
 python3 run_experiment.py \
   --task "${TASK}" \
   --cache_dir "${CACHE_DIR}" \
@@ -90,6 +90,8 @@ python3 run_experiment.py \
   --hf_id_vlm "${VLM}" \
   --verbose
 
-# --interactive
-# --show_generation
-# --debug
+# --add_code
+# --add_ds_info
+# --remove_comments
+# --use_cot
+# --few_shot 0

@@ -33,11 +33,8 @@ class Code4ChartExp:
             cuda_dict: dict,
             cache_dir: Optional[str] = None,
             project_root_dir: Optional[str] = None,
-            hf_id_text_llm: str = "meta-llama/Llama-3.1-8B-Instruct",
-            hf_id_code_llm: str = "meta-llama/CodeLlama-7b-Instruct-hf",
             hf_id_vlm: str = "meta-llama/Llama-3.2-11B-Vision-Instruct",
             bsz: int = 1,
-            max_seq_len: int = 1024,
             show_generation: bool = False,
             debug: bool = False,
     ):
@@ -49,11 +46,8 @@ class Code4ChartExp:
         :param cuda_dict: The cuda/GPU information dictionary.
         :param cache_dir: The root directory of the cache.
         :param project_root_dir: The directory of the project root.
-        :param hf_id_text_llm: The Hugging Face model ID of Text LLM. Format: ORGANIZATION_NAME/MODEL_NAME
-        :param hf_id_code_llm: The Hugging Face model ID of Code LLM. Format: ORGANIZATION_NAME/MODEL_NAME
         :param hf_id_vlm: The Hugging Face model ID of VLM. Format: ORGANIZATION_NAME/MODEL_NAME
         :param bsz: The batch size.
-        :param max_seq_len: The maximum sequence length for padding/truncation.
         :param show_generation: Whether to show outputs during generation.
         :param debug: Debugging / developing mode.
         :return: None.
@@ -66,11 +60,8 @@ class Code4ChartExp:
         self.project_root_dir = project_root_dir
         self.home_dir = os.path.expanduser("~")
         self.bsz = bsz
-        self.max_seq_len = max_seq_len
         self.show_generation = show_generation
         self.debug = debug
-        self.hf_id_text_llm = hf_id_text_llm
-        self.hf_id_code_llm = hf_id_code_llm
         self.hf_id_vlm = hf_id_vlm
 
         # Data and checkpoint directory
@@ -88,6 +79,7 @@ class Code4ChartExp:
             self,
             add_ds_info: bool = False,
             add_code: bool = False,
+            remove_comments: bool = False,
             use_cot: bool = False,
             few_shot: int = 0,
     ) -> str:
@@ -357,13 +349,11 @@ def main(
     cuda: Optional[str] = None,
     cache_dir: Optional[str] = None,
     project_root_dir: Optional[str] = None,
-    hf_id_text_llm: str = "meta-llama/Llama-3.1-8B-Instruct",
-    hf_id_code_llm: str = "meta-llama/CodeLlama-7b-Instruct-hf",
     hf_id_vlm: str = "meta-llama/Llama-3.2-11B-Vision-Instruct",
     bsz: int = 1,
-    max_seq_len: int = 1024,
     add_ds_info: bool = False,
     add_code: bool = False,
+    remove_comments: bool = False,
     use_cot: bool = False,
     few_shot: int = 0,
     show_generation: bool = False,
@@ -379,13 +369,11 @@ def main(
     :param cuda: To specify CUDA GPU devices, e.g., "0" OR "0,1". Default: None -- Use CPU or all available GPUs.
     :param cache_dir: The root directory of the cache.
     :param project_root_dir: The directory of the project root.
-    :param hf_id_text_llm: The Hugging Face model ID of Text LLM. Format: ORGANIZATION_NAME/MODEL_NAME
-    :param hf_id_code_llm: The Hugging Face model ID of Code LLM. Format: ORGANIZATION_NAME/MODEL_NAME
     :param hf_id_vlm: The Hugging Face model ID of VLM. Format: ORGANIZATION_NAME/MODEL_NAME
     :param bsz: The batch size.
-    :param max_seq_len: The maximum sequence length for padding/truncation.
     :param add_ds_info: Add dataset information as input or not.
     :param add_code: Add the visualization code as input or not.
+    :param remove_comments: Remove the code comments or not.
     :param use_cot: Use chain-of-thought prompting or not.
     :param few_shot: The number of examples used in the few shot generation.
     :param show_generation: Whether to show outputs during generation.
@@ -409,11 +397,8 @@ def main(
         cuda_dict=cuda_dict,
         cache_dir=cache_dir,
         project_root_dir=project_root_dir,
-        hf_id_text_llm=hf_id_text_llm,
-        hf_id_code_llm=hf_id_code_llm,
         hf_id_vlm=hf_id_vlm,
         bsz=bsz,
-        max_seq_len=max_seq_len,
         show_generation=show_generation,
         debug=debug,
     )
@@ -424,6 +409,7 @@ def main(
             c4c_exp.run_chart_qa(
                 add_ds_info=add_ds_info,
                 add_code=add_code,
+                remove_comments=remove_comments,
                 use_cot=use_cot,
                 few_shot=few_shot,
             )
@@ -435,4 +421,11 @@ def main(
 
 
 if __name__ == "__main__":
+    """
+    python3 run_experiment.py --verbose --task 1 --cache_dir "${HOME}/projects/def-carenini/yuweiyin/.cache/huggingface/" --project_root_dir "${HOME}"
+    python3 run_experiment.py --verbose --task 1 --add_code --cache_dir "${HOME}/projects/def-carenini/yuweiyin/.cache/huggingface/" --project_root_dir "${HOME}"
+
+    python3 run_experiment.py --verbose --task 1 --add_ds_info --cache_dir "${HOME}/projects/def-carenini/yuweiyin/.cache/huggingface/" --project_root_dir "${HOME}"
+    python3 run_experiment.py --verbose --task 1 --add_ds_info --add_code --cache_dir "${HOME}/projects/def-carenini/yuweiyin/.cache/huggingface/" --project_root_dir "${HOME}"
+    """
     fire.Fire(main)
