@@ -358,7 +358,11 @@ Answer:
         remove_comments_tag = "1" if remove_comments else "0"
         all_qa_results_fp = os.path.join(
             self.data_dir_process,
-            f"all_qa_results-{add_code_tag}_{add_ds_info_tag}_{use_cot_tag}_{remove_comments_tag}_{few_shot}.jsonl")
+            f"all_qa_results-{add_code_tag}_{add_ds_info_tag}_{use_cot_tag}_{remove_comments_tag}_{few_shot}.json")
+        with open(all_qa_results_fp, "w", encoding="utf-8") as fp_out:
+            json.dump(all_qa_results, fp_out, cls=NumpyEncoder, indent=4)
+
+        all_qa_results_fp += "l"  # ".jsonl"
         write_cnt = 0
         with open(all_qa_results_fp, "w", encoding="utf-8") as fp_out:
             for _item in all_qa_results:
@@ -368,8 +372,6 @@ Answer:
         if self.verbose:
             self.logger.info(f">>> write_cnt = {write_cnt} to file: {all_qa_results_fp}")
 
-        # Baseline: Accuracy: 0.031746031746031744
-        # Total Running Time: 310.8 sec (5.2 min)
         return all_qa_results_fp
 
     # def run_chart_qa_with_code_no_comments(
@@ -473,10 +475,16 @@ def main(
 
 if __name__ == "__main__":
     """
+    # Baseline (0, 0, 0, 0, 0):
     python3 run_experiment.py --verbose --task 1 --cache_dir "${HOME}/projects/def-carenini/yuweiyin/.cache/huggingface/" --project_root_dir "${HOME}"
+
+    # Baseline + Code Input (1, 0, 0, 0, 0):
     python3 run_experiment.py --verbose --task 1 --add_code --cache_dir "${HOME}/projects/def-carenini/yuweiyin/.cache/huggingface/" --project_root_dir "${HOME}"
 
+    # Baseline + Dataset Info (0, 1, 0, 0, 0):
     python3 run_experiment.py --verbose --task 1 --add_ds_info --cache_dir "${HOME}/projects/def-carenini/yuweiyin/.cache/huggingface/" --project_root_dir "${HOME}"
+
+    # Baseline + Dataset Info + Code Input (1, 1, 0, 0, 0):
     python3 run_experiment.py --verbose --task 1 --add_ds_info --add_code --cache_dir "${HOME}/projects/def-carenini/yuweiyin/.cache/huggingface/" --project_root_dir "${HOME}"
     """
     fire.Fire(main)
