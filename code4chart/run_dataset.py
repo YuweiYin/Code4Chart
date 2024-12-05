@@ -642,7 +642,7 @@ Python3 Code for Chart Plotting:
     def step6_chart_cap_gen(
             self,
     ) -> str:
-        # For each chart, we use Vision-language models (VLMs) to generate the chart captions (descriptions).
+        # [Optional] For each chart, we use VLMs to generate the chart captions (descriptions).
         # TODO: future work: the raw data is not provided in the prompt or generated code
         #   since there are too many values in a column,
         #   but maybe it is helpful for the VLMs to perform chart understanding, especially for knowing the numbers
@@ -752,7 +752,7 @@ Please be concise and only generate the chart caption:
             done_cnt, miss_cnt = 0, 0
             for cur_prompts, cur_images in cap_prompt_image_list:
                 if cur_prompts is None or cur_images is None:
-                    cur_caption_list.append(None)
+                    cur_caption_list.append(None)  # Can NOT be "" since json.dumps will ignore it
                     miss_cnt += 1
                     continue
 
@@ -816,7 +816,7 @@ Please be concise and only generate the chart caption:
 
         if self.verbose:
             self.logger.info(f">>> write_cnt = {write_cnt} to file: {chart_captions_fp}")
-        # Total Running Time: 1433.1 sec (23.9 min)
+        # Total Running Time: 949.6 sec (15.8 min)
         return chart_captions_fp
 
     def step7_overall_analysis(
@@ -933,7 +933,7 @@ Please be concise and only generate the conclusion:
         assert (len(metadata) == len(da_reqs) == len(vis_code_post) ==
                 len(chart_figures) == len(chart_captions) == len(overall_analysis))
 
-        all_info = []  # List[Dict[str, Any]] cur_vis_code_dict, cur_chart
+        all_info = []  # List[Dict[str, Any]]
         for metadata_dict, da_reqs_dict, vis_code_dict, chart_fig_dict, chart_cap_dict, analysis_dict in zip(
                 metadata, da_reqs, vis_code_post, chart_figures, chart_captions, overall_analysis):
             cur_info_dict = dict()
@@ -971,6 +971,10 @@ Please be concise and only generate the conclusion:
             all_info.append(cur_info_dict)
 
         # Write all the info into jsonl files
+        all_info_fp = os.path.join(self.data_dir_process, "all_info.json")
+        with open(all_info_fp, "w", encoding="utf-8") as fp_out:
+            json.dump(all_info, fp_out, cls=NumpyEncoder, indent=4)
+
         all_info_fp = os.path.join(self.data_dir_process, "all_info.jsonl")
         write_cnt = 0
         with open(all_info_fp, "w", encoding="utf-8") as fp_out:
@@ -985,68 +989,149 @@ Please be concise and only generate the conclusion:
     def step9_chart_qa_task(
             self,
     ) -> str:
-        # Input all information to Text2Text LLMs and construct a chart QA evaluation benchmark
-        # TODO: manually construct a small evaluation dataset of high quality (or as the guide for text LLMs)
-        chart_question = []  # List[str]
-        chart_option = []  # List[List[str]] -> five options, one with correct answer (consider distractors' quality)
-        chart_answer = []  # List[int] -> each entry: the index of correct answer in each option list
+        # Construct a chart QA evaluation benchmark by feeding all information to Text LLMs.
+        # After generation, manually post-process the generated questions, options, and answers (quality control).
 
-        # Get self.datasets_info
-        # Load "metadata.jsonl", "da_reqs.jsonl", "vis_code.jsonl", "chart_figures.jsonl",
-        #   "chart_captions.jsonl", and "overall_analysis.jsonl"
-        metadata_fp = os.path.join(self.data_dir_process, "metadata.jsonl")
-        da_reqs_fp = os.path.join(self.data_dir_process, "da_reqs.jsonl")
-        vis_code_fp = os.path.join(self.data_dir_process, "vis_code.jsonl")
-        chart_figures_fp = os.path.join(self.data_dir_process, "chart_figures.jsonl")
-        chart_captions_fp = os.path.join(self.data_dir_process, "chart_captions.jsonl")
-        overall_analysis_fp = os.path.join(self.data_dir_process, "overall_analysis.jsonl")
+        # Load processed all_info data
+        all_info_fp = os.path.join(self.data_dir_process, "all_info.jsonl")
+        with open(all_info_fp, "r", encoding="utf-8") as fp_in:
+            all_info = [json.loads(line.strip()) for line in fp_in]
 
-        # Write each chart QA example into jsonl files
-        res_fp = os.path.join(self.data_dir_process, "c4c_qa.jsonl")
+        # Load the Text LLM
+        text_llm = TextLLM(
+            verbose=self.verbose, logger=self.logger, cuda_dict=self.cuda_dict,
+            cache_dir=self.cache_dir, project_root_dir=self.project_root_dir,
+            hf_id=self.hf_id_text_llm, bsz=self.bsz,
+            show_generation=self.show_generation, debug=self.debug,
+        )
 
-        # To upload to Hugging Face datasets
+        c4c_chart_qa = []  # List[Dict[str, Any]]
+        for cur_info_dict in all_info:
+            cur_qa_dict = dict()
+            if self.verbose:
+                self.logger.info(f">>> [id={cur_info_dict['id']}] Dataset: {cur_info_dict['name']}")
 
-        return res_fp
+            cur_qa_dict["id"] = cur_info_dict["id"]
+            cur_qa_dict["url"] = cur_info_dict["url"]
+            cur_qa_dict["name"] = cur_info_dict["name"]
+            cur_qa_dict["description"] = cur_info_dict["description"]
+            cur_qa_dict["filename"] = cur_info_dict["filename"]
+            cur_qa_dict["filepath"] = cur_info_dict["filepath"]
+            cur_qa_dict["num_row"] = cur_info_dict["num_row"]
+            cur_qa_dict["num_col"] = cur_info_dict["num_col"]
+            cur_qa_dict["features"] = cur_info_dict["features"]
 
-    def step10_chart_cap_task(
-            self,
-    ) -> str:
-        # Input all information to Text2Text LLMs and construct a chart captioning evaluation benchmark
-        # TODO: manually construct a small evaluation dataset of high quality (or as the guide for text LLMs)
-        chart_question = []  # List[str]
-        chart_option = []  # List[List[str]] -> five options, one with correct answer (consider distractors' quality)
-        chart_answer = []  # List[int] -> each entry: the index of correct answer in each option list
+            cur_qa_dict["da_reqs"] = cur_info_dict["da_reqs"]
+            cur_qa_dict["captions"] = cur_info_dict["captions"]
+            cur_qa_dict["analysis"] = cur_info_dict["overall_analysis"]
 
-        # Get self.datasets_info
-        # Load "metadata.jsonl", "da_reqs.jsonl", "vis_code.jsonl", "chart_figures.jsonl",
-        #   "chart_captions.jsonl", and "overall_analysis.jsonl"
-        metadata_fp = os.path.join(self.data_dir_process, "metadata.jsonl")
-        da_reqs_fp = os.path.join(self.data_dir_process, "da_reqs.jsonl")
-        vis_code_fp = os.path.join(self.data_dir_process, "vis_code.jsonl")
-        chart_figures_fp = os.path.join(self.data_dir_process, "chart_figures.jsonl")
-        chart_captions_fp = os.path.join(self.data_dir_process, "chart_captions.jsonl")
-        overall_analysis_fp = os.path.join(self.data_dir_process, "overall_analysis.jsonl")
+            # cur_qa_dict["vis_code_raw"] = cur_info_dict["vis_code"]
+            cur_qa_dict["vis_code_features"] = cur_info_dict["vis_feat"]
+            cur_qa_dict["vis_code_filepath"] = cur_info_dict["code_filepath"]
 
-        # Write each chart captioning example into jsonl files
-        res_fp = os.path.join(self.data_dir_process, "c4c_cap.jsonl")
+            cur_qa_dict["vis_code_clean"] = cur_info_dict["vis_code"]
+            cur_qa_dict["vis_code_stat"] = cur_info_dict["code_stat"]
+            cur_qa_dict["chart_figure_base64"] = cur_info_dict["fig_base64"]
+            cur_qa_dict["chart_figure_filepath"] = cur_info_dict["fig_filepath"]
 
-        # To upload to Hugging Face datasets
+            assert len(cur_qa_dict["features"]) == len(cur_qa_dict["captions"])
 
-        return res_fp
+            prompt_list = []
+            for feat_dict, cur_caption_text in zip(cur_qa_dict["features"], cur_qa_dict["captions"]):
+                # Here, we construct chart QA task's questions, options, and answers mainly based on chart captions
+                # if self.verbose:
+                #     self.logger.info(f">>> >>> Feature: {feat_dict['name']}")
+                # Dataset Information:
+                # - Dataset Name: {cur_qa_dict["name"]}
+                # - All Features: {", ".join([x["name"] for x in cur_qa_dict["features"]])}
+                qa_prompt = f"""
+Feature Information of Dataset {cur_qa_dict["name"]}:
+- Feature Name: {feat_dict["name"]}
+- Data Type: {feat_dict["dtype"]}
+- Number of all rows (feature values): {feat_dict["num_valid"]}
+- Number of unique feature values: {feat_dict["num_unique"]}
+                """.strip()
+                numerical_stat = feat_dict["numerical_stat"]
+                if isinstance(numerical_stat, dict) and len(numerical_stat) > 0:
+                    qa_prompt += "\n" + f"""
+- Min of Feature Values: {numerical_stat["min"]:.2f}
+- Max of Feature Values: {numerical_stat["max"]:.2f}
+- Mean of Feature Values: {numerical_stat["mean"]:.2f}
+- Std of Feature Values: {numerical_stat["std"]:.2f}
+                    """.strip()
+                if isinstance(cur_caption_text, str) and len(cur_caption_text) > 0:
+                    qa_prompt += "\n" + f"""
+Chart Caption of Feature \"{feat_dict["name"]}\" (data type: {feat_dict["dtype"]}):
+{cur_caption_text}
+                    """.strip()
 
-    def step11_chart_qa_edit_chart(
+                qa_prompt += "\n\n" + f"""
+## Task: Based on the dataset feature information and the corresponding chart captions above,
+construct one chart question-answering test, including a question, five options, and a correct answer. \
+Please be concise and only generate the question, options, and answer:
+                """.strip()
+
+                prompt_list.append(qa_prompt)
+
+            cur_qa_dict["chart_qa"] = []
+            for prompt in prompt_list:
+                gen_dict = text_llm.run_generation(
+                    prompts=[prompt], model=text_llm.model, tokenizer=text_llm.tokenizer_gen,
+                    need_tokenize=True, max_new_tokens=512,
+                    temperature=0.1, top_p=0.1,  # Be more deterministic when choosing an option
+                )
+                output_text = gen_dict["output_text"][0].strip()
+                cur_qa_dict["chart_qa"].append(output_text)
+                # TODO: manually extract questions, options, and answers from the generated text
+                # cur_qa_dict["chart_qa"] = {
+                #     "question": "",
+                #     "options": {
+                #         "A": "",
+                #         "B": "",
+                #         "C": "",
+                #         "D": "",
+                #         "E": "",
+                #     },  # Five options, one of which is correct (consider the quality of the distractors)
+                #     "answer": "",
+                # }
+
+            c4c_chart_qa.append(cur_qa_dict)
+            if self.debug:
+                sys.exit(0)
+
+        # [Later] To upload to Hugging Face datasets
+
+        # Write the chart QA benchmark into jsonl files
+        c4c_chart_qa_fp = os.path.join(self.data_dir_process, "c4c_chart_qa.jsonl")
+        write_cnt = 0
+        with open(c4c_chart_qa_fp, "w", encoding="utf-8") as fp_out:
+            for _item in c4c_chart_qa:
+                fp_out.write(json.dumps(_item, cls=NumpyEncoder) + "\n")
+                write_cnt += 1
+
+        if self.verbose:
+            self.logger.info(f">>> write_cnt = {write_cnt} to file: {c4c_chart_qa_fp}")
+        return c4c_chart_qa_fp
+
+    def step10_chart_qa_edit_chart(
             self,
     ) -> str:
         # TODO: Do minor modification of the chart figures in our chart QA benchmark for robustness experiments.
         #   Slightly change the chart figures by editing the visualization code.
         pass
 
-    def step12_chart_qa_edit_question(
+    def step11_chart_qa_edit_question(
             self,
     ) -> str:
         # TODO: Do minor modification of the questions in our chart QA benchmark for robustness experiments.
         #   Paraphrase the questions using Text LLMs.
         pass
+
+    # def step12_chart_cap_task(
+    #         self,
+    # ) -> str:
+    #     # [Optional] Construct a chart captioning evaluation benchmark by feeding all information to Text LLMs.
+    #     pass
 
 
 def main(
@@ -1133,11 +1218,11 @@ def main(
         case 9:
             c4c_data.step9_chart_qa_task()
         case 10:
-            c4c_data.step10_chart_cap_task()
+            c4c_data.step10_chart_qa_edit_chart()
         case 11:
-            c4c_data.step11_chart_qa_edit_chart()
-        case 11:
-            c4c_data.step12_chart_qa_edit_question()
+            c4c_data.step11_chart_qa_edit_question()
+        # case 12:
+        #     c4c_data.step12_chart_cap_task()
         case _:
             raise ValueError(f"ValueError: task = {task}")
 
