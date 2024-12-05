@@ -299,7 +299,7 @@ Answer:
                     text=cur_prompts, images=cur_images, return_tensors="pt").to(vlm_model.model.device)
 
                 with torch.no_grad():
-                    output_ids = vlm_model.model.generate(**cur_inputs, max_new_tokens=100)
+                    output_ids = vlm_model.model.generate(**cur_inputs, max_new_tokens=150)
                 output_text = vlm_model.processor.batch_decode(
                     output_ids, skip_special_tokens=True, clean_up_tokenization_spaces=True)
                 input_text = vlm_model.processor.batch_decode(

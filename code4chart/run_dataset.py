@@ -822,6 +822,7 @@ Please be concise and only generate the chart caption:
             self,
     ) -> str:
         # [Optional] Input all information to Text2Text LLMs and obtain the overall analysis for each table
+        # TODO: Overall analysis and insights
 
         # Load the metadata, vis_code, and chart figures
         metadata_fp = os.path.join(self.data_dir_process, "metadata.jsonl")
