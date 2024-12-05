@@ -617,7 +617,7 @@ Python3 Code for Chart Plotting:
 
         # Done all, show statistics
         if self.verbose:
-            self.logger.info(f">>> >>> Done All. Statistics: "
+            self.logger.info(f">>> Done All. Statistics: "
                              f"done_cnt_all={done_cnt_all}, miss_cnt_all={miss_cnt_all}; "
                              f"avg_num_python={np.mean(num_python_all)}, "
                              f"avg_num_empty={np.mean(num_empty_all)}, "
@@ -802,7 +802,7 @@ Please be concise and only generate the chart caption:
 
         # Done all, show statistics
         if self.verbose:
-            self.logger.info(f">>> >>> Done All. Statistics: "
+            self.logger.info(f">>> Done All. Statistics: "
                              f"done_cnt_all={done_cnt_all}, miss_cnt_all={miss_cnt_all}")
 
         # Write the chart captions into jsonl files

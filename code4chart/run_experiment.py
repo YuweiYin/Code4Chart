@@ -101,6 +101,7 @@ class Code4ChartExp:
 
         all_qa_results = []  # List[Dict[str, Any]]
         done_cnt_all, miss_cnt_all = 0, 0
+        fail_to_answer_cnt_all = 0
         for cur_qa_dict in c4c_chart_qa:
             cur_qa_results = dict()
             if self.verbose:
@@ -148,15 +149,24 @@ class Code4ChartExp:
             cur_qa_results["chart_qa"] = chart_qa
             cur_qa_results["vis_code"] = vis_code
 
+            choice_set = {"A", "B", "C", "D", "E"}
+
             assert len(chart_qa) == len(chart_figure_base64) == len(vis_code) == len(cur_qa_dict["features"])
             qa_prompt_image_list = []
+            cur_questions, cur_options, cur_answers = [], [], []
             for cur_chart_qa, cur_fig_base64, cur_vis_code, feat_dict in zip(
                     chart_qa, chart_figure_base64, vis_code, cur_qa_dict["features"]):
                 if cur_fig_base64 == "":
+                    cur_questions.append(None)
+                    cur_options.append(None)
+                    cur_answers.append(None)
                     qa_prompt_image_list.append((None, None))
                     continue
 
                 question, options, answer = cur_chart_qa["question"], cur_chart_qa["options"], cur_chart_qa["answer"]
+                cur_questions.append(question)
+                cur_options.append(options)
+                cur_answers.append(answer)
 
                 # The dataset/feature information
                 cur_ds_info_prompt = f"""
@@ -254,11 +264,13 @@ Answer:
                 assert isinstance(cur_prompts, list)
                 qa_prompt_image_list.append((cur_prompts, cur_images))
 
-            cur_results = []
+            cur_results, cur_choices = [], []
             done_cnt, miss_cnt = 0, 0
+            fail_to_answer_cnt = 0
             for cur_prompts, cur_images in qa_prompt_image_list:
                 if cur_prompts is None or cur_images is None:
                     cur_results.append(None)  # Can NOT be "" since json.dumps will ignore it
+                    cur_choices.append(None)
                     miss_cnt += 1
                     continue
 
@@ -286,15 +298,29 @@ Answer:
                         self.logger.info("================================== >>> output <<<")
                         self.logger.info(output_pure)
 
-                # cur_results.append(output_text_pure[0].strip())
-                # TODO: pick VLMs' choice
+                # Pick VLMs' choice
+                cur_output = output_text_pure[0].strip()
+                cur_results.append(cur_output)
+                assert isinstance(cur_output, str)
+                if cur_output.startswith("("):
+                    cur_output = cur_output[1:]
+                if cur_output[0] in choice_set:  # {"A", "B", "C", "D", "E"}
+                    cur_choices.append(cur_output[0])
+                else:
+                    fail_to_answer_cnt += 1
+                    cur_choices.append("X")
                 done_cnt += 1
 
-            assert len(cur_results) == len(chart_qa) == len(chart_figure_base64)
+            assert len(cur_results) == len(cur_choices) == len(chart_qa) == len(chart_figure_base64)
             cur_qa_results["model_results"] = cur_results
+            cur_qa_results["model_choices"] = cur_choices
+            cur_qa_results["questions"] = cur_questions
+            cur_qa_results["options"] = cur_options
+            cur_qa_results["answers"] = cur_answers
             all_qa_results.append(cur_qa_results)
             done_cnt_all += done_cnt
             miss_cnt_all += miss_cnt
+            fail_to_answer_cnt_all += fail_to_answer_cnt
             if self.verbose:
                 self.logger.info(f">>> >>> Done [id={cur_qa_dict['id']}] Dataset: {cur_qa_dict['name']}. "
                                  f"done_cnt={done_cnt}, miss_cnt={miss_cnt}")
@@ -303,10 +329,23 @@ Answer:
 
         # Done all, show statistics
         if self.verbose:
-            self.logger.info(f">>> >>> Done All. Statistics: "
+            self.logger.info(f">>> Done All. Statistics: "
                              f"done_cnt_all={done_cnt_all}, miss_cnt_all={miss_cnt_all}")
 
         # TODO: Compute the chart QA accuracy
+        all_answers, all_choices = [], []
+        for all_qa_res in all_qa_results:
+            all_answers.extend(all_qa_res["answers"])
+            all_choices.extend(all_qa_res["model_choices"])
+        try:
+            all_answers = np.array([_item.strip() for _item in all_answers if isinstance(_item, str)])
+            all_choices = np.array([_item.strip() for _item in all_choices if isinstance(_item, str)])
+            acc = np.mean(all_answers == all_choices).item()
+            if self.verbose:
+                self.logger.info(f">>> [#item = {len(all_choices)}] Accuracy: {acc}")
+        except Exception as e:
+            if self.verbose:
+                self.logger.info(e)
 
         # Write the QA and results into jsonl files
         add_code_tag = "1" if add_code else "0"
