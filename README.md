@@ -30,7 +30,9 @@ python3 download_hf_model.py --trust_remote_code --verbose --cache_dir "${CACHE_
 #  --hf_id "meta-llama/CodeLlama-7b-Python-hf"
 
 python3 download_hf_model.py --trust_remote_code --verbose --cache_dir "${CACHE_DIR}" \
-  --hf_id "meta-llama/Llama-3.2-11B-Vision-Instruct"
+  --hf_id "meta-llama/Llama-3.2-11B-Vision-Instruct"  # The VLM to generate chart captions (and for evaluation)
+python3 download_hf_model.py --trust_remote_code --verbose --cache_dir "${CACHE_DIR}" \
+  --hf_id "Qwen/Qwen2-VL-7B-Instruct"  # The VLM for evaluation
 ```
 
 ## Dataset Construction
@@ -52,26 +54,28 @@ bash run_dataset.sh "9"  # step9_chart_qa_task() <-- Text LLM (GPU needed)
 
 ```bash
 CACHE_DIR="${HOME}/projects/def-carenini/yuweiyin/.cache/huggingface/"  # YOUR CACHE_DIR
+HF_ID_VLM="meta-llama/Llama-3.2-11B-Vision-Instruct"  # The VLMs to evaluate
+#HF_ID_VLM="Qwen/Qwen2-VL-7B-Instruct"
 
 # Baseline (0, 0, 0, 0, 0): [#item = 63] Accuracy: 0.04762
 # Done All. Statistics: done_cnt_all=63, miss_cnt_all=53, fail_to_answer_cnt_all=47
 python3 run_experiment.py --verbose --task 1 \
-  --cache_dir "${CACHE_DIR}" --project_root_dir "${HOME}"
+  --cache_dir "${CACHE_DIR}" --project_root_dir "${HOME}" --hf_id_vlm "${HF_ID_VLM}"
 
 # Baseline + Code Input (1, 0, 0, 0, 0): [#item = 63] Accuracy: 0.17460
 # Done All. Statistics: done_cnt_all=63, miss_cnt_all=53, fail_to_answer_cnt_all=39
 python3 run_experiment.py --verbose --task 1 --add_code \
-  --cache_dir "${CACHE_DIR}" --project_root_dir "${HOME}"
+  --cache_dir "${CACHE_DIR}" --project_root_dir "${HOME}" --hf_id_vlm "${HF_ID_VLM}"
 
 # Baseline + Dataset Info (0, 1, 0, 0, 0): [#item = 63] Accuracy: 0.04762
 # Done All. Statistics: done_cnt_all=63, miss_cnt_all=53, fail_to_answer_cnt_all=47
 python3 run_experiment.py --verbose --task 1 --add_ds_info \
-  --cache_dir "${CACHE_DIR}" --project_root_dir "${HOME}"
+  --cache_dir "${CACHE_DIR}" --project_root_dir "${HOME}" --hf_id_vlm "${HF_ID_VLM}"
 
 # Baseline + Dataset Info + Code Input (1, 1, 0, 0, 0): [#item = 63] Accuracy: 0.30159
 # Done All. Statistics: done_cnt_all=63, miss_cnt_all=53, fail_to_answer_cnt_all=34
 python3 run_experiment.py --verbose --task 1 --add_ds_info --add_code \
-  --cache_dir "${CACHE_DIR}" --project_root_dir "${HOME}"
+  --cache_dir "${CACHE_DIR}" --project_root_dir "${HOME}" --hf_id_vlm "${HF_ID_VLM}"
 ```
 
 ---
