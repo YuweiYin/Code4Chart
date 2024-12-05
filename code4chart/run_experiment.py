@@ -481,25 +481,4 @@ def main(
 
 
 if __name__ == "__main__":
-    """
-    # Baseline (0, 0, 0, 0, 0): Accuracy: 0.03175
-    # Done All. Statistics: done_cnt_all=63, miss_cnt_all=53, fail_to_answer_cnt_all=48
-    # Total Running Time: 281.3 sec (4.7 min)
-    python3 run_experiment.py --verbose --task 1 --cache_dir "${HOME}/projects/def-carenini/yuweiyin/.cache/huggingface/" --project_root_dir "${HOME}"
-
-    # Baseline + Code Input (1, 0, 0, 0, 0): Accuracy: 0.09524
-    # Done All. Statistics: done_cnt_all=63, miss_cnt_all=53, fail_to_answer_cnt_all=45
-    # Total Running Time: 146.3 sec (2.4 min)
-    python3 run_experiment.py --verbose --task 1 --add_code --cache_dir "${HOME}/projects/def-carenini/yuweiyin/.cache/huggingface/" --project_root_dir "${HOME}"
-
-    # Baseline + Dataset Info (0, 1, 0, 0, 0): [#item = 63] Accuracy: 0.03175
-    # Done All. Statistics: done_cnt_all=63, miss_cnt_all=53, fail_to_answer_cnt_all=48
-    # Total Running Time: 125.6 sec (2.1 min)
-    python3 run_experiment.py --verbose --task 1 --add_ds_info --cache_dir "${HOME}/projects/def-carenini/yuweiyin/.cache/huggingface/" --project_root_dir "${HOME}"
-
-    # Baseline + Dataset Info + Code Input (1, 1, 0, 0, 0): [#item = 63] Accuracy: 0.07937
-    # Done All. Statistics: done_cnt_all=63, miss_cnt_all=53, fail_to_answer_cnt_all=48
-    # Total Running Time: 135.7 sec (2.3 min)
-    python3 run_experiment.py --verbose --task 1 --add_ds_info --add_code --cache_dir "${HOME}/projects/def-carenini/yuweiyin/.cache/huggingface/" --project_root_dir "${HOME}"
-    """
     fire.Fire(main)
