@@ -21,7 +21,6 @@ from code4chart.text_llm import TextLLM
 from code4chart.code_llm import CodeLLM
 from code4chart.vlm import VLM
 from code4chart.default_inputs import DefaultInputs
-
 from code4chart.init_functions import logger_setup, cuda_setup, random_setup
 from code4chart.numpy_encoder import NumpyEncoder
 
@@ -1118,19 +1117,22 @@ Please be concise and only generate the question, options, and answer:
 
         if self.verbose:
             self.logger.info(f">>> write_cnt = {write_cnt} to file: {c4c_chart_qa_fp}")
+        # Total Running Time: 2658.4 sec (44.3 min)
         return c4c_chart_qa_fp
 
     def step10_chart_qa_edit_chart(
             self,
     ) -> str:
-        # TODO: Do minor modification of the chart figures in our chart QA benchmark for robustness experiments.
+        # TODO: future work:
+        #   Do minor modification of the chart figures in our chart QA benchmark for robustness experiments.
         #   Slightly change the chart figures by editing the visualization code.
         pass
 
     def step11_chart_qa_edit_question(
             self,
     ) -> str:
-        # TODO: Do minor modification of the questions in our chart QA benchmark for robustness experiments.
+        # TODO: future work:
+        #   Do minor modification of the questions in our chart QA benchmark for robustness experiments.
         #   Paraphrase the questions using Text LLMs.
         pass
 
