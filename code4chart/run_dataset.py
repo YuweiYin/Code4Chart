@@ -1084,7 +1084,8 @@ Please be concise and only generate the question, options, and answer:
                 )
                 output_text = gen_dict["output_text"][0].strip()
                 cur_qa_dict["chart_qa"].append(output_text)
-                # TODO: manually extract questions, options, and answers from the generated text
+                # TODO: manually extract questions, options, and answers from the generated text.
+                #   Also, consider the balance of answers (five options, random guess accuracy ~= 20%)
                 # cur_qa_dict["chart_qa"] = {
                 #     "question": "",
                 #     "options": {

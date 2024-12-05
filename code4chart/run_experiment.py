@@ -92,11 +92,14 @@ class Code4ChartExp:
             few_shot: int = 0,
     ) -> str:
         # Load our chart QA benchmark
-        c4c_chart_qa_fp = os.path.join(self.data_dir_process, "c4c_chart_qa.jsonl")
+        c4c_chart_qa_fp = os.path.join(self.data_dir_process, "c4c_chart_qa_post.json")
         with open(c4c_chart_qa_fp, "r", encoding="utf-8") as fp_in:
-            c4c_chart_qa = [json.loads(line.strip()) for line in fp_in]
+            # c4c_chart_qa = [json.loads(line.strip()) for line in fp_in]
+            c4c_chart_qa = json.load(fp_in)
 
         # Load the Vision-language Model (Multimodal LLM)
+        # TODO: future work: test VLMs that fine-tuned on [our] chart datasets, expecting performance improvement
+        #   Also, test proprietary LLMs like GPT-4
         vlm_model = VLM(
             verbose=self.verbose, logger=self.logger, cuda_dict=self.cuda_dict,
             cache_dir=self.cache_dir, project_root_dir=self.project_root_dir,
@@ -135,7 +138,8 @@ class Code4ChartExp:
             # cur_qa_dict["chart_figure_filepath"] = cur_info_dict["chart_figure_filepath"]
 
             chart_figure_base64 = cur_qa_dict["chart_figure_base64"]
-            chart_qa = cur_qa_dict["chart_qa"]
+            # chart_qa = cur_qa_dict["chart_qa"]
+            chart_qa = cur_qa_dict["chart_qa_clean"]
             vis_code = cur_qa_dict["vis_code_clean"]
             # cur_qa_dict["chart_qa"] = {
             #     "question": "",
@@ -184,7 +188,12 @@ Current Feature Information:
 - Std of Feature Values: {numerical_stat["std"]:.2f}
                     """.strip()
 
+                cur_vis_code = cur_vis_code.strip()
+                if self.data_dir in cur_vis_code:
+                    cur_vis_code = cur_vis_code.replace(self.data_dir, ".").strip()
                 # Optionally add the dataset/feature information
+                # TODO: when generating the chart QA benchmark, the model see the dataset information,
+                #   but letting the test model too see this information may result in answer leaking to some extent.
                 if add_ds_info:
                     # Optionally add the visualization code
                     if add_code:
@@ -222,11 +231,11 @@ answer the following question by choosing an option. Please only output your cho
                 # Add question and options
                 cur_qa_prompt += "\n" + f"""
 Question: {question}
-A: {options["A"]}
-B: {options["B"]}
-C: {options["C"]}
-D: {options["D"]}
-E: {options["E"]}
+A) {options["A"]}
+B) {options["B"]}
+C) {options["C"]}
+D) {options["D"]}
+E) {options["E"]}
 Answer:
                 """.strip()
 
