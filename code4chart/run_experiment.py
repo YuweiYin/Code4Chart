@@ -312,6 +312,7 @@ Answer:
                 done_cnt += 1
 
             assert len(cur_results) == len(cur_choices) == len(chart_qa) == len(chart_figure_base64)
+            assert len(cur_questions) == len(cur_options) == len(cur_answers) == len(cur_results)
             cur_qa_results["model_results"] = cur_results
             cur_qa_results["model_choices"] = cur_choices
             cur_qa_results["questions"] = cur_questions
@@ -337,10 +338,13 @@ Answer:
         for all_qa_res in all_qa_results:
             all_answers.extend(all_qa_res["answers"])
             all_choices.extend(all_qa_res["model_choices"])
+        all_answers = [_item.strip() for _item in all_answers if isinstance(_item, str)]
+        all_choices = [_item.strip() for _item in all_choices if isinstance(_item, str)]
         try:
-            all_answers = np.array([_item.strip() for _item in all_answers if isinstance(_item, str)])
-            all_choices = np.array([_item.strip() for _item in all_choices if isinstance(_item, str)])
-            acc = np.mean(all_answers == all_choices).item()
+            assert len(all_answers) == len(all_choices)
+            all_answers_np = np.array(all_answers)
+            all_choices_np = np.array(all_choices)
+            acc = np.mean(all_answers_np == all_choices_np).item()
             if self.verbose:
                 self.logger.info(f">>> [#item = {len(all_choices)}] Accuracy: {acc}")
         except Exception as e:
