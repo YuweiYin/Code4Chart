@@ -44,4 +44,28 @@ bash run_dataset.sh "4"
 bash run_dataset.sh "5"
 ```
 
+## Run Experiments
+
+```bash
+# Baseline (0, 0, 0, 0, 0): [#item = 63] Accuracy: 0.04762
+# Done All. Statistics: done_cnt_all=63, miss_cnt_all=53, fail_to_answer_cnt_all=47
+python3 run_experiment.py --verbose --task 1 \
+  --cache_dir "${HOME}/projects/def-carenini/yuweiyin/.cache/huggingface/" --project_root_dir "${HOME}"
+
+# Baseline + Code Input (1, 0, 0, 0, 0): [#item = 63] Accuracy: 0.17460
+# Done All. Statistics: done_cnt_all=63, miss_cnt_all=53, fail_to_answer_cnt_all=39
+python3 run_experiment.py --verbose --task 1 --add_code \
+  --cache_dir "${HOME}/projects/def-carenini/yuweiyin/.cache/huggingface/" --project_root_dir "${HOME}"
+
+# Baseline + Dataset Info (0, 1, 0, 0, 0): [#item = 63] Accuracy: 0.04762
+# Done All. Statistics: done_cnt_all=63, miss_cnt_all=53, fail_to_answer_cnt_all=47
+python3 run_experiment.py --verbose --task 1 --add_ds_info \
+  --cache_dir "${HOME}/projects/def-carenini/yuweiyin/.cache/huggingface/" --project_root_dir "${HOME}"
+
+# Baseline + Dataset Info + Code Input (1, 1, 0, 0, 0): [#item = 63] Accuracy: 0.30159
+# Done All. Statistics: done_cnt_all=63, miss_cnt_all=53, fail_to_answer_cnt_all=34
+python3 run_experiment.py --verbose --task 1 --add_ds_info --add_code \
+  --cache_dir "${HOME}/projects/def-carenini/yuweiyin/.cache/huggingface/" --project_root_dir "${HOME}"
+```
+
 ---
