@@ -72,8 +72,10 @@ class Code4ChartExp:
 
         self.data_dir_raw = os.path.join(self.data_dir, "raw")
         self.data_dir_process = os.path.join(self.data_dir, "process")
+        self.data_dir_results = os.path.join(self.data_dir, "results")
         os.makedirs(self.data_dir_raw, exist_ok=True)
         os.makedirs(self.data_dir_process, exist_ok=True)
+        os.makedirs(self.data_dir_results, exist_ok=True)
 
     def run_chart_qa(
             self,
@@ -206,14 +208,16 @@ The Python code to generate the chart is as follows:
 ```
 
 ## Task: Based on the above dataset information (text) and the chart figure (image), \
-answer the following question by choosing an option. Please only output your choice.
+answer the following question by choosing an option from "A", "B", "C", "D", and "E". \
+Be concise, give a short answer, and only output your choice.
                         """.strip()
                     else:
                         cur_qa_prompt = cur_ds_info_prompt + "\n\n" + f"""
 ## Task: Based on the above dataset information (text) and the chart figure (image), \
-answer the following question by choosing an option. Please only output your choice.
+answer the following question by choosing an option from "A", "B", "C", "D", and "E". \
+Be concise, give a short answer, and only output your choice.
                         """.strip()
-                else:
+                else:  # No dataset/feature information
                     if add_code:
                         cur_qa_prompt = f"""
 The Python code to generate the chart is as follows:
@@ -222,22 +226,24 @@ The Python code to generate the chart is as follows:
 ```
 
 ## Task: Based on the chart figure (image), \
-answer the following question by choosing an option. Please only output your choice.
+answer the following question by choosing an option from "A", "B", "C", "D", and "E". \
+Be concise, give a short answer, and only output your choice.
                         """.strip()
                     else:
                         cur_qa_prompt = f"""
 ## Task: Based on the chart figure (image), \
-answer the following question by choosing an option. Please only output your choice.
+answer the following question by choosing an option from "A", "B", "C", "D", and "E". \
+Be concise, give a short answer, and only output your choice.
                         """.strip()
 
                 # Add question and options
                 cur_qa_prompt += "\n" + f"""
 Question: {question}
-A) {options["A"]}
-B) {options["B"]}
-C) {options["C"]}
-D) {options["D"]}
-E) {options["E"]}
+A: {options["A"]}
+B: {options["B"]}
+C: {options["C"]}
+D: {options["D"]}
+E: {options["E"]}
 Answer:
                 """.strip()
 
@@ -278,7 +284,7 @@ Answer:
                     text=cur_prompts, images=cur_images, return_tensors="pt").to(vlm_model.model.device)
 
                 with torch.no_grad():
-                    output_ids = vlm_model.model.generate(**cur_inputs, max_new_tokens=10)
+                    output_ids = vlm_model.model.generate(**cur_inputs, max_new_tokens=20)
                 output_text = vlm_model.processor.batch_decode(
                     output_ids, skip_special_tokens=True, clean_up_tokenization_spaces=True)
                 input_text = vlm_model.processor.batch_decode(
@@ -302,7 +308,7 @@ Answer:
                 cur_output = output_text_pure[0].strip()
                 cur_results.append(cur_output)
                 assert isinstance(cur_output, str)
-                if cur_output.startswith("("):
+                if cur_output.startswith("(") or cur_output.startswith("\"") or cur_output.startswith("\'"):
                     cur_output = cur_output[1:]
                 if cur_output[0] in choice_set:  # {"A", "B", "C", "D", "E"}
                     cur_choices.append(cur_output[0])
@@ -358,7 +364,7 @@ Answer:
         use_cot_tag = "1" if use_cot else "0"
         remove_comments_tag = "1" if remove_comments else "0"
         all_qa_results_fp = os.path.join(
-            self.data_dir_process,
+            self.data_dir_results,
             f"all_qa_results-{add_code_tag}_{add_ds_info_tag}_{use_cot_tag}_{remove_comments_tag}_{few_shot}.json")
         with open(all_qa_results_fp, "w", encoding="utf-8") as fp_out:
             json.dump(all_qa_results, fp_out, cls=NumpyEncoder, indent=4)
@@ -476,16 +482,24 @@ def main(
 
 if __name__ == "__main__":
     """
-    # Baseline (0, 0, 0, 0, 0):
+    # Baseline (0, 0, 0, 0, 0): Accuracy: 0.03175
+    # Done All. Statistics: done_cnt_all=63, miss_cnt_all=53, fail_to_answer_cnt_all=48
+    # Total Running Time: 281.3 sec (4.7 min)
     python3 run_experiment.py --verbose --task 1 --cache_dir "${HOME}/projects/def-carenini/yuweiyin/.cache/huggingface/" --project_root_dir "${HOME}"
 
-    # Baseline + Code Input (1, 0, 0, 0, 0):
+    # Baseline + Code Input (1, 0, 0, 0, 0): Accuracy: 0.09524
+    # Done All. Statistics: done_cnt_all=63, miss_cnt_all=53, fail_to_answer_cnt_all=45
+    # Total Running Time: 146.3 sec (2.4 min)
     python3 run_experiment.py --verbose --task 1 --add_code --cache_dir "${HOME}/projects/def-carenini/yuweiyin/.cache/huggingface/" --project_root_dir "${HOME}"
 
-    # Baseline + Dataset Info (0, 1, 0, 0, 0):
+    # Baseline + Dataset Info (0, 1, 0, 0, 0): [#item = 63] Accuracy: 0.03175
+    # Done All. Statistics: done_cnt_all=63, miss_cnt_all=53, fail_to_answer_cnt_all=48
+    # Total Running Time: 125.6 sec (2.1 min)
     python3 run_experiment.py --verbose --task 1 --add_ds_info --cache_dir "${HOME}/projects/def-carenini/yuweiyin/.cache/huggingface/" --project_root_dir "${HOME}"
 
-    # Baseline + Dataset Info + Code Input (1, 1, 0, 0, 0):
+    # Baseline + Dataset Info + Code Input (1, 1, 0, 0, 0): [#item = 63] Accuracy: 0.07937
+    # Done All. Statistics: done_cnt_all=63, miss_cnt_all=53, fail_to_answer_cnt_all=48
+    # Total Running Time: 135.7 sec (2.3 min)
     python3 run_experiment.py --verbose --task 1 --add_ds_info --add_code --cache_dir "${HOME}/projects/def-carenini/yuweiyin/.cache/huggingface/" --project_root_dir "${HOME}"
     """
     fire.Fire(main)
