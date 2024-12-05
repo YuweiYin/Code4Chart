@@ -309,8 +309,13 @@ Answer:
         # TODO: Compute the chart QA accuracy
 
         # Write the QA and results into jsonl files
+        add_code_tag = "1" if add_code else "0"
+        add_ds_info_tag = "1" if add_ds_info else "0"
+        use_cot_tag = "1" if use_cot else "0"
+        remove_comments_tag = "1" if remove_comments else "0"
         all_qa_results_fp = os.path.join(
-            self.data_dir_process, f"all_qa_results-{add_ds_info}_{add_code}_{use_cot}_{few_shot}.jsonl")
+            self.data_dir_process,
+            f"all_qa_results-{add_code_tag}_{add_ds_info_tag}_{use_cot_tag}_{remove_comments_tag}_{few_shot}.jsonl")
         write_cnt = 0
         with open(all_qa_results_fp, "w", encoding="utf-8") as fp_out:
             for _item in all_qa_results:
