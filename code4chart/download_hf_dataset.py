@@ -7,7 +7,7 @@ import fire
 from datasets import load_dataset
 from huggingface_hub import login
 
-from utils.init_functions import logger_setup
+from code4chart.init_functions import logger_setup
 
 
 def main(

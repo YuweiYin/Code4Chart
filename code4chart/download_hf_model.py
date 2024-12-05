@@ -10,7 +10,7 @@ from transformers import AutoTokenizer, AutoModelForCausalLM
 from transformers import AutoProcessor, AutoModelForImageTextToText
 from huggingface_hub import login
 
-from utils.init_functions import logger_setup
+from code4chart.init_functions import logger_setup
 
 
 def main(
