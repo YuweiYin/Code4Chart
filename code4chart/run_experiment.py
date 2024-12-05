@@ -190,7 +190,7 @@ Current Feature Information:
 
                 cur_vis_code = cur_vis_code.strip()
                 if self.data_dir in cur_vis_code:
-                    cur_vis_code = cur_vis_code.replace(self.data_dir, ".").strip()
+                    cur_vis_code = cur_vis_code.replace(self.data_dir, "data").strip()
                 # Optionally add the dataset/feature information
                 # TODO: when generating the chart QA benchmark, the model see the dataset information,
                 #   but letting the test model too see this information may result in answer leaking to some extent.
