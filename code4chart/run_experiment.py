@@ -324,14 +324,15 @@ Answer:
             fail_to_answer_cnt_all += fail_to_answer_cnt
             if self.verbose:
                 self.logger.info(f">>> >>> Done [id={cur_qa_dict['id']}] Dataset: {cur_qa_dict['name']}. "
-                                 f"done_cnt={done_cnt}, miss_cnt={miss_cnt}")
+                                 f"done_cnt={done_cnt}, miss_cnt={miss_cnt}, fail_to_answer_cnt={fail_to_answer_cnt}")
             if self.debug:
                 sys.exit(0)
 
         # Done all, show statistics
         if self.verbose:
             self.logger.info(f">>> Done All. Statistics: "
-                             f"done_cnt_all={done_cnt_all}, miss_cnt_all={miss_cnt_all}")
+                             f"done_cnt_all={done_cnt_all}, miss_cnt_all={miss_cnt_all}, "
+                             f"fail_to_answer_cnt_all={fail_to_answer_cnt_all}")
 
         # TODO: Compute the chart QA accuracy
         all_answers, all_choices = [], []
@@ -346,7 +347,7 @@ Answer:
             all_choices_np = np.array(all_choices)
             acc = np.mean(all_answers_np == all_choices_np).item()
             if self.verbose:
-                self.logger.info(f">>> [#item = {len(all_choices)}] Accuracy: {acc}")
+                self.logger.info(f">>> [#item = {len(all_choices)}] Accuracy: {acc:.5f}")
         except Exception as e:
             if self.verbose:
                 self.logger.info(e)
