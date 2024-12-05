@@ -367,6 +367,9 @@ Answer:
 
         if self.verbose:
             self.logger.info(f">>> write_cnt = {write_cnt} to file: {all_qa_results_fp}")
+
+        # Baseline: Accuracy: 0.031746031746031744
+        # Total Running Time: 310.8 sec (5.2 min)
         return all_qa_results_fp
 
     # def run_chart_qa_with_code_no_comments(
