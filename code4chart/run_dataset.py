@@ -635,7 +635,7 @@ Python3 Code for Chart Plotting:
 
         if self.verbose:
             self.logger.info(f">>> write_cnt = {write_cnt} to file: {chart_figures_fp}")
-        # Total Running Time: 378.2 sec (6.3 min)
+        # Total Running Time: 364.3 sec (6.1 min)
         return chart_figures_fp
 
     def step6_chart_cap_gen(
@@ -1011,30 +1011,6 @@ Please be concise and only generate the conclusion:
 
             cur_qa_dict = cur_info_dict
 
-            # cur_qa_dict = dict()
-            # cur_qa_dict["id"] = cur_info_dict["id"]
-            # cur_qa_dict["url"] = cur_info_dict["url"]
-            # cur_qa_dict["name"] = cur_info_dict["name"]
-            # cur_qa_dict["description"] = cur_info_dict["description"]
-            # cur_qa_dict["filename"] = cur_info_dict["filename"]
-            # cur_qa_dict["filepath"] = cur_info_dict["filepath"]
-            # cur_qa_dict["num_row"] = cur_info_dict["num_row"]
-            # cur_qa_dict["num_col"] = cur_info_dict["num_col"]
-            # cur_qa_dict["features"] = cur_info_dict["features"]
-            #
-            # cur_qa_dict["da_reqs"] = cur_info_dict["da_reqs"]
-            # cur_qa_dict["captions"] = cur_info_dict["captions"]
-            # cur_qa_dict["analysis"] = cur_info_dict["analysis"]
-            #
-            # # cur_qa_dict["vis_code_raw"] = cur_info_dict["vis_code_raw"]
-            # cur_qa_dict["vis_code_features"] = cur_info_dict["vis_code_features"]
-            # cur_qa_dict["vis_code_filepath"] = cur_info_dict["vis_code_filepath"]
-            #
-            # cur_qa_dict["vis_code_clean"] = cur_info_dict["vis_code_clean"]
-            # cur_qa_dict["vis_code_stat"] = cur_info_dict["vis_code_stat"]
-            # cur_qa_dict["chart_figure_base64"] = cur_info_dict["chart_figure_base64"]
-            # cur_qa_dict["chart_figure_filepath"] = cur_info_dict["chart_figure_filepath"]
-
             assert len(cur_qa_dict["features"]) == len(cur_qa_dict["captions"])
 
             prompt_list = []
@@ -1084,7 +1060,7 @@ Please be concise and only generate the question, options, and answer:
                 )
                 output_text = gen_dict["output_text"][0].strip()
                 cur_qa_dict["chart_qa"].append(output_text)
-                # TODO: manually extract questions, options, and answers from the generated text.
+                # Post-processing: manually extract questions, options, and answers from the generated text.
                 #   Also, consider the balance of answers (five options, random guess accuracy ~= 20%)
                 # cur_qa_dict["chart_qa"] = {
                 #     "question": "",
@@ -1186,8 +1162,6 @@ def main(
     cuda_dict = cuda_setup(cuda=cuda, logger=logger, verbose=verbose)
     random_setup(seed=seed, has_cuda=cuda_dict["has_cuda"])
     logger.info(f">>> cuda_dict:\n{cuda_dict}")
-
-    # hf_login(token="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")
 
     def_input = DefaultInputs(project_root_dir=project_root_dir)
 

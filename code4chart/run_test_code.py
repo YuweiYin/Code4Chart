@@ -36,8 +36,6 @@ def main(
     # Setup of the logger, CUDA gpus, and random seed
     logger = logger_setup("Code4Chart")
 
-    # hf_login(token="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")
-
     # ##### Vis Code Start #####
 
     # data = pd.read_csv("../data/code4chart/raw/COVID-19_Dataset.csv")

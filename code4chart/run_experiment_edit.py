@@ -173,8 +173,6 @@ def main(
     random_setup(seed=seed, has_cuda=cuda_dict["has_cuda"])
     logger.info(f">>> cuda_dict:\n{cuda_dict}")
 
-    # hf_login(token="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")
-
     c4c_exp = Code4ChartExpEdit(
         verbose=verbose,
         logger=logger,

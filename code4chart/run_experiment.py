@@ -91,6 +91,21 @@ class Code4ChartExp:
             # c4c_chart_qa = [json.loads(line.strip()) for line in fp_in]
             c4c_chart_qa = json.load(fp_in)
 
+        # Correct choices distribution statistics
+        # all_ans = [0, 0, 0, 0, 0]
+        # all_ans_valid = [0, 0, 0, 0, 0]  # {"A": 0, "B": 0, "C": 0, "D": 0, "E": 0}
+        # choice2index = {"A": 0, "B": 1, "C": 2, "D": 3, "E": 4}
+        # for ds_meta in c4c_chart_qa:
+        #     chart_figure_base64 = ds_meta["chart_figure_base64"]
+        #     chart_qa_clean = ds_meta["chart_qa_clean"]
+        #     assert len(chart_figure_base64) == len(chart_qa_clean)
+        #     for cur_fig, cur_qa in zip(chart_figure_base64, chart_qa_clean):
+        #         cur_ans = cur_qa["answer"]
+        #         assert cur_ans in choice2index and isinstance(cur_fig, str)
+        #         all_ans[choice2index[cur_ans]] += 1
+        #         if cur_fig != "":
+        #             all_ans_valid[choice2index[cur_ans]] += 1
+
         # Load the Vision-language Model (Multimodal LLM)
         # TODO: future work: test VLMs that fine-tuned on [our] chart datasets, expecting performance improvement
         #   Also, test proprietary LLMs like GPT-4
@@ -284,7 +299,7 @@ Answer:
                     text=cur_prompts, images=cur_images, return_tensors="pt").to(vlm_model.model.device)
 
                 with torch.no_grad():
-                    output_ids = vlm_model.model.generate(**cur_inputs, max_new_tokens=20)
+                    output_ids = vlm_model.model.generate(**cur_inputs, max_new_tokens=100)
                 output_text = vlm_model.processor.batch_decode(
                     output_ids, skip_special_tokens=True, clean_up_tokenization_spaces=True)
                 input_text = vlm_model.processor.batch_decode(
@@ -315,6 +330,8 @@ Answer:
                 else:
                     fail_to_answer_cnt += 1
                     cur_choices.append("X")
+                    # TODO: The VLM often does not output A/B/C/D/E directly, so we need to read the generated output;
+                    #   Or, choose an A/B/C/D/E option by observing the first logits (vocab prob).
                 done_cnt += 1
 
             assert len(cur_results) == len(cur_choices) == len(chart_qa) == len(chart_figure_base64)
@@ -448,8 +465,6 @@ def main(
     cuda_dict = cuda_setup(cuda=cuda, logger=logger, verbose=verbose)
     random_setup(seed=seed, has_cuda=cuda_dict["has_cuda"])
     logger.info(f">>> cuda_dict:\n{cuda_dict}")
-
-    # hf_login(token="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")
 
     c4c_exp = Code4ChartExp(
         verbose=verbose,
