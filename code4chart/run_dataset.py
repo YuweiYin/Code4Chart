@@ -902,7 +902,7 @@ Please be concise and only generate the conclusion:
 
         if self.verbose:
             self.logger.info(f">>> write_cnt = {write_cnt} to file: {overall_analysis_fp}")
-        # Total Running Time: 569.7 sec (9.5 min)
+        # Total Running Time: 593.4 sec (9.9 min)
         return overall_analysis_fp
 
     def step8_merge_all_info(
@@ -1007,32 +1007,34 @@ Please be concise and only generate the conclusion:
 
         c4c_chart_qa = []  # List[Dict[str, Any]]
         for cur_info_dict in all_info:
-            cur_qa_dict = dict()
             if self.verbose:
                 self.logger.info(f">>> [id={cur_info_dict['id']}] Dataset: {cur_info_dict['name']}")
 
-            cur_qa_dict["id"] = cur_info_dict["id"]
-            cur_qa_dict["url"] = cur_info_dict["url"]
-            cur_qa_dict["name"] = cur_info_dict["name"]
-            cur_qa_dict["description"] = cur_info_dict["description"]
-            cur_qa_dict["filename"] = cur_info_dict["filename"]
-            cur_qa_dict["filepath"] = cur_info_dict["filepath"]
-            cur_qa_dict["num_row"] = cur_info_dict["num_row"]
-            cur_qa_dict["num_col"] = cur_info_dict["num_col"]
-            cur_qa_dict["features"] = cur_info_dict["features"]
+            cur_qa_dict = cur_info_dict
 
-            cur_qa_dict["da_reqs"] = cur_info_dict["da_reqs"]
-            cur_qa_dict["captions"] = cur_info_dict["captions"]
-            cur_qa_dict["analysis"] = cur_info_dict["overall_analysis"]
-
-            # cur_qa_dict["vis_code_raw"] = cur_info_dict["vis_code"]
-            cur_qa_dict["vis_code_features"] = cur_info_dict["vis_feat"]
-            cur_qa_dict["vis_code_filepath"] = cur_info_dict["code_filepath"]
-
-            cur_qa_dict["vis_code_clean"] = cur_info_dict["vis_code"]
-            cur_qa_dict["vis_code_stat"] = cur_info_dict["code_stat"]
-            cur_qa_dict["chart_figure_base64"] = cur_info_dict["fig_base64"]
-            cur_qa_dict["chart_figure_filepath"] = cur_info_dict["fig_filepath"]
+            # cur_qa_dict = dict()
+            # cur_qa_dict["id"] = cur_info_dict["id"]
+            # cur_qa_dict["url"] = cur_info_dict["url"]
+            # cur_qa_dict["name"] = cur_info_dict["name"]
+            # cur_qa_dict["description"] = cur_info_dict["description"]
+            # cur_qa_dict["filename"] = cur_info_dict["filename"]
+            # cur_qa_dict["filepath"] = cur_info_dict["filepath"]
+            # cur_qa_dict["num_row"] = cur_info_dict["num_row"]
+            # cur_qa_dict["num_col"] = cur_info_dict["num_col"]
+            # cur_qa_dict["features"] = cur_info_dict["features"]
+            #
+            # cur_qa_dict["da_reqs"] = cur_info_dict["da_reqs"]
+            # cur_qa_dict["captions"] = cur_info_dict["captions"]
+            # cur_qa_dict["analysis"] = cur_info_dict["analysis"]
+            #
+            # # cur_qa_dict["vis_code_raw"] = cur_info_dict["vis_code_raw"]
+            # cur_qa_dict["vis_code_features"] = cur_info_dict["vis_code_features"]
+            # cur_qa_dict["vis_code_filepath"] = cur_info_dict["vis_code_filepath"]
+            #
+            # cur_qa_dict["vis_code_clean"] = cur_info_dict["vis_code_clean"]
+            # cur_qa_dict["vis_code_stat"] = cur_info_dict["vis_code_stat"]
+            # cur_qa_dict["chart_figure_base64"] = cur_info_dict["chart_figure_base64"]
+            # cur_qa_dict["chart_figure_filepath"] = cur_info_dict["chart_figure_filepath"]
 
             assert len(cur_qa_dict["features"]) == len(cur_qa_dict["captions"])
 
@@ -1060,7 +1062,8 @@ Feature Information of Dataset {cur_qa_dict["name"]}:
 - Std of Feature Values: {numerical_stat["std"]:.2f}
                     """.strip()
                 if isinstance(cur_caption_text, str) and len(cur_caption_text) > 0:
-                    qa_prompt += "\n" + f"""
+                    cur_caption_text = cur_caption_text.replace("\n", " ").strip()
+                    qa_prompt += "\n\n" + f"""
 Chart Caption of Feature \"{feat_dict["name"]}\" (data type: {feat_dict["dtype"]}):
 {cur_caption_text}
                     """.strip()
@@ -1102,6 +1105,10 @@ Please be concise and only generate the question, options, and answer:
         # [Later] To upload to Hugging Face datasets
 
         # Write the chart QA benchmark into jsonl files
+        c4c_chart_qa_fp = os.path.join(self.data_dir_process, "c4c_chart_qa.json")
+        with open(c4c_chart_qa_fp, "w", encoding="utf-8") as fp_out:
+            json.dump(c4c_chart_qa, fp_out, cls=NumpyEncoder, indent=4)
+
         c4c_chart_qa_fp = os.path.join(self.data_dir_process, "c4c_chart_qa.jsonl")
         write_cnt = 0
         with open(c4c_chart_qa_fp, "w", encoding="utf-8") as fp_out:
