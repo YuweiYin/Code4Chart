@@ -114,6 +114,7 @@ class Code4ChartExp:
             cache_dir=self.cache_dir, project_root_dir=self.project_root_dir,
             hf_id=self.hf_id_vlm, bsz=self.bsz,
             show_generation=self.show_generation, debug=self.debug,
+            load_model=True,
         )
 
         all_qa_results = []  # List[Dict[str, Any]]
@@ -426,13 +427,12 @@ Answer:
             all_qa_results = json.load(fp_in)
 
         choice_set = {"A", "B", "C", "D", "E"}
-        all_answers, all_choices = [], []
-        for cur_qa_res in all_qa_results:
-            all_answers.append(cur_qa_res["answer"])
-            all_choices.append(cur_qa_res["model_choice"])
+        all_answers = [cur_qa_res["answer"] for cur_qa_res in all_qa_results]
+        all_choices = [cur_qa_res["model_choice"] for cur_qa_res in all_qa_results]
         all_answers = [_item.strip() for _item in all_answers if isinstance(_item, str)]
         all_choices = [_item.strip() for _item in all_choices if isinstance(_item, str)]
         no_answer_cnt = len([_item for _item in all_choices if _item not in choice_set])
+
         try:
             assert len(all_answers) == len(all_choices)
             all_answers_np = np.array(all_answers)
@@ -445,38 +445,42 @@ Answer:
             if self.verbose:
                 self.logger.info(e)
 
+        # Answer token length statistics
+        vlm_model = VLM(
+            verbose=self.verbose, logger=self.logger, cuda_dict=self.cuda_dict,
+            cache_dir=self.cache_dir, project_root_dir=self.project_root_dir,
+            hf_id=self.hf_id_vlm, bsz=self.bsz,
+            show_generation=self.show_generation, debug=self.debug,
+            load_model=False,
+        )
+        all_outputs = [cur_qa_res["model_output"] for cur_qa_res in all_qa_results]
+        all_outputs = [_item.strip() for _item in all_outputs if isinstance(_item, str)]
+        all_outputs_len = [len(vlm_model.tokenizer_gen(_o)["input_ids"]) for _o in all_outputs]
+        o_len, o_min, o_max, o_mean, o_std = (len(all_outputs_len), np.min(all_outputs_len), np.max(all_outputs_len),
+                                              np.mean(all_outputs_len), np.std(all_outputs_len))
+        if self.verbose:
+            self.logger.info(f">>> [#item = {o_len}] Output length statistics: "
+                             f"o_min = {o_min}; o_max = {o_max}; o_mean = {o_mean:.2f}; o_std = {o_std:.2f}")
+
         """
         --results_filename "all_qa_results-0_0_0_0_0-post.json"
-        >>> [#item = 63] Accuracy: 0.49206   no_answer_cnt = 6
+        >>> [#item = 63] Accuracy: 0.49206   no_answer_cnt = 4
+        >>> [#item = 63] Output length statistics: o_min = 13; o_max = 201; o_mean = 88.73; o_std = 49.40
+
         --results_filename "all_qa_results-1_0_0_0_0-post.json"
-        >>>
+        >>> [#item = 63] Accuracy: 0.52381   no_answer_cnt = 3
+        >>> [#item = 63] Output length statistics: o_min = 2; o_max = 201; o_mean = 90.46; o_std = 58.61
+
         --results_filename "all_qa_results-0_1_0_0_0-post.json"
-        >>>
+        >>> [#item = 63] Accuracy: 0.71429   no_answer_cnt = 1
+        >>> [#item = 63] Output length statistics: o_min = 2; o_max = 201; o_mean = 87.90; o_std = 40.00
+
         --results_filename "all_qa_results-1_1_0_0_0-post.json"
-        >>>
+        >>> [#item = 63] Accuracy: 0.66667   no_answer_cnt = 1
+        >>> [#item = 63] Output length statistics: o_min = 2; o_max = 201; o_mean = 55.76; o_std = 57.64
         """
 
         return None
-
-    # def run_chart_qa_with_code_no_comments(
-    #         self,
-    # ) -> None:
-    #     return None
-
-    # def run_chart_cap_no_code(
-    #         self,
-    # ) -> None:
-    #     return None
-
-    # def run_chart_cap_with_code(
-    #         self,
-    # ) -> None:
-    #     return None
-
-    # def run_chart_cap_with_code_no_comments(
-    #         self,
-    # ) -> None:
-    #     return None
 
 
 def main(

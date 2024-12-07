@@ -23,6 +23,7 @@ class VLM:
             max_seq_len: int = 1024,
             show_generation: bool = False,
             debug: bool = False,
+            load_model: bool = True,
     ):
         """
         Text-to-Text LLM
@@ -37,6 +38,7 @@ class VLM:
         :param show_generation: Whether to show outputs during generation.
         :param max_seq_len: The maximum sequence length for padding/truncation.
         :param debug: Debugging / developing mode.
+        :param load_model: Whether to load the pre-trained model.
         :return: None.
         """
 
@@ -94,9 +96,12 @@ class VLM:
         ]
 
         # Load the model
-        self.model = self.load_model(model_path=self.model_path, tokenizer=self.tokenizer_gen)
-        # self.model.train()
-        # self.model.eval()
+        if load_model:
+            self.model = self.load_model(model_path=self.model_path, tokenizer=self.tokenizer_gen)
+            # self.model.train()
+            # self.model.eval()
+        else:
+            self.model = None
 
         self.processor = AutoProcessor.from_pretrained(
             self.model_path,

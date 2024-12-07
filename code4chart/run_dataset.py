@@ -664,6 +664,7 @@ Python3 Code for Chart Plotting:
             cache_dir=self.cache_dir, project_root_dir=self.project_root_dir,
             hf_id=self.hf_id_vlm, bsz=self.bsz,
             show_generation=self.show_generation, debug=self.debug,
+            load_model=True,
         )
 
         chart_captions = []  # List[Dict[str, Any]]
@@ -1103,35 +1104,174 @@ Please be concise and only generate the question, options, and answer:
     ) -> str:
         # Do minor modification of the chart figures in our chart QA benchmark for robustness experiments.
         # Slightly change the chart figures by editing the visualization code.
-        # TODO: changes:
-        #   - [] bar color (consider 10 different attribute values)
-        #   - [] figure background color (consider 10 different attribute values)
-        #   - [] legend location (consider 10 different attribute values)
-        #   - [] figure direction (consider 2 different attribute values)
-        #   etc.
 
-        # Step 1: Pick 10 figures that the model can correctly classify in the base settings,
-        #   manually edit the Python code.
-        #   TODO: future work: Automate this process
-        viscode_edit_dir = os.path.join(self.data_dir_process, "chart_code-edit_bar_color")
-        # viscode_edit_dir = os.path.join(self.data_dir_process, "chart_code-edit_bg_color")
-        # viscode_edit_dir = os.path.join(self.data_dir_process, "chart_code-edit_legend_loc")
-        # viscode_edit_dir = os.path.join(self.data_dir_process, "chart_code-edit_direction")
+        # Step 1: Pick some figures that the model can correctly classify in the base settings.
+        pick_dataset = ["1", "2", "4", "5", "7", "8", "9"]
+        pick_dataset_set = set(pick_dataset)
+        pick_index_list = [9, 2, 8, 6, 2, 3, 12]
+        assert len(pick_dataset) == len(pick_index_list)
 
-        # Step 2: execute the edited code
+        # Load the original chart QA benchmark
+        c4c_chart_qa_fp = os.path.join(self.data_dir_process, "c4c_chart_qa_post.json")
+        with open(c4c_chart_qa_fp, "r", encoding="utf-8") as fp_in:
+            # c4c_chart_qa = [json.loads(line.strip()) for line in fp_in]
+            c4c_chart_qa = json.load(fp_in)
 
-        # Step 3: put the edited code and chart figures into the existing chart QA benchmark,
-        #   which means we do not change the questions, options, and answers.
+        c4c_chart_qa_pick = []
+        done_cnt = 0
+        pick_i = -1
+        for cur_qa_dict in c4c_chart_qa:
+            if cur_qa_dict["id"] not in pick_dataset_set:
+                continue
+            pick_i += 1
+            cur_pick_index = pick_index_list[pick_i]
+            if self.verbose:
+                self.logger.info(f">>> [id={cur_qa_dict['id']}] Dataset: {cur_qa_dict['name']}; "
+                                 f"cur_pick_index = {cur_pick_index}")
 
-        pass
+            cur_c4c_chart_qa_pick = dict()
+            cur_c4c_chart_qa_pick["id"] = cur_qa_dict["id"]
+            cur_c4c_chart_qa_pick["url"] = cur_qa_dict["url"]
+            cur_c4c_chart_qa_pick["name"] = cur_qa_dict["name"]
+            cur_c4c_chart_qa_pick["description"] = cur_qa_dict["description"]
+            cur_c4c_chart_qa_pick["filename"] = cur_qa_dict["filename"]
+            cur_c4c_chart_qa_pick["filepath"] = cur_qa_dict["filepath"]
+            cur_c4c_chart_qa_pick["num_row"] = cur_qa_dict["num_row"]
+            cur_c4c_chart_qa_pick["num_col"] = cur_qa_dict["num_col"]
+            cur_c4c_chart_qa_pick["analysis"] = cur_qa_dict["analysis"]
+            cur_c4c_chart_qa_pick["features"] = cur_qa_dict["features"][cur_pick_index]
+            cur_c4c_chart_qa_pick["da_reqs"] = cur_qa_dict["da_reqs"][cur_pick_index]
+            cur_c4c_chart_qa_pick["vis_code_raw"] = cur_qa_dict["vis_code_raw"][cur_pick_index]
+            cur_c4c_chart_qa_pick["vis_code_features"] = cur_qa_dict["vis_code_features"][cur_pick_index]
+            cur_c4c_chart_qa_pick["vis_code_filepath"] = cur_qa_dict["vis_code_filepath"][cur_pick_index]
+            cur_c4c_chart_qa_pick["vis_code_clean"] = cur_qa_dict["vis_code_clean"][cur_pick_index]
+            cur_c4c_chart_qa_pick["vis_code_stat"] = cur_qa_dict["vis_code_stat"][cur_pick_index]
+            cur_c4c_chart_qa_pick["chart_figure_base64"] = cur_qa_dict["chart_figure_base64"][cur_pick_index]
+            cur_c4c_chart_qa_pick["chart_figure_filepath"] = cur_qa_dict["chart_figure_filepath"][cur_pick_index]
+            cur_c4c_chart_qa_pick["captions"] = cur_qa_dict["captions"][cur_pick_index]
+            cur_c4c_chart_qa_pick["chart_qa"] = cur_qa_dict["chart_qa"][cur_pick_index]
+            cur_c4c_chart_qa_pick["chart_qa_clean"] = cur_qa_dict["chart_qa_clean"][cur_pick_index]
 
-    def step11_chart_qa_edit_question(
-            self,
-    ) -> str:
-        # TODO: future work:
-        #   Do minor modification of the questions in our chart QA benchmark for robustness experiments.
-        #   Paraphrase the questions using Text LLMs.
-        pass
+            # Step 2: Change bar color (the default color "C1") in VisCode:
+            #   color="blue", color="green", color="red", color="cyan", color="magenta",
+            #   color="yellow", color="orange", color="black"  # (color="white", edgecolor="black")
+            # TODO: future work: Other changes, e.g., figure background color, legend location, and figure orientation.
+            color_list = ["blue", "cyan", "green", "red", "magenta", "orange", "yellow", "black"]
+
+            original_vis_code = cur_c4c_chart_qa_pick["vis_code_clean"]
+            original_chart_base64 = cur_c4c_chart_qa_pick["chart_figure_base64"]
+            cur_c4c_chart_qa_pick["vis_code_edit_bar_color"] = {
+                "original": original_vis_code,  # "C0" color
+            }
+            cur_c4c_chart_qa_pick["chart_figure_edit_bar_color"] = {
+                "original": original_chart_base64,  # "C0" color
+            }
+            try:
+                exec(original_vis_code)
+                done_cnt += 1
+            except Exception as e:
+                if self.verbose:
+                    self.logger.info(f">>> >>> Exception: {e} --- Error exec the original file")
+                raise ValueError(f">>> Error exec session.")
+
+            for color in color_list:
+                assert "plt.savefig(" in original_vis_code
+                assert "plt.bar(" in original_vis_code or "plt.hist(" in original_vis_code
+                original_vis_code_lines = original_vis_code.split("\n")
+                edit_vis_code_lines = []
+                new_save_fp = None
+                for cur_line in original_vis_code_lines:
+                    cur_line = cur_line.rstrip()
+                    if "plt.savefig(" in cur_line:  # change the saving filepath
+                        assert "process/chart_figure/" in cur_line
+                        new_line = cur_line.replace("process/chart_figure/", "process/chart_figure_pick/")
+                        assert ".png" in new_line
+                        new_line = new_line.replace(".png", f"-{color}.png")
+                        new_save_fp = new_line.split("plt.savefig(")[-1].split(",")[0].strip()
+                        if new_save_fp[0] == "\'" or new_save_fp[0] == "\"":  # Ignore the left-most quotation mark
+                            new_save_fp = new_save_fp[1:]
+                        if new_save_fp[-1] == "\'" or new_save_fp[-1] == "\"":  # Ignore the right-most quotation mark
+                            new_save_fp = new_save_fp[:-1]
+                    elif "plt.bar(" in cur_line:  # Specify bar color
+                        if "edgecolor=" in cur_line:
+                            new_line = cur_line.split("edgecolor=")[0].rstrip()
+                            if "color=" in new_line:
+                                new_line = new_line.split("color=")[0].rstrip()
+                            if new_line[-1] == ",":
+                                new_line += f" color='{color}')"
+                            else:
+                                new_line += f", color='{color}')"
+                        else:
+                            assert cur_line[-1] == ")"
+                            new_line = cur_line[:-1] + f", color='{color}')"
+                    elif "plt.hist(" in cur_line:  # Specify bar color of histogram
+                        if "edgecolor=" in cur_line:
+                            new_line = cur_line.split("edgecolor=")[0].rstrip()
+                            if "color=" in new_line:
+                                new_line = new_line.split("color=")[0].rstrip()
+                            if new_line[-1] == ",":
+                                new_line += f" color='{color}', edgecolor='black')"
+                            else:
+                                new_line += f", color='{color}', edgecolor='black')"
+                        else:
+                            assert cur_line[-1] == ")"
+                            new_line = cur_line[:-1] + f", color='{color}', edgecolor='black')"
+                    else:
+                        new_line = cur_line
+                    edit_vis_code_lines.append(new_line)
+
+                assert new_save_fp is not None
+                edit_vis_code = "\n".join(edit_vis_code_lines)
+                cur_c4c_chart_qa_pick["vis_code_edit_bar_color"][color] = edit_vis_code
+
+                # Step 3: Execute the edited VisCode and encode the saved chart figures
+                try:
+                    exec(edit_vis_code)
+                    assert os.path.isfile(new_save_fp)
+
+                    # Base64 encoding
+                    with open(new_save_fp, "rb") as img_fp_in:
+                        img_base64 = base64.b64encode(img_fp_in.read())
+                    img_base64_str = img_base64.decode("utf-8")
+                    cur_c4c_chart_qa_pick["chart_figure_edit_bar_color"][color] = img_base64_str
+
+                    done_cnt += 1
+                except Exception as e:
+                    if self.verbose:
+                        self.logger.info(f">>> >>> Exception: {e} --- Error exec file: {new_save_fp}")
+                    raise ValueError(f">>> Error exec session.")
+
+            assert (len(cur_c4c_chart_qa_pick["vis_code_edit_bar_color"]) ==
+                    len(cur_c4c_chart_qa_pick["chart_figure_edit_bar_color"]))
+            c4c_chart_qa_pick.append(cur_c4c_chart_qa_pick)
+
+        # [Later] To upload to Hugging Face datasets
+
+        # Write the chart QA benchmark into jsonl files
+        c4c_chart_qa_post_edit_fp = os.path.join(self.data_dir_process, "c4c_chart_qa_post_edit.json")
+        with open(c4c_chart_qa_post_edit_fp, "w", encoding="utf-8") as fp_out:
+            json.dump(c4c_chart_qa_pick, fp_out, cls=NumpyEncoder, indent=4)
+
+        c4c_chart_qa_post_edit_fp = os.path.join(self.data_dir_process, "c4c_chart_qa_post_edit.jsonl")
+        write_cnt = 0
+        with open(c4c_chart_qa_post_edit_fp, "w", encoding="utf-8") as fp_out:
+            for _item in c4c_chart_qa_pick:
+                fp_out.write(json.dumps(_item, cls=NumpyEncoder) + "\n")
+                write_cnt += 1
+
+        if self.verbose:
+            self.logger.info(f">>> done_cnt = {done_cnt}; "
+                             f"write_cnt = {write_cnt} to file: {c4c_chart_qa_post_edit_fp}")
+        # Total Running Time: 493.0 sec (8.2 min)
+        return c4c_chart_qa_post_edit_fp
+
+    # def step11_chart_qa_edit_question(
+    #         self,
+    # ) -> str:
+    #     # TODO: future work:
+    #     #   Do minor modification of the questions in our chart QA benchmark for robustness experiments.
+    #     #   Paraphrase the questions using Text LLMs.
+    #     pass
 
     # def step12_chart_cap_task(
     #         self,
@@ -1223,8 +1363,8 @@ def main(
             c4c_data.step9_chart_qa_task()
         case 10:
             c4c_data.step10_chart_qa_edit_chart()
-        case 11:
-            c4c_data.step11_chart_qa_edit_question()
+        # case 11:
+        #     c4c_data.step11_chart_qa_edit_question()
         # case 12:
         #     c4c_data.step12_chart_cap_task()
         case _:
