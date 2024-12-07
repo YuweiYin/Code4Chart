@@ -1101,9 +1101,28 @@ Please be concise and only generate the question, options, and answer:
     def step10_chart_qa_edit_chart(
             self,
     ) -> str:
-        # TODO: future work:
-        #   Do minor modification of the chart figures in our chart QA benchmark for robustness experiments.
-        #   Slightly change the chart figures by editing the visualization code.
+        # Do minor modification of the chart figures in our chart QA benchmark for robustness experiments.
+        # Slightly change the chart figures by editing the visualization code.
+        # TODO: changes:
+        #   - [] bar color (consider 10 different attribute values)
+        #   - [] figure background color (consider 10 different attribute values)
+        #   - [] legend location (consider 10 different attribute values)
+        #   - [] figure direction (consider 2 different attribute values)
+        #   etc.
+
+        # Step 1: Pick 10 figures that the model can correctly classify in the base settings,
+        #   manually edit the Python code.
+        #   TODO: future work: Automate this process
+        viscode_edit_dir = os.path.join(self.data_dir_process, "chart_code-edit_bar_color")
+        # viscode_edit_dir = os.path.join(self.data_dir_process, "chart_code-edit_bg_color")
+        # viscode_edit_dir = os.path.join(self.data_dir_process, "chart_code-edit_legend_loc")
+        # viscode_edit_dir = os.path.join(self.data_dir_process, "chart_code-edit_direction")
+
+        # Step 2: execute the edited code
+
+        # Step 3: put the edited code and chart figures into the existing chart QA benchmark,
+        #   which means we do not change the questions, options, and answers.
+
         pass
 
     def step11_chart_qa_edit_question(

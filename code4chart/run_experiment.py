@@ -223,13 +223,13 @@ The Python code to generate the chart is as follows:
 {cur_vis_code.strip()}
 ```
 
-## Task: Based on the above dataset information (text) and the chart figure (image), \
+## Task: Based on the above information (text and code) and the chart figure (image), \
 answer the following question by choosing an option from "A", "B", "C", "D", and "E". \
 Be concise, give a short answer, and only output your choice.
                         """.strip()
                     else:
                         cur_qa_prompt = cur_ds_info_prompt + "\n\n" + f"""
-## Task: Based on the above dataset information (text) and the chart figure (image), \
+## Task: Based on the above information (text) and the chart figure (image), \
 answer the following question by choosing an option from "A", "B", "C", "D", and "E". \
 Be concise, give a short answer, and only output your choice.
                         """.strip()
@@ -241,7 +241,7 @@ The Python code to generate the chart is as follows:
 {cur_vis_code.strip()}
 ```
 
-## Task: Based on the chart figure (image), \
+## Task: Based on the above information (code) and the chart figure (image), \
 answer the following question by choosing an option from "A", "B", "C", "D", and "E". \
 Be concise, give a short answer, and only output your choice.
                         """.strip()
@@ -447,7 +447,7 @@ Answer:
 
         """
         --results_filename "all_qa_results-0_0_0_0_0-post.json"
-        >>> [#item = 63] Accuracy: 0.49206   refuse_answer_cnt = 6
+        >>> [#item = 63] Accuracy: 0.49206   no_answer_cnt = 6
         --results_filename "all_qa_results-1_0_0_0_0-post.json"
         >>>
         --results_filename "all_qa_results-0_1_0_0_0-post.json"
