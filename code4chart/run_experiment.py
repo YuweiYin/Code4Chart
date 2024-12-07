@@ -120,7 +120,8 @@ class Code4ChartExp:
         done_cnt_all, miss_cnt_all = 0, 0
         fail_to_answer_cnt_all = 0
         for cur_qa_dict in c4c_chart_qa:
-            cur_qa_results = dict()
+            # cur_qa_results = dict()
+            cur_qa_results = []
             if self.verbose:
                 self.logger.info(f">>> [id={cur_qa_dict['id']}] Dataset: {cur_qa_dict['name']}")
 
@@ -162,9 +163,9 @@ class Code4ChartExp:
             #     },  # Five options, one of which is correct (consider the quality of the distractors)
             #     "answer": "",
             # }
-            cur_qa_results["chart_figure_base64"] = chart_figure_base64
-            cur_qa_results["chart_qa"] = chart_qa
-            cur_qa_results["vis_code"] = vis_code
+            # cur_qa_results["chart_figure_base64"] = chart_figure_base64
+            # cur_qa_results["chart_qa"] = chart_qa
+            # cur_qa_results["vis_code"] = vis_code
 
             choice_set = {"A", "B", "C", "D", "E"}
 
@@ -336,12 +337,21 @@ Answer:
 
             assert len(cur_results) == len(cur_choices) == len(chart_qa) == len(chart_figure_base64)
             assert len(cur_questions) == len(cur_options) == len(cur_answers) == len(cur_results)
-            cur_qa_results["model_results"] = cur_results
-            cur_qa_results["model_choices"] = cur_choices
-            cur_qa_results["questions"] = cur_questions
-            cur_qa_results["options"] = cur_options
-            cur_qa_results["answers"] = cur_answers
-            all_qa_results.append(cur_qa_results)
+            for _q, _o, _a, _r, _c in zip(cur_questions, cur_options, cur_answers, cur_results, cur_choices):
+                cur_qa_results.append({
+                    "question": _q,
+                    "options": _o,
+                    "answer": _a,
+                    "model_output": _r,
+                    "model_choice": _c,
+                })
+            # cur_qa_results["model_results"] = cur_results
+            # cur_qa_results["model_choices"] = cur_choices
+            # cur_qa_results["questions"] = cur_questions
+            # cur_qa_results["options"] = cur_options
+            # cur_qa_results["answers"] = cur_answers
+            # all_qa_results.append(cur_qa_results)
+            all_qa_results.extend(cur_qa_results)
             done_cnt_all += done_cnt
             miss_cnt_all += miss_cnt
             fail_to_answer_cnt_all += fail_to_answer_cnt
@@ -359,9 +369,9 @@ Answer:
 
         # TODO: Compute the chart QA accuracy
         all_answers, all_choices = [], []
-        for all_qa_res in all_qa_results:
-            all_answers.extend(all_qa_res["answers"])
-            all_choices.extend(all_qa_res["model_choices"])
+        for cur_qa_res in all_qa_results:
+            all_answers.append(cur_qa_res["answer"])
+            all_choices.append(cur_qa_res["model_choice"])
         all_answers = [_item.strip() for _item in all_answers if isinstance(_item, str)]
         all_choices = [_item.strip() for _item in all_choices if isinstance(_item, str)]
         try:
