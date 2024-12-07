@@ -72,7 +72,7 @@ class Code4ChartExp:
 
         self.data_dir_raw = os.path.join(self.data_dir, "raw")
         self.data_dir_process = os.path.join(self.data_dir, "process")
-        self.data_dir_results = os.path.join(self.data_dir, "results")
+        self.data_dir_results = os.path.join(self.data_dir, "results", self.hf_id_vlm.split("/")[-1])
         os.makedirs(self.data_dir_raw, exist_ok=True)
         os.makedirs(self.data_dir_process, exist_ok=True)
         os.makedirs(self.data_dir_results, exist_ok=True)
