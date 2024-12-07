@@ -375,7 +375,7 @@ Answer:
                              f"done_cnt_all={done_cnt_all}, miss_cnt_all={miss_cnt_all}, "
                              f"fail_to_answer_cnt_all={fail_to_answer_cnt_all}")
 
-        # TODO: Compute the chart QA accuracy
+        # Compute the chart QA accuracy. TODO: Needs post-processing to determine the model's choice
         all_answers, all_choices = [], []
         for cur_qa_res in all_qa_results:
             all_answers.append(cur_qa_res["answer"])
@@ -416,6 +416,48 @@ Answer:
 
         return all_qa_results_fp
 
+    def compute_acc_post(
+            self,
+            result_filename: str,
+    ) -> None:
+        result_filepath = os.path.join(self.data_dir_results, result_filename)
+        assert os.path.isfile(result_filepath)
+        with open(result_filepath, "r", encoding="utf-8") as fp_in:
+            all_qa_results = json.load(fp_in)
+
+        choice_set = {"A", "B", "C", "D", "E"}
+        all_answers, all_choices = [], []
+        for cur_qa_res in all_qa_results:
+            all_answers.append(cur_qa_res["answer"])
+            all_choices.append(cur_qa_res["model_choice"])
+        all_answers = [_item.strip() for _item in all_answers if isinstance(_item, str)]
+        all_choices = [_item.strip() for _item in all_choices if isinstance(_item, str)]
+        refuse_answer_cnt = len([_item for _item in all_choices if _item not in choice_set])
+        try:
+            assert len(all_answers) == len(all_choices)
+            all_answers_np = np.array(all_answers)
+            all_choices_np = np.array(all_choices)
+            acc = np.mean(all_answers_np == all_choices_np).item()
+            if self.verbose:
+                self.logger.info(f">>> [#item = {len(all_choices)}] Accuracy: {acc:.5f}   "
+                                 f"refuse_answer_cnt = {refuse_answer_cnt}")
+        except Exception as e:
+            if self.verbose:
+                self.logger.info(e)
+
+        """
+        --results_filename "all_qa_results-0_0_0_0_0-post.json"
+        >>> [#item = 63] Accuracy: 0.49206   refuse_answer_cnt = 6
+        --results_filename "all_qa_results-1_0_0_0_0-post.json"
+        >>>
+        --results_filename "all_qa_results-0_1_0_0_0-post.json"
+        >>>
+        --results_filename "all_qa_results-1_1_0_0_0-post.json"
+        >>>
+        """
+
+        return None
+
     # def run_chart_qa_with_code_no_comments(
     #         self,
     # ) -> None:
@@ -452,6 +494,7 @@ def main(
     use_cot: bool = False,
     few_shot: int = 0,
     show_generation: bool = False,
+    result_filename: str = None,
     debug: bool = False,
     **kwargs
 ) -> None:
@@ -472,6 +515,7 @@ def main(
     :param use_cot: Use chain-of-thought prompting or not.
     :param few_shot: The number of examples used in the few shot generation.
     :param show_generation: Whether to show outputs during generation.
+    :param result_filename: The QA results file for computing accuracy.
     :param debug: Debugging / developing mode.
     :return: None.
     """
@@ -505,6 +549,10 @@ def main(
                 remove_comments=remove_comments,
                 use_cot=use_cot,
                 few_shot=few_shot,
+            )
+        case 2:
+            c4c_exp.compute_acc_post(
+                result_filename=result_filename,
             )
         case _:
             raise ValueError(f"ValueError: task = {task}")
