@@ -332,7 +332,10 @@ Answer:
                 if cur_output[-1] in choice_set:  # {"A", "B", "C", "D", "E"}
                     cur_choices.append(cur_output[-1])
                 if cur_output[0] in choice_set:  # {"A", "B", "C", "D", "E"}
-                    cur_choices.append(cur_output[0])
+                    if cur_output.startswith("Base") or cur_output.startswith("Accord"):
+                        cur_choices.append("X")
+                    else:
+                        cur_choices.append(cur_output[0])
                 else:
                     fail_to_answer_cnt += 1
                     cur_choices.append("X")
