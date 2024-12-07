@@ -1,8 +1,6 @@
 # Code4Chart
 
 * C4C: Does Visualization Code Improve Chart Understanding for Vision-Language Models?
-* <del>AutoDA: Automated Data Analysis via Multimodal Large Language Models</del>
-* <del>Code, Chart, and Caption: A Synthetic Dataset for Chart Understanding and Generation</del>
 
 ---
 
