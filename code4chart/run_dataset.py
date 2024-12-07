@@ -1262,7 +1262,7 @@ Please be concise and only generate the question, options, and answer:
         if self.verbose:
             self.logger.info(f">>> done_cnt = {done_cnt}; "
                              f"write_cnt = {write_cnt} to file: {c4c_chart_qa_post_edit_fp}")
-        # Total Running Time: 493.0 sec (8.2 min)
+        # Total Running Time: 481.2 sec (8.0 min)
         return c4c_chart_qa_post_edit_fp
 
     # def step11_chart_qa_edit_question(

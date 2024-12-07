@@ -37,15 +37,26 @@ def main(
     logger = logger_setup("Code4Chart")
 
     # ##### Vis Code Start #####
+    data = pd.read_csv("../data/code4chart/raw/New_York_City_Airbnb_Open_Data_2019.csv")
+    column = data["latitude"].tolist()
 
-    # data = pd.read_csv("../data/code4chart/raw/COVID-19_Dataset.csv")
-    # column = data["Country/Region"].tolist()
-    # plt.figure(figsize=(10, 6))
-    # plt.bar(column, data["Confirmed"])
-    # plt.xlabel('Country/Region')
-    # plt.ylabel('Confirmed Cases')
-    # plt.title('Top 10 Countries/Regions with the Highest Number of Confirmed Cases')
-    # plt.savefig('top_10_confirmed_cases.png')
+    plt.hist(column, bins=50, color='skyblue', edgecolor='black')
+    # 'C0' default blue color
+    # 'C1' second default orange color
+    # 'b' as blue
+    # 'g' as green
+    # 'r' as red
+    # 'c' as cyan
+    # 'm' as magenta
+    # 'y' as yellow
+    # 'k' as black
+    # 'orange' as orange
+    # 'w' as white
+    plt.title('Distribution of Latitude Values in NYC Airbnb Open Data 2019')
+    plt.xlabel('Latitude')
+    plt.ylabel('Frequency')
+    # plt.savefig('NYCAirbnb_LatitudeDistribution.png')
+    plt.show()
 
     # ##### Vis Code End #####
 

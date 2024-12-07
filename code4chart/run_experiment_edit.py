@@ -154,7 +154,7 @@ class Code4ChartExp:
             for color in color_list:
                 assert color in chart_figure_edit_bar_color and color in vis_code_edit_bar_color
                 feat_dict = cur_qa_dict["features"]
-                cur_chart_qa = cur_qa_dict["chart_qa"]
+                cur_chart_qa = cur_qa_dict["chart_qa_clean"]
                 question, options, answer = cur_chart_qa["question"], cur_chart_qa["options"], cur_chart_qa["answer"]
                 cur_questions.append(question)
                 cur_options.append(options)
@@ -164,10 +164,10 @@ class Code4ChartExp:
                 cur_vis_code = vis_code_edit_bar_color[color]
 
                 # The dataset/feature information
+                # - All Features: {", ".join([x["name"] for x in cur_qa_dict["features"]])}
                 cur_ds_info_prompt = f"""
 Dataset Information:
 - Dataset Name: {cur_qa_dict["name"]}
-- All Features: {", ".join([x["name"] for x in cur_qa_dict["features"]])}
 
 Current Feature Information:
 - Feature Name: {feat_dict["name"]}

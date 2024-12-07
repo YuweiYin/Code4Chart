@@ -188,10 +188,10 @@ class Code4ChartExp:
                 cur_answers.append(answer)
 
                 # The dataset/feature information
+                # - All Features: {", ".join([x["name"] for x in cur_qa_dict["features"]])}
                 cur_ds_info_prompt = f"""
 Dataset Information:
 - Dataset Name: {cur_qa_dict["name"]}
-- All Features: {", ".join([x["name"] for x in cur_qa_dict["features"]])}
 
 Current Feature Information:
 - Feature Name: {feat_dict["name"]}
