@@ -326,6 +326,11 @@ Answer:
                 assert isinstance(cur_output, str)
                 if cur_output.startswith("(") or cur_output.startswith("\"") or cur_output.startswith("\'"):
                     cur_output = cur_output[1:]
+                if cur_output.endswith(".") or cur_output.endswith(")") or \
+                        cur_output.endswith("\"") or cur_output.endswith("\'"):
+                    cur_output = cur_output[:-1]
+                if cur_output[-1] in choice_set:  # {"A", "B", "C", "D", "E"}
+                    cur_choices.append(cur_output[-1])
                 if cur_output[0] in choice_set:  # {"A", "B", "C", "D", "E"}
                     cur_choices.append(cur_output[0])
                 else:
