@@ -150,7 +150,8 @@ class Code4ChartExp:
             qa_prompt_image_list = []
 
             assert len(chart_figure_edit_bar_color) == len(vis_code_edit_bar_color)
-            color_list = ["original", "blue", "cyan", "green", "red", "magenta", "orange", "yellow", "black"]
+            # color_list = ["original", "blue", "cyan", "green", "red", "magenta", "orange", "yellow", "black"]
+            color_list = ["blue", "cyan", "green", "red", "magenta", "orange", "yellow", "black"]
             for color in color_list:
                 assert color in chart_figure_edit_bar_color and color in vis_code_edit_bar_color
                 feat_dict = cur_qa_dict["features"]
@@ -264,15 +265,9 @@ Answer:
                 qa_prompt_image_list.append((cur_prompts, cur_images))
 
             cur_results, cur_choices = [], []
-            done_cnt, miss_cnt = 0, 0
+            done_cnt = 0
             fail_to_answer_cnt = 0
             for cur_prompts, cur_images in qa_prompt_image_list:
-                if cur_prompts is None or cur_images is None:
-                    cur_results.append(None)  # Can NOT be "" since json.dumps will ignore it
-                    cur_choices.append(None)
-                    miss_cnt += 1
-                    continue
-
                 cur_inputs = vlm_model.processor(
                     text=cur_prompts, images=cur_images, return_tensors="pt").to(vlm_model.model.device)
 
@@ -320,10 +315,12 @@ Answer:
                     #   Or, choose an A/B/C/D/E option by observing the first logits (vocab prob).
                 done_cnt += 1
 
-            assert len(cur_results) == len(cur_choices) == len(chart_qa) == len(chart_figure_base64)
-            assert len(cur_questions) == len(cur_options) == len(cur_answers) == len(cur_results)
-            for _q, _o, _a, _r, _c in zip(cur_questions, cur_options, cur_answers, cur_results, cur_choices):
+            assert len(color_list) == len(cur_results) == len(cur_choices)
+            assert len(color_list) == len(cur_questions) == len(cur_options) == len(cur_answers)
+            for color, _q, _o, _a, _r, _c in zip(
+                    color_list, cur_questions, cur_options, cur_answers, cur_results, cur_choices):
                 cur_qa_results.append({
+                    "color": color,
                     "question": _q,
                     "options": _o,
                     "answer": _a,
@@ -338,19 +335,17 @@ Answer:
             # all_qa_results.append(cur_qa_results)
             all_qa_results.extend(cur_qa_results)
             done_cnt_all += done_cnt
-            miss_cnt_all += miss_cnt
             fail_to_answer_cnt_all += fail_to_answer_cnt
             if self.verbose:
                 self.logger.info(f">>> >>> Done [id={cur_qa_dict['id']}] Dataset: {cur_qa_dict['name']}. "
-                                 f"done_cnt={done_cnt}, miss_cnt={miss_cnt}, fail_to_answer_cnt={fail_to_answer_cnt}")
+                                 f"done_cnt={done_cnt}, fail_to_answer_cnt={fail_to_answer_cnt}")
             if self.debug:
                 sys.exit(0)
 
         # Done all, show statistics
         if self.verbose:
             self.logger.info(f">>> Done All. Statistics: "
-                             f"done_cnt_all={done_cnt_all}, miss_cnt_all={miss_cnt_all}, "
-                             f"fail_to_answer_cnt_all={fail_to_answer_cnt_all}")
+                             f"done_cnt_all={done_cnt_all}, fail_to_answer_cnt_all={fail_to_answer_cnt_all}")
 
         # Compute the chart QA accuracy. TODO: Needs post-processing to determine the model's choice
         all_answers, all_choices = [], []
