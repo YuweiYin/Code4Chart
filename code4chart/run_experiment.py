@@ -331,7 +331,7 @@ Answer:
                     cur_output = cur_output[:-1]
                 if cur_output[-1] in choice_set:  # {"A", "B", "C", "D", "E"}
                     cur_choices.append(cur_output[-1])
-                if cur_output[0] in choice_set:  # {"A", "B", "C", "D", "E"}
+                elif cur_output[0] in choice_set:  # {"A", "B", "C", "D", "E"}
                     if cur_output.startswith("Base") or cur_output.startswith("Accord"):
                         cur_choices.append("X")
                     else:
@@ -432,7 +432,7 @@ Answer:
             all_choices.append(cur_qa_res["model_choice"])
         all_answers = [_item.strip() for _item in all_answers if isinstance(_item, str)]
         all_choices = [_item.strip() for _item in all_choices if isinstance(_item, str)]
-        refuse_answer_cnt = len([_item for _item in all_choices if _item not in choice_set])
+        no_answer_cnt = len([_item for _item in all_choices if _item not in choice_set])
         try:
             assert len(all_answers) == len(all_choices)
             all_answers_np = np.array(all_answers)
@@ -440,7 +440,7 @@ Answer:
             acc = np.mean(all_answers_np == all_choices_np).item()
             if self.verbose:
                 self.logger.info(f">>> [#item = {len(all_choices)}] Accuracy: {acc:.5f}   "
-                                 f"refuse_answer_cnt = {refuse_answer_cnt}")
+                                 f"no_answer_cnt = {no_answer_cnt}")
         except Exception as e:
             if self.verbose:
                 self.logger.info(e)
