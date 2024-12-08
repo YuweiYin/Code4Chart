@@ -1,0 +1,786 @@
+[
+    {
+        "color": "blue",
+        "question": "Which region has had the highest number of COVID-19 cases?",
+        "options": {
+            "A": "Eastern Mediterranean",
+            "B": "Europe",
+            "C": "Africa",
+            "D": "Americas",
+            "E": "Western Pacific"
+        },
+        "answer": "D",
+        "model_output": "To determine which region has had the highest number of COVID-19 cases, we need to look at the bar plot and identify the tallest bar. The y-axis represents the number of cases, and the x-axis represents the regions.\n\nLooking at the bar plot, we can see that the tallest bar corresponds to the Americas region, with a value of 4,200,000 cases.\n\n*Answer*: D",
+        "model_choice": "D"
+    },
+    {
+        "color": "cyan",
+        "question": "Which region has had the highest number of COVID-19 cases?",
+        "options": {
+            "A": "Eastern Mediterranean",
+            "B": "Europe",
+            "C": "Africa",
+            "D": "Americas",
+            "E": "Western Pacific"
+        },
+        "answer": "D",
+        "model_output": "To determine which region has had the highest number of COVID-19 cases, we need to look at the bar plot and identify the tallest bar. The y-axis represents the number of cases, and the x-axis represents the regions.\n\nLooking at the bar plot, we can see that the tallest bar corresponds to the Americas region, with a value of 4,200,000 cases.\n\n*Answer*: D",
+        "model_choice": "D"
+    },
+    {
+        "color": "green",
+        "question": "Which region has had the highest number of COVID-19 cases?",
+        "options": {
+            "A": "Eastern Mediterranean",
+            "B": "Europe",
+            "C": "Africa",
+            "D": "Americas",
+            "E": "Western Pacific"
+        },
+        "answer": "D",
+        "model_output": "To determine which region has had the highest number of COVID-19 cases, we need to look at the bar plot and identify the tallest bar. The y-axis represents the number of cases, and the x-axis represents the regions.\n\nLooking at the bar plot, we can see that the tallest bar corresponds to the Americas region, with a value of 4,200,000 cases.\n\n*Answer*: D",
+        "model_choice": "D"
+    },
+    {
+        "color": "red",
+        "question": "Which region has had the highest number of COVID-19 cases?",
+        "options": {
+            "A": "Eastern Mediterranean",
+            "B": "Europe",
+            "C": "Africa",
+            "D": "Americas",
+            "E": "Western Pacific"
+        },
+        "answer": "D",
+        "model_output": "To determine which region has had the highest number of COVID-19 cases, we need to look at the bar plot and identify the tallest bar. The y-axis represents the number of cases, and the x-axis represents the regions.\n\nLooking at the bar plot, we can see that the tallest bar corresponds to the Americas region, with a value of 4,200,000 cases.\n\n*Answer*: D",
+        "model_choice": "D"
+    },
+    {
+        "color": "magenta",
+        "question": "Which region has had the highest number of COVID-19 cases?",
+        "options": {
+            "A": "Eastern Mediterranean",
+            "B": "Europe",
+            "C": "Africa",
+            "D": "Americas",
+            "E": "Western Pacific"
+        },
+        "answer": "D",
+        "model_output": "To determine which region has had the highest number of COVID-19 cases, we need to look at the bar plot and identify the tallest bar. The y-axis represents the number of cases, and the x-axis represents the regions.\n\nLooking at the bar plot, we can see that the tallest bar corresponds to the Americas region, with a value of 4,200,000 cases.\n\n*Answer*: D",
+        "model_choice": "D"
+    },
+    {
+        "color": "orange",
+        "question": "Which region has had the highest number of COVID-19 cases?",
+        "options": {
+            "A": "Eastern Mediterranean",
+            "B": "Europe",
+            "C": "Africa",
+            "D": "Americas",
+            "E": "Western Pacific"
+        },
+        "answer": "D",
+        "model_output": "To determine which region has had the highest number of COVID-19 cases, we need to look at the bar plot and identify the tallest bar. The y-axis represents the number of cases, and the x-axis represents the regions.\n\nLooking at the bar plot, we can see that the tallest bar corresponds to the Americas region, with a value of 4,200,000 cases.\n\n*Answer*: D",
+        "model_choice": "D"
+    },
+    {
+        "color": "yellow",
+        "question": "Which region has had the highest number of COVID-19 cases?",
+        "options": {
+            "A": "Eastern Mediterranean",
+            "B": "Europe",
+            "C": "Africa",
+            "D": "Americas",
+            "E": "Western Pacific"
+        },
+        "answer": "D",
+        "model_output": "To determine which region has had the highest number of COVID-19 cases, we need to look at the bar plot and identify the tallest bar. The y-axis represents the number of cases, and the x-axis represents the regions.\n\nLooking at the bar plot, we can see that the tallest bar corresponds to the Americas region, with a value of 4,200,000 cases.\n\n*Answer*: D",
+        "model_choice": "D"
+    },
+    {
+        "color": "black",
+        "question": "Which region has had the highest number of COVID-19 cases?",
+        "options": {
+            "A": "Eastern Mediterranean",
+            "B": "Europe",
+            "C": "Africa",
+            "D": "Americas",
+            "E": "Western Pacific"
+        },
+        "answer": "D",
+        "model_output": "To determine which region has had the highest number of COVID-19 cases, we need to look at the bar plot and identify the tallest bar. The y-axis represents the number of cases, and the x-axis represents the regions.\n\nLooking at the bar plot, we can see that the tallest bar corresponds to the Americas region, with a value of 4,200,000 cases.\n\n*Answer*: D",
+        "model_choice": "D"
+    },
+    {
+        "color": "blue",
+        "question": "What is the platform with the highest sales in the dataset?",
+        "options": {
+            "A": "3DS",
+            "B": "NES",
+            "C": "DS",
+            "D": "PS3",
+            "E": "Wii"
+        },
+        "answer": "E",
+        "model_output": "The platform with the highest sales in the dataset is Wii.",
+        "model_choice": "E"
+    },
+    {
+        "color": "cyan",
+        "question": "What is the platform with the highest sales in the dataset?",
+        "options": {
+            "A": "3DS",
+            "B": "NES",
+            "C": "DS",
+            "D": "PS3",
+            "E": "Wii"
+        },
+        "answer": "E",
+        "model_output": "The platform with the highest sales in the dataset is Wii.",
+        "model_choice": "E"
+    },
+    {
+        "color": "green",
+        "question": "What is the platform with the highest sales in the dataset?",
+        "options": {
+            "A": "3DS",
+            "B": "NES",
+            "C": "DS",
+            "D": "PS3",
+            "E": "Wii"
+        },
+        "answer": "E",
+        "model_output": "The platform with the highest sales in the dataset is Wii.",
+        "model_choice": "E"
+    },
+    {
+        "color": "red",
+        "question": "What is the platform with the highest sales in the dataset?",
+        "options": {
+            "A": "3DS",
+            "B": "NES",
+            "C": "DS",
+            "D": "PS3",
+            "E": "Wii"
+        },
+        "answer": "E",
+        "model_output": "The platform with the highest sales in the dataset is Wii.",
+        "model_choice": "E"
+    },
+    {
+        "color": "magenta",
+        "question": "What is the platform with the highest sales in the dataset?",
+        "options": {
+            "A": "3DS",
+            "B": "NES",
+            "C": "DS",
+            "D": "PS3",
+            "E": "Wii"
+        },
+        "answer": "E",
+        "model_output": "The platform with the highest sales in the dataset is Wii.",
+        "model_choice": "E"
+    },
+    {
+        "color": "orange",
+        "question": "What is the platform with the highest sales in the dataset?",
+        "options": {
+            "A": "3DS",
+            "B": "NES",
+            "C": "DS",
+            "D": "PS3",
+            "E": "Wii"
+        },
+        "answer": "E",
+        "model_output": "The platform with the highest sales in the dataset is Wii.",
+        "model_choice": "E"
+    },
+    {
+        "color": "yellow",
+        "question": "What is the platform with the highest sales in the dataset?",
+        "options": {
+            "A": "3DS",
+            "B": "NES",
+            "C": "DS",
+            "D": "PS3",
+            "E": "Wii"
+        },
+        "answer": "E",
+        "model_output": "The platform with the highest sales in the dataset is Wii.",
+        "model_choice": "E"
+    },
+    {
+        "color": "black",
+        "question": "What is the platform with the highest sales in the dataset?",
+        "options": {
+            "A": "3DS",
+            "B": "NES",
+            "C": "DS",
+            "D": "PS3",
+            "E": "Wii"
+        },
+        "answer": "E",
+        "model_output": "The platform with the highest sales in the dataset is Wii.",
+        "model_choice": "E"
+    },
+    {
+        "color": "blue",
+        "question": "What is the most popular Netflix movie or TV show rating category?",
+        "options": {
+            "A": "TV-14",
+            "B": "PG-13",
+            "C": "R",
+            "D": "TV-MA",
+            "E": "TV-PG"
+        },
+        "answer": "D",
+        "model_output": "To determine the most popular Netflix movie or TV show rating category, we need to look at the bar graph and identify the category with the highest count of ratings. The y-axis represents the count of ratings, and the x-axis lists the different rating categories.\n\nThe bar graph shows that TV-MA has the highest count of ratings, with a value of approximately 3100. This is significantly higher than the other categories, which have counts ranging from around 500 to 2100.\n\nTherefore, based on the graph, the most popular Netflix movie or TV show rating category is TV-MA.\n\n*Answer*: D",
+        "model_choice": "D"
+    },
+    {
+        "color": "cyan",
+        "question": "What is the most popular Netflix movie or TV show rating category?",
+        "options": {
+            "A": "TV-14",
+            "B": "PG-13",
+            "C": "R",
+            "D": "TV-MA",
+            "E": "TV-PG"
+        },
+        "answer": "D",
+        "model_output": "To determine the most popular Netflix movie or TV show rating category, we need to look at the bar graph and identify the category with the highest count of ratings. The y-axis represents the count of ratings, and the x-axis lists the different rating categories.\n\nThe bar graph shows that TV-MA has the highest count of ratings, with a value of approximately 3100. This is significantly higher than the other categories, which have counts ranging from around 500 to 2100.\n\nTherefore, based on the graph, the most popular Netflix movie or TV show rating category is TV-MA.\n\n*Answer*: D",
+        "model_choice": "D"
+    },
+    {
+        "color": "green",
+        "question": "What is the most popular Netflix movie or TV show rating category?",
+        "options": {
+            "A": "TV-14",
+            "B": "PG-13",
+            "C": "R",
+            "D": "TV-MA",
+            "E": "TV-PG"
+        },
+        "answer": "D",
+        "model_output": "To determine the most popular Netflix movie or TV show rating category, we need to look at the bar graph and identify the category with the highest count of ratings. The y-axis represents the count of ratings, and the x-axis lists the different rating categories.\n\nThe bar graph shows that TV-MA has the highest count of ratings, with a value of approximately 3100. This is significantly higher than the other categories, which have counts ranging from around 500 to 2100.\n\nTherefore, based on the bar graph, the most popular Netflix movie or TV show rating category is TV-MA.\n\n*Answer*: D",
+        "model_choice": "D"
+    },
+    {
+        "color": "red",
+        "question": "What is the most popular Netflix movie or TV show rating category?",
+        "options": {
+            "A": "TV-14",
+            "B": "PG-13",
+            "C": "R",
+            "D": "TV-MA",
+            "E": "TV-PG"
+        },
+        "answer": "D",
+        "model_output": "To determine the most popular Netflix movie or TV show rating category, we need to look at the bar chart and identify the category with the highest count of ratings. The chart shows that TV-MA has the highest count of ratings, followed by TV-14, TV-PG, R, and PG-13.\n\n*Answer*: D",
+        "model_choice": "D"
+    },
+    {
+        "color": "magenta",
+        "question": "What is the most popular Netflix movie or TV show rating category?",
+        "options": {
+            "A": "TV-14",
+            "B": "PG-13",
+            "C": "R",
+            "D": "TV-MA",
+            "E": "TV-PG"
+        },
+        "answer": "D",
+        "model_output": "To determine the most popular Netflix movie or TV show rating category, we need to look at the bar graph and identify the category with the highest count of ratings. The y-axis represents the count of ratings, and the x-axis lists the different rating categories.\n\nThe bar graph shows that TV-MA has the highest count of ratings, with a value of approximately 3100. This is significantly higher than the other categories, which have counts ranging from around 500 to 2100.\n\nTherefore, based on the graph, the most popular Netflix movie or TV show rating category is TV-MA.\n\n*Answer*: D",
+        "model_choice": "D"
+    },
+    {
+        "color": "orange",
+        "question": "What is the most popular Netflix movie or TV show rating category?",
+        "options": {
+            "A": "TV-14",
+            "B": "PG-13",
+            "C": "R",
+            "D": "TV-MA",
+            "E": "TV-PG"
+        },
+        "answer": "D",
+        "model_output": "To determine the most popular Netflix movie or TV show rating category, we need to look at the bar graph and identify the category with the highest count of ratings. The y-axis represents the count of ratings, and the x-axis lists the different rating categories.\n\nThe bar graph shows that TV-MA has the highest count of ratings, with a value of approximately 3100. This is significantly higher than the other categories, which have counts ranging from around 500 to 2100.\n\nTherefore, based on the data presented in the bar graph, the most popular Netflix movie or TV show rating category is TV-MA.\n\n*Answer*: D",
+        "model_choice": "D"
+    },
+    {
+        "color": "yellow",
+        "question": "What is the most popular Netflix movie or TV show rating category?",
+        "options": {
+            "A": "TV-14",
+            "B": "PG-13",
+            "C": "R",
+            "D": "TV-MA",
+            "E": "TV-PG"
+        },
+        "answer": "D",
+        "model_output": "To determine the most popular Netflix movie or TV show rating category, we need to look at the bar graph and identify the category with the highest count of ratings. The y-axis represents the count of ratings, and the x-axis lists the different rating categories.\n\nThe bar graph shows that TV-MA has the highest count of ratings, with a value of approximately 3100. This is significantly higher than the other categories, which have counts ranging from around 500 to 2100.\n\nTherefore, based on the graph, the most popular Netflix movie or TV show rating category is TV-MA.\n\n*Answer*: D",
+        "model_choice": "D"
+    },
+    {
+        "color": "black",
+        "question": "What is the most popular Netflix movie or TV show rating category?",
+        "options": {
+            "A": "TV-14",
+            "B": "PG-13",
+            "C": "R",
+            "D": "TV-MA",
+            "E": "TV-PG"
+        },
+        "answer": "D",
+        "model_output": "To determine the most popular Netflix movie or TV show rating category, we need to look at the bar graph and identify the category with the highest count of ratings. The y-axis represents the count of ratings, and the x-axis lists the different rating categories.\n\nThe bar graph shows that TV-MA has the highest count of ratings, with over 3000 ratings. This is significantly higher than the other categories, which have much lower counts of ratings.\n\nTherefore, based on the data in the bar graph, the most popular Netflix movie or TV show rating category is TV-MA.\n\n*Answer*: D",
+        "model_choice": "D"
+    },
+    {
+        "color": "blue",
+        "question": "What is the distribution of latitude values in the NYC Airbnb Open Data 2019?",
+        "options": {
+            "A": "Skewed distribution with most values around 40.7",
+            "B": "Uniform distribution with most values around 40.5",
+            "C": "Normal distribution with most values around 40.8",
+            "D": "Bimodal distribution with peaks at 40.5 and 40.9",
+            "E": "Poisson distribution with most values around 40.6"
+        },
+        "answer": "A",
+        "model_output": "To determine the distribution of latitude values in the NYC Airbnb Open Data 2019, we need to analyze the given bar plot. The plot shows the frequency of latitude values for different locations.\n\nThe x-axis represents the latitude values, and the y-axis represents the frequency. The plot has several bars corresponding to different locations, including TV-TWA, L4P, and RG-13.\n\nUpon examining the plot, we can see that the latitude values are not evenly distributed. The majority of the values are clustered around 40.5, with a smaller peak at 40.9. This suggests that the distribution is not uniform or normal, but rather bimodal.\n\nTherefore, the correct answer is:\n\n*Answer*: D",
+        "model_choice": "D"
+    },
+    {
+        "color": "cyan",
+        "question": "What is the distribution of latitude values in the NYC Airbnb Open Data 2019?",
+        "options": {
+            "A": "Skewed distribution with most values around 40.7",
+            "B": "Uniform distribution with most values around 40.5",
+            "C": "Normal distribution with most values around 40.8",
+            "D": "Bimodal distribution with peaks at 40.5 and 40.9",
+            "E": "Poisson distribution with most values around 40.6"
+        },
+        "answer": "A",
+        "model_output": "To determine the distribution of latitude values in the NYC Airbnb Open Data 2019, we need to analyze the given bar plot. The plot shows the frequency of latitude values for different locations.\n\nThe x-axis represents the latitude values, and the y-axis represents the frequency. The plot has several bars corresponding to different locations, including TV-TWA, L4P, and RG-13.\n\nUpon examining the plot, we can see that the latitude values are not evenly distributed. The majority of the values are clustered around 40.5, with a smaller peak at 40.9. This suggests that the distribution is not uniform or normal, but rather bimodal.\n\nTherefore, the correct answer is:\n\n*Answer*: D",
+        "model_choice": "D"
+    },
+    {
+        "color": "green",
+        "question": "What is the distribution of latitude values in the NYC Airbnb Open Data 2019?",
+        "options": {
+            "A": "Skewed distribution with most values around 40.7",
+            "B": "Uniform distribution with most values around 40.5",
+            "C": "Normal distribution with most values around 40.8",
+            "D": "Bimodal distribution with peaks at 40.5 and 40.9",
+            "E": "Poisson distribution with most values around 40.6"
+        },
+        "answer": "A",
+        "model_output": "To determine the distribution of latitude values in the NYC Airbnb Open Data 2019, we need to analyze the given bar plot. The plot shows the frequency of latitude values for different locations.\n\nThe x-axis represents the latitude values, and the y-axis represents the frequency. The plot has several bars corresponding to different locations, including TV-TWA, L4P, and RG-13.\n\nUpon examining the plot, we can see that the latitude values are not evenly distributed. The majority of the values are clustered around 40.5, with a smaller peak at 40.9. This suggests that the distribution is not uniform or normal, but rather bimodal.\n\nTherefore, the correct answer is:\n\n*Answer*: D",
+        "model_choice": "D"
+    },
+    {
+        "color": "red",
+        "question": "What is the distribution of latitude values in the NYC Airbnb Open Data 2019?",
+        "options": {
+            "A": "Skewed distribution with most values around 40.7",
+            "B": "Uniform distribution with most values around 40.5",
+            "C": "Normal distribution with most values around 40.8",
+            "D": "Bimodal distribution with peaks at 40.5 and 40.9",
+            "E": "Poisson distribution with most values around 40.6"
+        },
+        "answer": "A",
+        "model_output": "To determine the distribution of latitude values in the NYC Airbnb Open Data 2019, we need to analyze the given bar plot. The plot shows the frequency of latitude values for different locations.\n\nThe x-axis represents the latitude values, and the y-axis represents the frequency. The plot has several bars corresponding to different locations, including TV-TWA, L4P, and RG-13.\n\nUpon examining the plot, we can see that the latitude values are not evenly distributed. The majority of the values are clustered around 40.5, with a smaller peak at 40.9. This suggests that the distribution is not uniform or normal, but rather bimodal.\n\nTherefore, the correct answer is:\n\n*Answer*: D",
+        "model_choice": "D"
+    },
+    {
+        "color": "magenta",
+        "question": "What is the distribution of latitude values in the NYC Airbnb Open Data 2019?",
+        "options": {
+            "A": "Skewed distribution with most values around 40.7",
+            "B": "Uniform distribution with most values around 40.5",
+            "C": "Normal distribution with most values around 40.8",
+            "D": "Bimodal distribution with peaks at 40.5 and 40.9",
+            "E": "Poisson distribution with most values around 40.6"
+        },
+        "answer": "A",
+        "model_output": "To determine the distribution of latitude values in the NYC Airbnb Open Data 2019, we need to analyze the given bar plot. The plot shows the frequency of latitude values for different locations.\n\nThe x-axis represents the latitude values, and the y-axis represents the frequency. The plot has several bars corresponding to different locations, including TV-TWA, L4P, and RG-13.\n\nUpon examining the plot, we can see that the latitude values are not evenly distributed. The majority of the values are clustered around 40.5, with a smaller peak at 40.9. This suggests that the distribution is not uniform or normal, but rather bimodal.\n\nTherefore, the correct answer is:\n\n*Answer*: D",
+        "model_choice": "D"
+    },
+    {
+        "color": "orange",
+        "question": "What is the distribution of latitude values in the NYC Airbnb Open Data 2019?",
+        "options": {
+            "A": "Skewed distribution with most values around 40.7",
+            "B": "Uniform distribution with most values around 40.5",
+            "C": "Normal distribution with most values around 40.8",
+            "D": "Bimodal distribution with peaks at 40.5 and 40.9",
+            "E": "Poisson distribution with most values around 40.6"
+        },
+        "answer": "A",
+        "model_output": "To determine the distribution of latitude values in the NYC Airbnb Open Data 2019, we need to analyze the given bar plot. The plot shows the frequency of latitude values for different locations.\n\nThe x-axis represents the latitude values, and the y-axis represents the frequency. The plot has several bars corresponding to different locations, including TV-TWA, L4P, and RG-13.\n\nUpon examining the plot, we can see that the latitude values are not evenly distributed. The majority of the values are clustered around 40.5, with a smaller peak at 40.9. This suggests that the distribution is not uniform or normal, but rather bimodal.\n\nTherefore, the correct answer is:\n\n*Answer*: D",
+        "model_choice": "D"
+    },
+    {
+        "color": "yellow",
+        "question": "What is the distribution of latitude values in the NYC Airbnb Open Data 2019?",
+        "options": {
+            "A": "Skewed distribution with most values around 40.7",
+            "B": "Uniform distribution with most values around 40.5",
+            "C": "Normal distribution with most values around 40.8",
+            "D": "Bimodal distribution with peaks at 40.5 and 40.9",
+            "E": "Poisson distribution with most values around 40.6"
+        },
+        "answer": "A",
+        "model_output": "To determine the distribution of latitude values in the NYC Airbnb Open Data 2019, we need to analyze the given bar plot. The plot shows the frequency of latitude values for different locations.\n\nThe x-axis represents the latitude values, and the y-axis represents the frequency. The plot has several bars corresponding to different locations, including TV-TWA, L4P, and RG-13.\n\nUpon examining the plot, we can see that the latitude values are not evenly distributed. The majority of the values are clustered around 40.5, with a smaller peak at 40.9. This suggests that the distribution is not uniform or normal, but rather bimodal.\n\nTherefore, the correct answer is:\n\n*Answer*: D",
+        "model_choice": "D"
+    },
+    {
+        "color": "black",
+        "question": "What is the distribution of latitude values in the NYC Airbnb Open Data 2019?",
+        "options": {
+            "A": "Skewed distribution with most values around 40.7",
+            "B": "Uniform distribution with most values around 40.5",
+            "C": "Normal distribution with most values around 40.8",
+            "D": "Bimodal distribution with peaks at 40.5 and 40.9",
+            "E": "Poisson distribution with most values around 40.6"
+        },
+        "answer": "A",
+        "model_output": "To determine the distribution of latitude values in the NYC Airbnb Open Data 2019, we need to analyze the given bar plot. The plot shows the frequency of latitude values for different locations.\n\nThe x-axis represents the latitude values, and the y-axis represents the frequency. The plot has several bars corresponding to different locations, including TV-TWA, L4P, and RG-13.\n\nUpon examining the plot, we can see that the latitude values are not evenly distributed. The majority of the values are clustered around 40.5, with a smaller peak at 40.9. This suggests that the distribution is not uniform or normal, but rather bimodal.\n\nTherefore, the correct answer is:\n\n*Answer*: D",
+        "model_choice": "D"
+    },
+    {
+        "color": "blue",
+        "question": "What is the most common parental education level in the dataset?",
+        "options": {
+            "A": "Some high school",
+            "B": "High school",
+            "C": "Some college",
+            "D": "Bachelor's degree",
+            "E": "Master's degree"
+        },
+        "answer": "A",
+        "model_output": "To determine the most common parental education level in the dataset, we need to look at the bar plot and identify the bar with the highest value. The y-axis represents the frequency of each parental education level, and the x-axis lists the different levels.\n\nLooking at the bar plot, we can see that the bar for \"some high school\" has the highest value, which is 9. This indicates that the most common parental education level in the dataset is \"some high school\".\n\n*Answer*: A",
+        "model_choice": "A"
+    },
+    {
+        "color": "cyan",
+        "question": "What is the most common parental education level in the dataset?",
+        "options": {
+            "A": "Some high school",
+            "B": "High school",
+            "C": "Some college",
+            "D": "Bachelor's degree",
+            "E": "Master's degree"
+        },
+        "answer": "A",
+        "model_output": "To determine the most common parental education level in the dataset, we need to look at the bar plot and identify the tallest bar, which represents the highest frequency. \n\nThe bar plot shows the distribution of parental education levels, with the x-axis representing the education levels and the y-axis representing the frequency. The y-values are not explicitly provided, but we can infer the relative frequencies by comparing the heights of the bars.\n\nBy examining the plot, we can see that the bar for \"some high school\" is the tallest, indicating that it has the highest frequency. \n\nTherefore, the most common parental education level in the dataset is \"some high school\".\n\n*Answer*: A",
+        "model_choice": "A"
+    },
+    {
+        "color": "green",
+        "question": "What is the most common parental education level in the dataset?",
+        "options": {
+            "A": "Some high school",
+            "B": "High school",
+            "C": "Some college",
+            "D": "Bachelor's degree",
+            "E": "Master's degree"
+        },
+        "answer": "A",
+        "model_output": "To determine the most common parental education level in the dataset, we need to look at the bar plot and identify the bar with the highest value. The y-axis represents the frequency of each parental education level, and the x-axis lists the different levels.\n\nLooking at the bar plot, we can see that the bar for \"some high school\" has the highest value, which is 96. This indicates that the most common parental education level in the dataset is \"some high school\".\n\n*Answer*: A",
+        "model_choice": "A"
+    },
+    {
+        "color": "red",
+        "question": "What is the most common parental education level in the dataset?",
+        "options": {
+            "A": "Some high school",
+            "B": "High school",
+            "C": "Some college",
+            "D": "Bachelor's degree",
+            "E": "Master's degree"
+        },
+        "answer": "A",
+        "model_output": "To determine the most common parental education level in the dataset, we need to look at the bar plot and identify the bar with the highest value. The y-axis represents the frequency of each parental education level, and the x-axis lists the different levels.\n\nLooking at the bar plot, we can see that the bar for \"some high school\" has the highest value, which is 96. This indicates that the most common parental education level in the dataset is \"some high school\".\n\n*Answer*: A",
+        "model_choice": "A"
+    },
+    {
+        "color": "magenta",
+        "question": "What is the most common parental education level in the dataset?",
+        "options": {
+            "A": "Some high school",
+            "B": "High school",
+            "C": "Some college",
+            "D": "Bachelor's degree",
+            "E": "Master's degree"
+        },
+        "answer": "A",
+        "model_output": "To determine the most common parental education level in the dataset, we need to look at the bar plot and identify the tallest bar, which represents the highest frequency. \n\nThe bar plot shows the distribution of parental education levels, with the x-axis representing the education levels and the y-axis representing the frequency. The y-values are not explicitly provided, but we can infer the relative frequencies based on the height of the bars.\n\nBy examining the plot, we can see that the bar for \"some high school\" is the tallest, indicating that it has the highest frequency. \n\nTherefore, the most common parental education level in the dataset is \"some high school\".\n\n*Answer*: A",
+        "model_choice": "A"
+    },
+    {
+        "color": "orange",
+        "question": "What is the most common parental education level in the dataset?",
+        "options": {
+            "A": "Some high school",
+            "B": "High school",
+            "C": "Some college",
+            "D": "Bachelor's degree",
+            "E": "Master's degree"
+        },
+        "answer": "A",
+        "model_output": "To determine the most common parental education level in the dataset, we need to look at the bar plot and identify the tallest bar, which represents the highest frequency. \n\nThe bar plot shows the distribution of parental education levels, with the x-axis representing the education levels and the y-axis representing the frequency. The y-values are not explicitly provided, but we can infer the relative frequencies by comparing the heights of the bars.\n\nLooking at the plot, we can see that the bar for \"some high school\" is the tallest, indicating that it has the highest frequency. \n\nTherefore, the most common parental education level in the dataset is \"some high school\".\n\n*Answer*: A",
+        "model_choice": "A"
+    },
+    {
+        "color": "yellow",
+        "question": "What is the most common parental education level in the dataset?",
+        "options": {
+            "A": "Some high school",
+            "B": "High school",
+            "C": "Some college",
+            "D": "Bachelor's degree",
+            "E": "Master's degree"
+        },
+        "answer": "A",
+        "model_output": "To determine the most common parental education level in the dataset, we need to look at the bar plot and identify the tallest bar, which represents the highest frequency. \n\nThe bar plot shows the distribution of parental education levels, with the x-axis representing the education levels and the y-axis representing the frequency. The bars are colored in yellow.\n\nUpon examining the plot, we can see that the tallest bar corresponds to \"some high school\" with a frequency of 9. This is the highest frequency among all the education levels.\n\nTherefore, the most common parental education level in the dataset is \"some high school\".\n\n*Answer*: A",
+        "model_choice": "A"
+    },
+    {
+        "color": "black",
+        "question": "What is the most common parental education level in the dataset?",
+        "options": {
+            "A": "Some high school",
+            "B": "High school",
+            "C": "Some college",
+            "D": "Bachelor's degree",
+            "E": "Master's degree"
+        },
+        "answer": "A",
+        "model_output": "To determine the most common parental education level in the dataset, we need to look at the bar plot and identify the tallest bar, which represents the highest frequency. \n\nThe bar plot shows the distribution of parental education levels, with the x-axis representing the education levels and the y-axis representing the frequency. The y-values are not explicitly provided, but we can infer the relative frequencies by comparing the heights of the bars.\n\nBy examining the plot, we can see that the bar for \"some high school\" is the tallest, indicating that it has the highest frequency. \n\nTherefore, the most common parental education level in the dataset is \"some high school\".\n\n*Answer*: A",
+        "model_choice": "A"
+    },
+    {
+        "color": "blue",
+        "question": "What age group had the highest number of suicides per 100,000 people in 2016?",
+        "options": {
+            "A": "5-14 years",
+            "B": "15-24 years",
+            "C": "25-34 years",
+            "D": "35-44 years",
+            "E": "75 years and above"
+        },
+        "answer": "E",
+        "model_output": "To determine the age group with the highest number of suicides per 100,000 people in 2016, we need to analyze the bar plot provided. The x-axis represents different age groups, and the y-axis represents the number of suicides per 100,000 people.\n\nLooking at the bar plot, we can see that the bar for the 75+ years age group is the tallest, indicating that this age group had the highest number of suicides per 100,000 people in 2016.\n\n*Answer*: E",
+        "model_choice": "E"
+    },
+    {
+        "color": "cyan",
+        "question": "What age group had the highest number of suicides per 100,000 people in 2016?",
+        "options": {
+            "A": "5-14 years",
+            "B": "15-24 years",
+            "C": "25-34 years",
+            "D": "35-44 years",
+            "E": "75 years and above"
+        },
+        "answer": "E",
+        "model_output": "To determine the age group with the highest number of suicides per 100,000 people in 2016, we need to analyze the bar chart provided. The chart shows the average number of suicides per 100,000 people for different age groups.\n\nThe x-axis represents the age groups, and the y-axis represents the average number of suicides per 100,000 people. The bars are colored in a light blue shade.\n\nLooking at the chart, we can see that the bar for the 75+ years age group is the tallest, indicating that this age group had the highest number of suicides per 100,000 people in 2016.\n\nTherefore, the correct answer is:\n\n*Answer*: E",
+        "model_choice": "E"
+    },
+    {
+        "color": "green",
+        "question": "What age group had the highest number of suicides per 100,000 people in 2016?",
+        "options": {
+            "A": "5-14 years",
+            "B": "15-24 years",
+            "C": "25-34 years",
+            "D": "35-44 years",
+            "E": "75 years and above"
+        },
+        "answer": "E",
+        "model_output": "To determine the age group with the highest number of suicides per 100,000 people in 2016, we need to analyze the bar chart provided. The chart shows the average number of suicides per 100,000 people for different age groups.\n\nThe x-axis represents the age groups, and the y-axis represents the average number of suicides per 100,000 people. The bars are colored green, but this does not affect the analysis.\n\nLooking at the chart, we can see that the bar for the 75+ years age group is the tallest, indicating that this age group had the highest number of suicides per 100,000 people in 2016.\n\nTherefore, the correct answer is:\n\n*Answer*: E",
+        "model_choice": "E"
+    },
+    {
+        "color": "red",
+        "question": "What age group had the highest number of suicides per 100,000 people in 2016?",
+        "options": {
+            "A": "5-14 years",
+            "B": "15-24 years",
+            "C": "25-34 years",
+            "D": "35-44 years",
+            "E": "75 years and above"
+        },
+        "answer": "E",
+        "model_output": "To determine the age group with the highest number of suicides per 100,000 people in 2016, we need to analyze the bar chart provided. The chart shows the average number of suicides per 100,000 people for different age groups.\n\nThe highest bar on the chart corresponds to the age group \"75+ years,\" indicating that this age group had the highest number of suicides per 100,000 people in 2016.\n\n*Answer*: E",
+        "model_choice": "E"
+    },
+    {
+        "color": "magenta",
+        "question": "What age group had the highest number of suicides per 100,000 people in 2016?",
+        "options": {
+            "A": "5-14 years",
+            "B": "15-24 years",
+            "C": "25-34 years",
+            "D": "35-44 years",
+            "E": "75 years and above"
+        },
+        "answer": "E",
+        "model_output": "To determine the age group with the highest number of suicides per 100,000 people in 2016, we need to analyze the bar plot provided. The x-axis represents different age groups, and the y-axis represents the number of suicides per 100,000 people.\n\nLooking at the bar plot, we can see that the bar for the 75+ years age group is the tallest, indicating that this age group had the highest number of suicides per 100,000 people in 2016.\n\nTherefore, the correct answer is:\n\n*Answer*: E",
+        "model_choice": "E"
+    },
+    {
+        "color": "orange",
+        "question": "What age group had the highest number of suicides per 100,000 people in 2016?",
+        "options": {
+            "A": "5-14 years",
+            "B": "15-24 years",
+            "C": "25-34 years",
+            "D": "35-44 years",
+            "E": "75 years and above"
+        },
+        "answer": "E",
+        "model_output": "To determine the age group with the highest number of suicides per 100,000 people in 2016, we need to analyze the bar chart provided. The chart shows the average number of suicides per 100,000 people for different age groups.\n\nThe x-axis represents the age groups, and the y-axis represents the average number of suicides per 100,000 people. The bars are colored orange, and their heights correspond to the number of suicides per 100,000 people.\n\nLooking at the chart, we can see that the bar for the 75+ years age group is the tallest, indicating that this age group had the highest number of suicides per 100,000 people in 2016.\n\n*Answer*: E",
+        "model_choice": "E"
+    },
+    {
+        "color": "yellow",
+        "question": "What age group had the highest number of suicides per 100,000 people in 2016?",
+        "options": {
+            "A": "5-14 years",
+            "B": "15-24 years",
+            "C": "25-34 years",
+            "D": "35-44 years",
+            "E": "75 years and above"
+        },
+        "answer": "E",
+        "model_output": "To determine the age group with the highest number of suicides per 100,000 people in 2016, we need to analyze the bar chart provided. The chart shows the average number of suicides per 100,000 people for different age groups.\n\nThe x-axis represents the age groups, and the y-axis represents the average number of suicides per 100,000 people. The bars are colored yellow, and their heights correspond to the number of suicides per 100,000 people.\n\nLooking at the chart, we can see that the bar for the 75+ years age group is the tallest, indicating that this age group had the highest number of suicides per 100,000 people in 2016.\n\n*Answer*: E",
+        "model_choice": "E"
+    },
+    {
+        "color": "black",
+        "question": "What age group had the highest number of suicides per 100,000 people in 2016?",
+        "options": {
+            "A": "5-14 years",
+            "B": "15-24 years",
+            "C": "25-34 years",
+            "D": "35-44 years",
+            "E": "75 years and above"
+        },
+        "answer": "E",
+        "model_output": "To determine the age group with the highest number of suicides per 100,000 people in 2016, we need to analyze the bar chart provided. The chart shows the average number of suicides per 100,000 people for different age groups.\n\nThe highest bar on the chart corresponds to the age group \"75+ years,\" indicating that this age group had the highest number of suicides per 100,000 people in 2016.\n\n*Answer*: E",
+        "model_choice": "E"
+    },
+    {
+        "color": "blue",
+        "question": "What is the distribution of revenue for the 4803 movies in the dataset?",
+        "options": {
+            "A": "A normal distribution with most movies having revenue around 1 billion",
+            "B": "A uniform distribution with all movies having revenue around 0.5 billion",
+            "C": "A uniform distribution with all movies having revenue around 1 billion",
+            "D": "A bimodal distribution with two peaks at 0.5 and 1.5 billion",
+            "E": "A skewed distribution with most movies having low revenue"
+        },
+        "answer": "E",
+        "model_output": "Based on the bar plot, the distribution of revenue for the 4803 movies in the dataset appears to be skewed, with most movies having low revenue. The majority of the bars are clustered at the lower end of the revenue scale, with a few bars at higher revenue levels. This suggests that the distribution is not uniform or normal, but rather skewed towards lower revenue values.\n\n*Answer*: E",
+        "model_choice": "E"
+    },
+    {
+        "color": "cyan",
+        "question": "What is the distribution of revenue for the 4803 movies in the dataset?",
+        "options": {
+            "A": "A normal distribution with most movies having revenue around 1 billion",
+            "B": "A uniform distribution with all movies having revenue around 0.5 billion",
+            "C": "A uniform distribution with all movies having revenue around 1 billion",
+            "D": "A bimodal distribution with two peaks at 0.5 and 1.5 billion",
+            "E": "A skewed distribution with most movies having low revenue"
+        },
+        "answer": "E",
+        "model_output": "Based on the bar plot, the distribution of revenue for the 4803 movies in the dataset is skewed, with most movies having low revenue. The majority of the bars are concentrated on the left side of the plot, indicating that the revenue is concentrated at lower values. This suggests that the distribution is skewed to the left, with a long tail of low-revenue movies.\n\n*Answer*: E",
+        "model_choice": "E"
+    },
+    {
+        "color": "green",
+        "question": "What is the distribution of revenue for the 4803 movies in the dataset?",
+        "options": {
+            "A": "A normal distribution with most movies having revenue around 1 billion",
+            "B": "A uniform distribution with all movies having revenue around 0.5 billion",
+            "C": "A uniform distribution with all movies having revenue around 1 billion",
+            "D": "A bimodal distribution with two peaks at 0.5 and 1.5 billion",
+            "E": "A skewed distribution with most movies having low revenue"
+        },
+        "answer": "E",
+        "model_output": "Based on the bar plot, the distribution of revenue for the 4803 movies in the dataset is skewed, with most movies having low revenue. The majority of the bars are concentrated on the left side of the plot, indicating that the revenue is concentrated at lower values. This suggests that the distribution is skewed to the left, with a long tail of low-revenue movies.\n\n*Answer*: E",
+        "model_choice": "E"
+    },
+    {
+        "color": "red",
+        "question": "What is the distribution of revenue for the 4803 movies in the dataset?",
+        "options": {
+            "A": "A normal distribution with most movies having revenue around 1 billion",
+            "B": "A uniform distribution with all movies having revenue around 0.5 billion",
+            "C": "A uniform distribution with all movies having revenue around 1 billion",
+            "D": "A bimodal distribution with two peaks at 0.5 and 1.5 billion",
+            "E": "A skewed distribution with most movies having low revenue"
+        },
+        "answer": "E",
+        "model_output": "Based on the bar plot, the distribution of revenue for the 4803 movies in the dataset is skewed, with most movies having low revenue. The majority of the bars are concentrated on the left side of the plot, indicating that the revenue is concentrated at lower values. This suggests that the distribution is skewed to the left, with a long tail of low-revenue movies.\n\n*Answer*: E",
+        "model_choice": "E"
+    },
+    {
+        "color": "magenta",
+        "question": "What is the distribution of revenue for the 4803 movies in the dataset?",
+        "options": {
+            "A": "A normal distribution with most movies having revenue around 1 billion",
+            "B": "A uniform distribution with all movies having revenue around 0.5 billion",
+            "C": "A uniform distribution with all movies having revenue around 1 billion",
+            "D": "A bimodal distribution with two peaks at 0.5 and 1.5 billion",
+            "E": "A skewed distribution with most movies having low revenue"
+        },
+        "answer": "E",
+        "model_output": "Based on the bar plot, the distribution of revenue for the 4803 movies in the dataset appears to be skewed, with most movies having low revenue. The majority of the bars are clustered at the lower end of the revenue scale, with a few bars at higher revenue levels. This suggests that the distribution is not uniform or normal, but rather skewed towards lower revenue values.\n\n*Answer*: E",
+        "model_choice": "E"
+    },
+    {
+        "color": "orange",
+        "question": "What is the distribution of revenue for the 4803 movies in the dataset?",
+        "options": {
+            "A": "A normal distribution with most movies having revenue around 1 billion",
+            "B": "A uniform distribution with all movies having revenue around 0.5 billion",
+            "C": "A uniform distribution with all movies having revenue around 1 billion",
+            "D": "A bimodal distribution with two peaks at 0.5 and 1.5 billion",
+            "E": "A skewed distribution with most movies having low revenue"
+        },
+        "answer": "E",
+        "model_output": "Based on the bar plot, the distribution of revenue for the 4803 movies in the dataset is skewed, with most movies having low revenue. The majority of the bars are concentrated on the left side of the plot, indicating that the revenue is concentrated at lower values. This suggests that the distribution is skewed to the left, with a long tail of low-revenue movies.\n\n*Answer*: E",
+        "model_choice": "E"
+    },
+    {
+        "color": "yellow",
+        "question": "What is the distribution of revenue for the 4803 movies in the dataset?",
+        "options": {
+            "A": "A normal distribution with most movies having revenue around 1 billion",
+            "B": "A uniform distribution with all movies having revenue around 0.5 billion",
+            "C": "A uniform distribution with all movies having revenue around 1 billion",
+            "D": "A bimodal distribution with two peaks at 0.5 and 1.5 billion",
+            "E": "A skewed distribution with most movies having low revenue"
+        },
+        "answer": "E",
+        "model_output": "Based on the bar plot, the distribution of revenue for the 4803 movies in the dataset is skewed, with most movies having low revenue. The majority of the bars are concentrated at the lower end of the revenue scale, with a few bars at the higher end. This suggests that the distribution is skewed to the left, with a long tail of low-revenue movies.\n\n*Answer*: E",
+        "model_choice": "E"
+    },
+    {
+        "color": "black",
+        "question": "What is the distribution of revenue for the 4803 movies in the dataset?",
+        "options": {
+            "A": "A normal distribution with most movies having revenue around 1 billion",
+            "B": "A uniform distribution with all movies having revenue around 0.5 billion",
+            "C": "A uniform distribution with all movies having revenue around 1 billion",
+            "D": "A bimodal distribution with two peaks at 0.5 and 1.5 billion",
+            "E": "A skewed distribution with most movies having low revenue"
+        },
+        "answer": "E",
+        "model_output": "Based on the bar plot, the distribution of revenue for the 4803 movies in the dataset is skewed, with most movies having low revenue. The majority of the bars are concentrated on the left side of the plot, indicating that the revenue is concentrated at lower values. This suggests that the distribution is skewed to the left, with a long tail of low-revenue movies.\n\n*Answer*: E",
+        "model_choice": "E"
+    }
+]

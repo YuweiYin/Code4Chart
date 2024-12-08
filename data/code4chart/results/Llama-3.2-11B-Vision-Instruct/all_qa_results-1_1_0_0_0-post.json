@@ -1,0 +1,1192 @@
+[
+    {
+        "question": null,
+        "options": null,
+        "answer": null,
+        "model_output": null,
+        "model_choice": null
+    },
+    {
+        "question": "Which country/region has the highest number of confirmed cases?",
+        "options": {
+            "A": "China",
+            "B": "Italy",
+            "C": "Iran",
+            "D": "United States",
+            "E": "Japan"
+        },
+        "answer": "A",
+        "model_output": "D",
+        "model_choice": "D"
+    },
+    {
+        "question": null,
+        "options": null,
+        "answer": null,
+        "model_output": null,
+        "model_choice": null
+    },
+    {
+        "question": "What is the mean of the longitude values in the COVID-19 dataset?",
+        "options": {
+            "A": "-135.00",
+            "B": "23.53",
+            "C": "178.07",
+            "D": "70.44",
+            "E": "4,200,000"
+        },
+        "answer": "B",
+        "model_output": "B",
+        "model_choice": "B"
+    },
+    {
+        "question": "What is the general trend of the daily confirmed cases of COVID-19 over time, as shown in the chart?",
+        "options": {
+            "A": "A steady decrease in cases from the beginning to the end of the dataset",
+            "B": "A steady increase in cases from the beginning to the end of the dataset",
+            "C": "A sharp decrease in cases towards the end of the dataset",
+            "D": "A steady fluctuation in cases throughout the dataset",
+            "E": "A sharp increase in cases towards the end of the dataset"
+        },
+        "answer": "E",
+        "model_output": "The chart shows a steady increase in cases from the beginning to the end of the dataset.",
+        "model_choice": "B"
+    },
+    {
+        "question": "What is the mean of the confirmed cases in the dataset?",
+        "options": {
+            "A": "10,027",
+            "B": "16,885",
+            "C": "130,024",
+            "D": "1,430,019",
+            "E": "5,085,003"
+        },
+        "answer": "B",
+        "model_output": "B: 16,885",
+        "model_choice": "B"
+    },
+    {
+        "question": "What is the maximum number of deaths in the dataset?",
+        "options": {
+            "A": "10072",
+            "B": "27901",
+            "C": "30502",
+            "D": "93401",
+            "E": "148011"
+        },
+        "answer": "E",
+        "model_output": "E",
+        "model_choice": "E"
+    },
+    {
+        "question": "What is the distribution of recovered cases in the COVID-19 dataset?",
+        "options": {
+            "A": "A normal distribution with a mean of 7915.71",
+            "B": "A skewed distribution with a large majority of cases having a low number of recovered cases",
+            "C": "A uniform distribution with a range of 0 to 1846641",
+            "D": "A bimodal distribution with two peaks at 0 and 1846641",
+            "E": "A Poisson distribution with a mean of 54800.36"
+        },
+        "answer": "B",
+        "model_output": "B: A skewed distribution with a large majority of cases having a low number of recovered cases",
+        "model_choice": "B"
+    },
+    {
+        "question": "What is the approximate mean of the active COVID-19 cases in the dataset?",
+        "options": {
+            "A": "1000",
+            "B": "5000",
+            "C": "8000",
+            "D": "20000",
+            "E": "40000"
+        },
+        "answer": "C",
+        "model_output": "To find the approximate mean of the active COVID-19 cases in the dataset, we can look at the provided information. The mean of the feature values is given as 8085.01.\n\nThe final answer is: C",
+        "model_choice": "C"
+    },
+    {
+        "question": "Which region has had the highest number of COVID-19 cases?",
+        "options": {
+            "A": "Eastern Mediterranean",
+            "B": "Europe",
+            "C": "Africa",
+            "D": "Americas",
+            "E": "Western Pacific"
+        },
+        "answer": "D",
+        "model_output": "D",
+        "model_choice": "D"
+    },
+    {
+        "question": "What is the highest rank value in the dataset?",
+        "options": {
+            "A": "1",
+            "B": "16600",
+            "C": "8300.61",
+            "D": "4791.71",
+            "E": "0.5"
+        },
+        "answer": "B",
+        "model_output": "B",
+        "model_choice": "B"
+    },
+    {
+        "question": null,
+        "options": null,
+        "answer": null,
+        "model_output": null,
+        "model_choice": null
+    },
+    {
+        "question": "What is the platform with the highest sales in the dataset?",
+        "options": {
+            "A": "3DS",
+            "B": "NES",
+            "C": "DS",
+            "D": "PS3",
+            "E": "Wii"
+        },
+        "answer": "E",
+        "model_output": "E",
+        "model_choice": "E"
+    },
+    {
+        "question": "What is the primary distribution pattern of the global sales data in the chart?",
+        "options": {
+            "A": "The sales distribution is evenly spread across all years.",
+            "B": "The sales distribution is uniform, with no outliers.",
+            "C": "The sales distribution is concentrated in the middle years, with a few outliers at the top and bottom.",
+            "D": "The sales distribution is bimodal, with two distinct peaks.",
+            "E": "The sales distribution is skewed towards the lower values, with a single outlier at the top."
+        },
+        "answer": "E",
+        "model_output": "Based on the chart, the sales distribution is skewed towards the lower values, with a single outlier at the top. This is evident from the fact that the majority of the data points are clustered at the lower end of the y-axis, with a single data point at the top (corresponding to the year 2020) that is significantly higher than the rest. This suggests that the sales distribution is skewed towards the lower values, with a single outlier at the top.\n\n*Answer*: E",
+        "model_choice": "E"
+    },
+    {
+        "question": "What is the top-selling genre in the video game market based on global sales?",
+        "options": {
+            "A": "Sports",
+            "B": "RPG",
+            "C": "Action",
+            "D": "Strategy",
+            "E": "Adventure"
+        },
+        "answer": "B",
+        "model_output": "Based on the bar plot, the top-selling genre in the video game market based on global sales is Action.",
+        "model_choice": "C"
+    },
+    {
+        "question": null,
+        "options": null,
+        "answer": null,
+        "model_output": null,
+        "model_choice": null
+    },
+    {
+        "question": "What is the most common value of NA_Sales in the dataset?",
+        "options": {
+            "A": "0.00",
+            "B": "0.26",
+            "C": "0.82",
+            "D": "41.49",
+            "E": "16000.00"
+        },
+        "answer": "A",
+        "model_output": "A",
+        "model_choice": "A"
+    },
+    {
+        "question": "What is the most common value of EU_Sales in the dataset?",
+        "options": {
+            "A": "16400",
+            "B": "29.02",
+            "C": "0.15",
+            "D": "0.00",
+            "E": "0.51"
+        },
+        "answer": "D",
+        "model_output": "To find the most common value of EU_Sales in the dataset, we need to look at the histogram and identify the bar with the highest frequency. The histogram shows a single bar with a high frequency, which corresponds to the value 0.00. This indicates that the most common value of EU_Sales in the dataset is 0.00.\n\n*Answer*: D",
+        "model_choice": "D"
+    },
+    {
+        "question": "What is the mean of the \"JP_Sales\" feature values in the dataset?",
+        "options": {
+            "A": "0.08",
+            "B": "0.31",
+            "C": "10.22",
+            "D": "0.00",
+            "E": "244"
+        },
+        "answer": "A",
+        "model_output": "A",
+        "model_choice": "A"
+    },
+    {
+        "question": "What is the approximate number of data points with a value of 0 in the \"Other_Sales\" category?",
+        "options": {
+            "A": "1000",
+            "B": "5000",
+            "C": "16000",
+            "D": "20000",
+            "E": "30000"
+        },
+        "answer": "C",
+        "model_output": "To find the approximate number of data points with a value of 0 in the \"Other_Sales\" category, we need to look at the bar plot and identify the bar that corresponds to 0 on the x-axis. The height of this bar represents the frequency of data points with a value of 0.\n\nLooking at the bar plot, we can see that the bar for 0 on the x-axis is the tallest bar, and its height is approximately 16000. This means that there are approximately 16000 data points with a value of 0 in the \"Other_Sales\" category.\n\n*Answer*: C",
+        "model_choice": "C"
+    },
+    {
+        "question": null,
+        "options": null,
+        "answer": null,
+        "model_output": null,
+        "model_choice": null
+    },
+    {
+        "question": "What is the distribution of unique Id values in the dataset?",
+        "options": {
+            "A": "A random distribution of unique Id values",
+            "B": "A uniform distribution of unique Id values",
+            "C": "A bimodal distribution of unique Id values",
+            "D": "A steady decrease in the count of unique Id values as the Id values increase",
+            "E": "A steady increase in the count of unique Id values as the Id values increase"
+        },
+        "answer": "E",
+        "model_output": "E",
+        "model_choice": "E"
+    },
+    {
+        "question": "What is the most frequent sepal length in the dataset?",
+        "options": {
+            "A": "4.30 cm",
+            "B": "5.84 cm",
+            "C": "7.90 cm",
+            "D": "140 cm",
+            "E": "0 cm"
+        },
+        "answer": "D",
+        "model_output": "To find the most frequent sepal length in the dataset, we need to look at the histogram and identify the bar with the highest frequency. The x-axis represents the sepal length in cm, and the y-axis represents the frequency.\n\nLooking at the histogram, we can see that the bar with the highest frequency is at 5.84 cm, which corresponds to the mean of the sepal length values. This is because the mean is the average value of all the data points, and in this case, it is the most frequent value.\n\nTherefore, the most frequent sepal length in the dataset is 5.84 cm.\n\n**Answer: B**",
+        "model_choice": "B"
+    },
+    {
+        "question": "What is the most common sepal width in the Iris dataset?",
+        "options": {
+            "A": "2.00 cm",
+            "B": "3.00 cm",
+            "C": "3.05 cm",
+            "D": "4.00 cm",
+            "E": "4.40 cm"
+        },
+        "answer": "B",
+        "model_output": "To find the most common sepal width in the Iris dataset, we need to look at the histogram and identify the bar with the highest frequency. The histogram shows the distribution of sepal widths, with the x-axis representing the sepal width in centimeters and the y-axis representing the frequency.\n\nThe highest bar in the histogram corresponds to a sepal width of 4.40 cm, which has the highest frequency. Therefore, the most common sepal width in the Iris dataset is 4.40 cm.\n\n**Answer: E**",
+        "model_choice": "E"
+    },
+    {
+        "question": "What is the approximate range of petal lengths in centimeters for the dataset of 150 iris species?",
+        "options": {
+            "A": "0-10 cm",
+            "B": "1-6 cm",
+            "C": "2-8 cm",
+            "D": "3-9 cm",
+            "E": "4-12 cm"
+        },
+        "answer": "B",
+        "model_output": "To determine the approximate range of petal lengths in centimeters for the dataset of 150 iris species, we can analyze the provided information and chart figure.\n\nThe chart figure shows a histogram with the x-axis representing petal length in centimeters and the y-axis representing frequency. The x-axis major ticks range from 0 to 140 cm, with minor ticks at intervals of 4 cm. The histogram bars are densely packed, indicating a large number of data points within each bin.\n\nFrom the chart, we can see that the petal lengths range from approximately 1 cm to 6 cm. The majority of the data points are concentrated between 2 cm and 5 cm, with a few data points extending up to 6 cm.\n\nTherefore, based on the chart figure, the approximate range of petal lengths in centimeters for the dataset of 150 iris species is:\n\n*Answer*: B",
+        "model_choice": "B"
+    },
+    {
+        "question": "What is the most frequent petal width in centimeters for the iris species dataset?",
+        "options": {
+            "A": "0.10 cm",
+            "B": "1.20 cm",
+            "C": "2.50 cm",
+            "D": "140 cm",
+            "E": "0.76 cm"
+        },
+        "answer": "D",
+        "model_output": "To find the most frequent petal width in centimeters for the iris species dataset, we need to look at the histogram provided. The histogram shows the distribution of petal widths in centimeters. The x-axis represents the petal width in centimeters, and the y-axis represents the frequency.\n\nLooking at the histogram, we can see that the highest frequency is at 0.10 cm. This means that the most frequent petal width in centimeters for the iris species dataset is 0.10 cm.\n\n*Answer*: A",
+        "model_choice": "A"
+    },
+    {
+        "question": "What is the species with the highest count in the Iris dataset?",
+        "options": {
+            "A": "Iris-setosa",
+            "B": "Iris-versicolor",
+            "C": "Iris-virginica",
+            "D": "Iris-virginica and Iris-setosa",
+            "E": "Iris-setosa and Iris-versicolor"
+        },
+        "answer": "A",
+        "model_output": "D",
+        "model_choice": "D"
+    },
+    {
+        "question": "What is the distribution of Netflix movies and TV shows across different show IDs?",
+        "options": {
+            "A": "A bar plot showing the count of movies and TV shows by genre",
+            "B": "A scatter plot showing the relationship between show ID and release year",
+            "C": "A pie chart showing the proportion of movies and TV shows by release year",
+            "D": "A horizontal bar plot showing the distribution of Netflix movies and TV shows by show ID",
+            "E": "A histogram showing the distribution of show IDs by genre"
+        },
+        "answer": "D",
+        "model_output": "D",
+        "model_choice": "D"
+    },
+    {
+        "question": null,
+        "options": null,
+        "answer": null,
+        "model_output": null,
+        "model_choice": null
+    },
+    {
+        "question": null,
+        "options": null,
+        "answer": null,
+        "model_output": null,
+        "model_choice": null
+    },
+    {
+        "question": null,
+        "options": null,
+        "answer": null,
+        "model_output": null,
+        "model_choice": null
+    },
+    {
+        "question": null,
+        "options": null,
+        "answer": null,
+        "model_output": null,
+        "model_choice": null
+    },
+    {
+        "question": null,
+        "options": null,
+        "answer": null,
+        "model_output": null,
+        "model_choice": null
+    },
+    {
+        "question": null,
+        "options": null,
+        "answer": null,
+        "model_output": null,
+        "model_choice": null
+    },
+    {
+        "question": "What is the year with the highest frequency of Netflix movies and TV shows released, according to the bar plot?",
+        "options": {
+            "A": "2005",
+            "B": "2010",
+            "C": "2015",
+            "D": "2018",
+            "E": "2020"
+        },
+        "answer": "E",
+        "model_output": "To answer this question, we need to look at the bar plot and identify the year with the highest frequency of Netflix movies and TV shows released. The x-axis represents the release year, and the y-axis represents the frequency.\n\nLooking at the bar plot, we can see that the highest bar corresponds to the year 2020. This indicates that 2020 has the highest frequency of Netflix movies and TV shows released.\n\nTherefore, the correct answer is:\n\nE: 2020",
+        "model_choice": "E"
+    },
+    {
+        "question": "What is the most popular Netflix movie or TV show rating category?",
+        "options": {
+            "A": "TV-14",
+            "B": "PG-13",
+            "C": "R",
+            "D": "TV-MA",
+            "E": "TV-PG"
+        },
+        "answer": "D",
+        "model_output": "D",
+        "model_choice": "D"
+    },
+    {
+        "question": null,
+        "options": null,
+        "answer": null,
+        "model_output": null,
+        "model_choice": null
+    },
+    {
+        "question": null,
+        "options": null,
+        "answer": null,
+        "model_output": null,
+        "model_choice": null
+    },
+    {
+        "question": null,
+        "options": null,
+        "answer": null,
+        "model_output": null,
+        "model_choice": null
+    },
+    {
+        "question": "What is the most popular price point for Airbnb listings in New York City?",
+        "options": {
+            "A": "$0-$500",
+            "B": "$1,000-$2,000",
+            "C": "$2,000-$3,000",
+            "D": "$3,000-$4,000",
+            "E": "$4,000-$5,000"
+        },
+        "answer": "B",
+        "model_output": "To determine the most popular price point for Airbnb listings in New York City, we need to analyze the histogram provided. The histogram shows the distribution of prices for Airbnb listings in New York City.\n\nThe x-axis represents the price range, and the y-axis represents the frequency or count of listings within each price range. The histogram is divided into several bins, each representing a specific price range.\n\nUpon examining the histogram, we can see that the highest frequency of listings falls within the $2,000-$3,000 price range. This indicates that the majority of Airbnb listings in New York City are priced between $2,000 and $3,000.\n\nTherefore, based on the histogram, the most popular price point for Airbnb listings in New York City is:\n\n**Answer: C: $2,000-$3,000**",
+        "model_choice": "C"
+    },
+    {
+        "question": null,
+        "options": null,
+        "answer": null,
+        "model_output": null,
+        "model_choice": null
+    },
+    {
+        "question": "What is the distribution of host ID values in the New York City Airbnb Open Data 2019 dataset?",
+        "options": {
+            "A": "The majority of host IDs fall within the range of 0-1,000.",
+            "B": "The majority of host IDs fall within the range of 0-5,000.",
+            "C": "The majority of host IDs fall within the range of 0-10,000.",
+            "D": "The majority of host IDs fall within the range of 0-50,000.",
+            "E": "The majority of host IDs fall within the range of 0-100,000."
+        },
+        "answer": "B",
+        "model_output": "To determine the distribution of host ID values in the New York City Airbnb Open Data 2019 dataset, we need to analyze the histogram provided. The histogram shows the frequency of host ID values on the y-axis and the host ID values on the x-axis.\n\nThe histogram indicates that the majority of host IDs fall within the range of 0-10,000. This is evident from the fact that the highest frequency is observed in the range of 0-10,000, with a significant drop in frequency for values above 10,000.\n\nTherefore, the correct answer is:\n\nC: The majority of host IDs fall within the range of 0-10,000.",
+        "model_choice": "C"
+    },
+    {
+        "question": null,
+        "options": null,
+        "answer": null,
+        "model_output": null,
+        "model_choice": null
+    },
+    {
+        "question": null,
+        "options": null,
+        "answer": null,
+        "model_output": null,
+        "model_choice": null
+    },
+    {
+        "question": null,
+        "options": null,
+        "answer": null,
+        "model_output": null,
+        "model_choice": null
+    },
+    {
+        "question": "What is the distribution of latitude values in the NYC Airbnb Open Data 2019?",
+        "options": {
+            "A": "Skewed distribution with most values around 40.7",
+            "B": "Uniform distribution with most values around 40.5",
+            "C": "Normal distribution with most values around 40.8",
+            "D": "Bimodal distribution with peaks at 40.5 and 40.9",
+            "E": "Poisson distribution with most values around 40.6"
+        },
+        "answer": "A",
+        "model_output": "A",
+        "model_choice": "A"
+    },
+    {
+        "question": "What is the most frequent longitude value in the New York City Airbnb Open Data 2019?",
+        "options": {
+            "A": "-73.71",
+            "B": "-73.95",
+            "C": "-74.24",
+            "D": "-80",
+            "E": "40"
+        },
+        "answer": "C",
+        "model_output": "To find the most frequent longitude value, we need to look at the histogram and identify the peak. The histogram shows a single peak at -73.71, which is the most frequent longitude value in the New York City Airbnb Open Data 2019.\n\n**Answer:** A",
+        "model_choice": "A"
+    },
+    {
+        "question": "What is the distribution of room types in the New York City Airbnb Open Data 2019?",
+        "options": {
+            "A": "Entire home/apt is the most common room type.",
+            "B": "Private room is the most common room type.",
+            "C": "Shared room is the most common room type.",
+            "D": "The distribution of room types is evenly spread across all three types.",
+            "E": "The distribution of room types is not provided in the dataset."
+        },
+        "answer": "D",
+        "model_output": "Based on the bar chart, we can see that the distribution of room types is evenly spread across all three types, with each type having a count of 1. This suggests that the distribution of room types is not skewed towards any particular type, and each type is equally represented in the dataset.\n\n*Answer*: D",
+        "model_choice": "D"
+    },
+    {
+        "question": "What is the mean price of NYC Airbnb listings in 2019?",
+        "options": {
+            "A": "$100",
+            "B": "$150",
+            "C": "$200",
+            "D": "$250",
+            "E": "$152.72"
+        },
+        "answer": "E",
+        "model_output": "E",
+        "model_choice": "E"
+    },
+    {
+        "question": "What is the minimum number of nights in the NYC Airbnb listings dataset?",
+        "options": {
+            "A": "1",
+            "B": "5",
+            "C": "10",
+            "D": "20",
+            "E": "1250"
+        },
+        "answer": "A",
+        "model_output": "A",
+        "model_choice": "A"
+    },
+    {
+        "question": "What is the approximate mean number of reviews for the dataset?",
+        "options": {
+            "A": "10.74",
+            "B": "20.01",
+            "C": "23.27",
+            "D": "40.21",
+            "E": "52.90"
+        },
+        "answer": "C",
+        "model_output": "To find the approximate mean number of reviews for the dataset, we can look at the provided information. The mean of the feature values is given as 23.27.\n\n*Answer*: C",
+        "model_choice": "C"
+    },
+    {
+        "question": null,
+        "options": null,
+        "answer": null,
+        "model_output": null,
+        "model_choice": null
+    },
+    {
+        "question": "What is the mean value of reviews per month in the dataset?",
+        "options": {
+            "A": "0.01",
+            "B": "1.37",
+            "C": "1.68",
+            "D": "10,000",
+            "E": "58.50"
+        },
+        "answer": "B",
+        "model_output": "B",
+        "model_choice": "B"
+    },
+    {
+        "question": null,
+        "options": null,
+        "answer": null,
+        "model_output": null,
+        "model_choice": null
+    },
+    {
+        "question": "What percentage of New York City Airbnb listings in 2019 had an availability of 365 days?",
+        "options": {
+            "A": "10%",
+            "B": "50%",
+            "C": "80%",
+            "D": "90%",
+            "E": "95%"
+        },
+        "answer": "C",
+        "model_output": "To find the percentage of New York City Airbnb listings in 2019 that had an availability of 365 days, we need to look at the distribution of the availability_365 feature. The histogram shows that the majority of the listings have an availability of 0 days, with a few listings having an availability of 365 days. \n\nSince the y-axis represents the frequency and the x-axis represents the availability_365, we can see that the frequency of listings with an availability of 365 days is relatively low compared to the total number of listings. \n\nLooking at the y-axis major ticks, we can estimate that the frequency of listings with an availability of 365 days is around 10% of the total number of listings.\n\n*Answer*: A",
+        "model_choice": "A"
+    },
+    {
+        "question": "What is the number of unique values for the feature 'id' in the Stroke Prediction Dataset?",
+        "options": {
+            "A": "5110",
+            "B": "51100",
+            "C": "511000",
+            "D": "5110000",
+            "E": "51100000"
+        },
+        "answer": "A",
+        "model_output": "A",
+        "model_choice": "A"
+    },
+    {
+        "question": null,
+        "options": null,
+        "answer": null,
+        "model_output": null,
+        "model_choice": null
+    },
+    {
+        "question": "What can be inferred about the age distribution in the dataset based on the chart?",
+        "options": {
+            "A": "The age distribution is highly skewed towards older individuals.",
+            "B": "The age distribution is normally distributed, with a single peak.",
+            "C": "The age distribution is bimodal, with two distinct peaks.",
+            "D": "The age distribution is highly variable, with a wide range of ages.",
+            "E": "The age distribution is uniform across all categories."
+        },
+        "answer": "E",
+        "model_output": "Based on the chart, the age distribution appears to be highly variable, with a wide range of ages. The histogram shows a large number of individuals in the younger age groups (0-20) and a smaller number of individuals in the older age groups (40-80). This suggests that the age distribution is not normally distributed or bimodal, but rather has a wide range of ages. Therefore, the correct answer is:\n\n**Answer: D**",
+        "model_choice": "D"
+    },
+    {
+        "question": "What is the frequency of the value 1 in the 'hypertension' feature?",
+        "options": {
+            "A": "10,000",
+            "B": "22,000",
+            "C": "30,000",
+            "D": "40,100",
+            "E": "44,000"
+        },
+        "answer": "E",
+        "model_output": "To find the frequency of the value 1 in the 'hypertension' feature, we need to look at the bar chart provided. The chart shows two bars, one for 'Hypertension' and one for 'No Hypertension'. The height of the 'Hypertension' bar represents the frequency of the value 1 in the 'hypertension' feature.\n\nFrom the chart, we can see that the 'Hypertension' bar is at 0, which means that the frequency of the value 1 in the 'hypertension' feature is 0.\n\n*Answer*: A",
+        "model_choice": "A"
+    },
+    {
+        "question": null,
+        "options": null,
+        "answer": null,
+        "model_output": null,
+        "model_choice": null
+    },
+    {
+        "question": null,
+        "options": null,
+        "answer": null,
+        "model_output": null,
+        "model_choice": null
+    },
+    {
+        "question": null,
+        "options": null,
+        "answer": null,
+        "model_output": null,
+        "model_choice": null
+    },
+    {
+        "question": null,
+        "options": null,
+        "answer": null,
+        "model_output": null,
+        "model_choice": null
+    },
+    {
+        "question": "What is the primary characteristic of the glucose level distribution in the dataset?",
+        "options": {
+            "A": "Bimodal distribution with two peaks",
+            "B": "Poisson distribution with a high frequency of low values",
+            "C": "Uniform distribution with equal frequency across all values",
+            "D": "Normal distribution with a mean at the center",
+            "E": "Skewed distribution with a single peak at the lower end"
+        },
+        "answer": "E",
+        "model_output": "Based on the histogram, the glucose level distribution appears to be skewed with a single peak at the lower end, indicating that most individuals have lower glucose levels. The distribution is not uniform, and there is a clear skew towards the lower values. This suggests that the majority of the population has relatively low glucose levels, with fewer individuals having higher glucose levels.\n\n*Answer*: E",
+        "model_choice": "E"
+    },
+    {
+        "question": "What is the most frequent BMI value in the Stroke Prediction Dataset?",
+        "options": {
+            "A": "10.30",
+            "B": "28.00",
+            "C": "28.89",
+            "D": "997.60",
+            "E": "40,000"
+        },
+        "answer": "E",
+        "model_output": "To find the most frequent BMI value in the Stroke Prediction Dataset, we need to look at the histogram provided. The histogram shows the distribution of BMI values, with the x-axis representing the BMI values and the y-axis representing the frequency. The highest bar in the histogram corresponds to the most frequent BMI value.\n\nLooking at the histogram, we can see that the highest bar is at a BMI value of 28.00. This indicates that the most frequent BMI value in the dataset is 28.00.\n\n*Answer*: B",
+        "model_choice": "B"
+    },
+    {
+        "question": null,
+        "options": null,
+        "answer": null,
+        "model_output": null,
+        "model_choice": null
+    },
+    {
+        "question": null,
+        "options": null,
+        "answer": null,
+        "model_output": null,
+        "model_choice": null
+    },
+    {
+        "question": "What is the number of unique gender categories in the dataset?",
+        "options": {
+            "A": "1",
+            "B": "2",
+            "C": "3",
+            "D": "4",
+            "E": "5"
+        },
+        "answer": "B",
+        "model_output": "Based on the information provided, the number of unique gender categories in the dataset can be determined by looking at the number of unique feature values for the 'gender' column. The code snippet shows that the 'gender' column has 2 unique values, which are 'female' and'male'. Therefore, the correct answer is:\n\n**Answer: B**",
+        "model_choice": "B"
+    },
+    {
+        "question": null,
+        "options": null,
+        "answer": null,
+        "model_output": null,
+        "model_choice": null
+    },
+    {
+        "question": "What is the most common parental education level in the dataset?",
+        "options": {
+            "A": "Some high school",
+            "B": "High school",
+            "C": "Some college",
+            "D": "Bachelor's degree",
+            "E": "Master's degree"
+        },
+        "answer": "A",
+        "model_output": "To determine the most common parental education level in the dataset, we need to look at the bar chart and identify the tallest bar. The y-axis represents the frequency, so the tallest bar corresponds to the highest frequency.\n\nLooking at the chart, we can see that the tallest bar is labeled \"some high school\". This indicates that the most common parental education level in the dataset is \"some high school\".\n\n*Answer*: A",
+        "model_choice": "A"
+    },
+    {
+        "question": null,
+        "options": null,
+        "answer": null,
+        "model_output": null,
+        "model_choice": null
+    },
+    {
+        "question": null,
+        "options": null,
+        "answer": null,
+        "model_output": null,
+        "model_choice": null
+    },
+    {
+        "question": "What is the most common math score among the students in the dataset?",
+        "options": {
+            "A": "0",
+            "B": "20",
+            "C": "40",
+            "D": "60",
+            "E": "80"
+        },
+        "answer": "D",
+        "model_output": "To find the most common math score among the students in the dataset, we need to look at the histogram and identify the bar with the highest frequency. The x-axis represents the math scores, and the y-axis represents the frequency. The bar with the highest frequency is the one that extends the farthest to the right on the x-axis.\n\nLooking at the histogram, we can see that the bar that extends the farthest to the right is the one corresponding to a math score of 100. This means that the most common math score among the students in the dataset is 100.\n\n*Answer*: E",
+        "model_choice": "E"
+    },
+    {
+        "question": null,
+        "options": null,
+        "answer": null,
+        "model_output": null,
+        "model_choice": null
+    },
+    {
+        "question": null,
+        "options": null,
+        "answer": null,
+        "model_output": null,
+        "model_choice": null
+    },
+    {
+        "question": "Which country has the highest average suicide rate per 100,000 people in the dataset?",
+        "options": {
+            "A": "United States",
+            "B": "Brazil",
+            "C": "Japan",
+            "D": "China",
+            "E": "India"
+        },
+        "answer": "A",
+        "model_output": "A",
+        "model_choice": "A"
+    },
+    {
+        "question": "What is the year with the highest suicide rate in the dataset?",
+        "options": {
+            "A": "1985",
+            "B": "1990",
+            "C": "1995",
+            "D": "2000",
+            "E": "2005"
+        },
+        "answer": "C",
+        "model_output": "To find the year with the highest suicide rate in the dataset, we need to look at the chart figure provided. The chart shows a line plot of suicide rates per 100,000 population over the years from 1985 to 2016.\n\nThe highest point on the chart corresponds to the year 1995, which has the highest suicide rate. Therefore, the correct answer is:\n\nC: 1995",
+        "model_choice": "C"
+    },
+    {
+        "question": "What is the main difference in suicide rates between males and females, as shown in the chart?",
+        "options": {
+            "A": "Females have a higher rate than males.",
+            "B": "The rates are almost equal for both sexes.",
+            "C": "Males have a significantly higher rate than females.",
+            "D": "The rates are decreasing for both sexes over time.",
+            "E": "The rates are increasing for both sexes over time."
+        },
+        "answer": "C",
+        "model_output": "To answer this question, we need to analyze the bar chart provided. The chart shows the average number of suicides per 100,000 people by sex. The x-axis represents the sex, and the y-axis represents the average number of suicides per 100,000 people.\n\nLooking at the chart, we can see that the bar for males is significantly higher than the bar for females. This indicates that males have a higher rate of suicide than females.\n\nTherefore, the correct answer is:\n\n*Answer*: C",
+        "model_choice": "C"
+    },
+    {
+        "question": "What age group had the highest number of suicides per 100,000 people in 2016?",
+        "options": {
+            "A": "5-14 years",
+            "B": "15-24 years",
+            "C": "25-34 years",
+            "D": "35-44 years",
+            "E": "75 years and above"
+        },
+        "answer": "E",
+        "model_output": "E",
+        "model_choice": "E"
+    },
+    {
+        "question": "What is the approximate average number of suicides per 100,000 people in the dataset?",
+        "options": {
+            "A": "104",
+            "B": "242",
+            "C": "524",
+            "D": "1037",
+            "E": "5320"
+        },
+        "answer": "B",
+        "model_output": "B",
+        "model_choice": "B"
+    },
+    {
+        "question": null,
+        "options": null,
+        "answer": null,
+        "model_output": null,
+        "model_choice": null
+    },
+    {
+        "question": null,
+        "options": null,
+        "answer": null,
+        "model_output": null,
+        "model_choice": null
+    },
+    {
+        "question": null,
+        "options": null,
+        "answer": null,
+        "model_output": null,
+        "model_choice": null
+    },
+    {
+        "question": null,
+        "options": null,
+        "answer": null,
+        "model_output": null,
+        "model_choice": null
+    },
+    {
+        "question": "What is the relationship between the average GDP and the number of countries as shown in the chart?",
+        "options": {
+            "A": "A negative correlation, where higher GDP is associated with fewer countries.",
+            "B": "An inverse relationship, where higher GDP is associated with fewer countries.",
+            "C": "No correlation, where GDP and the number of countries are unrelated.",
+            "D": "A positive correlation, where higher GDP is associated with more countries.",
+            "E": "A direct relationship, where higher GDP is associated with more countries."
+        },
+        "answer": "D",
+        "model_output": "The chart shows a positive correlation between the average GDP and the number of countries, where higher GDP is associated with more countries.",
+        "model_choice": "D"
+    },
+    {
+        "question": null,
+        "options": null,
+        "answer": null,
+        "model_output": null,
+        "model_choice": null
+    },
+    {
+        "question": "What is the relationship between the number of suicides per 100,000 people and the Human Development Index (HDI) for each country over the years 1985 to 2016, as shown in the scatter plot?",
+        "options": {
+            "A": "The number of suicides per 100,000 people remains constant regardless of the HDI.",
+            "B": "The relationship between the number of suicides per 100,000 people and the HDI is unclear.",
+            "C": "There is no relationship between the number of suicides per 100,000 people and the HDI.",
+            "D": "The number of suicides per 100,000 people increases as the HDI increases.",
+            "E": "The number of suicides per 100,000 people decreases as the HDI increases."
+        },
+        "answer": "E",
+        "model_output": "The scatter plot shows a negative correlation between the number of suicides per 100,000 people and the Human Development Index (HDI) for each country over the years 1985 to 2016. This suggests that as the HDI increases, the number of suicides per 100,000 people tends to decrease. Therefore, the correct answer is:\n\nE: The number of suicides per 100,000 people decreases as the HDI increases.",
+        "model_choice": "E"
+    },
+    {
+        "question": "What percentage of movies in the dataset have a budget of less than $1 million?",
+        "options": {
+            "A": "20%",
+            "B": "50%",
+            "C": "70%",
+            "D": "80%",
+            "E": "Not enough information to determine"
+        },
+        "answer": "C",
+        "model_output": "To find the percentage of movies with a budget of less than $1 million, we need to analyze the histogram provided. The histogram shows the distribution of movie budgets, with the x-axis representing the budget in dollars and the y-axis representing the frequency.\n\nLooking at the histogram, we can see that the majority of the data points are concentrated on the left side of the graph, indicating that most movies have a budget of less than $1 million. To calculate the exact percentage, we need to sum up the frequencies of all data points to the left of the $1 million mark and divide it by the total number of data points.\n\nFrom the histogram, we can estimate that approximately 80% of the data points are to the left of the $1 million mark. Therefore, the percentage of movies with a budget of less than $1 million is around 80%.\n\n**Answer: D: 80%**",
+        "model_choice": "D"
+    },
+    {
+        "question": null,
+        "options": null,
+        "answer": null,
+        "model_output": null,
+        "model_choice": null
+    },
+    {
+        "question": null,
+        "options": null,
+        "answer": null,
+        "model_output": null,
+        "model_choice": null
+    },
+    {
+        "question": "What is the data type of the feature \"id\" in the TMDB 5000 Movie Dataset?",
+        "options": {
+            "A": "string",
+            "B": "categorical",
+            "C": "int32",
+            "D": "float32",
+            "E": "datetime"
+        },
+        "answer": "D",
+        "model_output": "D",
+        "model_choice": "D"
+    },
+    {
+        "question": null,
+        "options": null,
+        "answer": null,
+        "model_output": null,
+        "model_choice": null
+    },
+    {
+        "question": null,
+        "options": null,
+        "answer": null,
+        "model_output": null,
+        "model_choice": null
+    },
+    {
+        "question": "What is the primary characteristic of the distribution of movie titles by original title in the TMDB 5000 Movie Dataset?",
+        "options": {
+            "A": "Symmetry",
+            "B": "Uniformity",
+            "C": "Normality",
+            "D": "Bimodality",
+            "E": "Skewness"
+        },
+        "answer": "E",
+        "model_output": "The primary characteristic of the distribution of movie titles by original title in the TMDB 5000 Movie Dataset is skewness. The chart shows a clear skewness to the right, indicating that there are more movie titles with lower frequencies than those with higher frequencies. This suggests that the distribution is not symmetrical and has a long tail towards the lower end.",
+        "model_choice": "E"
+    },
+    {
+        "question": null,
+        "options": null,
+        "answer": null,
+        "model_output": null,
+        "model_choice": null
+    },
+    {
+        "question": "What is the distribution of movie popularity in the TMDB 5000 Movie Dataset?",
+        "options": {
+            "A": "A normal distribution with a mean of 50 and a standard deviation of 10",
+            "B": "A random distribution with no pattern or trend",
+            "C": "A uniform distribution with all movies having the same popularity value",
+            "D": "A skewed distribution with most movies having low popularity values",
+            "E": "A bimodal distribution with two peaks at 200 and 400"
+        },
+        "answer": "D",
+        "model_output": "D: A skewed distribution with most movies having low popularity values.",
+        "model_choice": "D"
+    },
+    {
+        "question": null,
+        "options": null,
+        "answer": null,
+        "model_output": null,
+        "model_choice": null
+    },
+    {
+        "question": null,
+        "options": null,
+        "answer": null,
+        "model_output": null,
+        "model_choice": null
+    },
+    {
+        "question": null,
+        "options": null,
+        "answer": null,
+        "model_output": null,
+        "model_choice": null
+    },
+    {
+        "question": "What is the distribution of revenue for the 4803 movies in the dataset?",
+        "options": {
+            "A": "A normal distribution with most movies having revenue around 1 billion",
+            "B": "A uniform distribution with all movies having revenue around 0.5 billion",
+            "C": "A uniform distribution with all movies having revenue around 1 billion",
+            "D": "A bimodal distribution with two peaks at 0.5 and 1.5 billion",
+            "E": "A skewed distribution with most movies having low revenue"
+        },
+        "answer": "E",
+        "model_output": "**Answer: E**\n\nThe histogram shows a skewed distribution with most movies having low revenue, indicating that the majority of the movies in the dataset have relatively low revenue. The distribution is not normal, uniform, or bimodal, but rather skewed towards lower revenue values.",
+        "model_choice": "E"
+    },
+    {
+        "question": "What is the approximate median runtime of movies in the dataset?",
+        "options": {
+            "A": "50 minutes",
+            "B": "100 minutes",
+            "C": "500 minutes",
+            "D": "1,000 minutes",
+            "E": "1,500 minutes"
+        },
+        "answer": "C",
+        "model_output": "To find the median runtime of movies in the dataset, we need to look at the distribution of runtime values. The histogram shows a skewed distribution with most movies having a runtime of less than 100 minutes. The median is the middle value in a dataset when it is ordered from smallest to largest. Since the distribution is skewed, the median will be closer to the lower end of the range.\n\nLooking at the histogram, we can see that the majority of movies have a runtime of less than 100 minutes. The median will likely be around the midpoint of this range, which appears to be around 50 minutes.\n\n*Answer*: A",
+        "model_choice": "A"
+    },
+    {
+        "question": null,
+        "options": null,
+        "answer": null,
+        "model_output": null,
+        "model_choice": null
+    },
+    {
+        "question": "What percentage of movies in the TMDB 5000 Movie Dataset are in the \"Released\" status?",
+        "options": {
+            "A": "20%",
+            "B": "40%",
+            "C": "60%",
+            "D": "80%",
+            "E": "90%"
+        },
+        "answer": "C",
+        "model_output": "To find the percentage of movies in the \"Released\" status, we need to look at the bar plot and identify the number of movies in this status category. The bar plot shows three categories: \"Released\", \"Post Production\", and \"Rumored\". The x-axis represents the index, and the y-axis represents the status.\n\nFrom the bar plot, we can see that the \"Released\" category has a significant number of movies, while the other two categories have fewer movies. To calculate the percentage, we need to know the total number of movies in the dataset, which is 5000.\n\nSince the bar plot does not provide the exact number of movies in each category, we can estimate the percentage based on the relative lengths of the bars. The \"Released\" bar appears to be the longest, indicating that it has the largest number of movies.\n\nAssuming the \"Released\" bar represents approximately 60% of the total number of movies, we can estimate the percentage of movies in the",
+        "model_choice": "X"
+    },
+    {
+        "question": null,
+        "options": null,
+        "answer": null,
+        "model_output": null,
+        "model_choice": null
+    },
+    {
+        "question": "What is the most frequent original language of movie titles in the dataset?",
+        "options": {
+            "A": "fr",
+            "B": "de",
+            "C": "es",
+            "D": "en",
+            "E": "zh"
+        },
+        "answer": "D",
+        "model_output": "D",
+        "model_choice": "D"
+    },
+    {
+        "question": "What is the highest frequency of the feature \"vote_average\" in the dataset?",
+        "options": {
+            "A": "1100",
+            "B": "2200",
+            "C": "3300",
+            "D": "4400",
+            "E": "5500"
+        },
+        "answer": "D",
+        "model_output": "To answer this question, we need to look at the bar plot and find the highest frequency of the feature \"vote_average\" in the dataset. The y-axis represents the frequency, and the x-axis represents the rating. The highest bar in the plot corresponds to the highest frequency.\n\nLooking at the plot, we can see that the highest bar is at the rating of 4.4, which corresponds to a frequency of 4400.\n\n*Answer*: D",
+        "model_choice": "D"
+    },
+    {
+        "question": "What is the distribution of the vote count in the TMDB 5000 Movie Dataset?",
+        "options": {
+            "A": "The vote count is evenly distributed across all data points.",
+            "B": "The vote count is highly skewed with most values concentrated at the lower end.",
+            "C": "The vote count is normally distributed with a mean of 690.22.",
+            "D": "The vote count is highly concentrated at the upper end with a few outliers.",
+            "E": "The vote count is zero for all data points."
+        },
+        "answer": "E",
+        "model_output": "Based on the histogram, the vote count is highly concentrated at the lower end with a few outliers. The majority of the data points are clustered at the lower end of the vote count range, with a few data points having significantly higher vote counts. This suggests that the vote count is not evenly distributed across all data points, but rather skewed towards the lower end.\n\n*Answer*: D",
+        "model_choice": "D"
+    },
+    {
+        "question": null,
+        "options": null,
+        "answer": null,
+        "model_output": null,
+        "model_choice": null
+    },
+    {
+        "question": "What is the country or region with the highest happiness score in the World Happiness Report 2019?",
+        "options": {
+            "A": "Denmark",
+            "B": "Iceland",
+            "C": "Switzerland",
+            "D": "Finland",
+            "E": "Norway"
+        },
+        "answer": "D",
+        "model_output": "A",
+        "model_choice": "A"
+    },
+    {
+        "question": "What is the mean happiness score across different countries and regions?",
+        "options": {
+            "A": "0.00",
+            "B": "2.85",
+            "C": "5.41",
+            "D": "1.11",
+            "E": "7.77"
+        },
+        "answer": "C",
+        "model_output": "C",
+        "model_choice": "C"
+    },
+    {
+        "question": null,
+        "options": null,
+        "answer": null,
+        "model_output": null,
+        "model_choice": null
+    },
+    {
+        "question": null,
+        "options": null,
+        "answer": null,
+        "model_output": null,
+        "model_choice": null
+    },
+    {
+        "question": null,
+        "options": null,
+        "answer": null,
+        "model_output": null,
+        "model_choice": null
+    },
+    {
+        "question": null,
+        "options": null,
+        "answer": null,
+        "model_output": null,
+        "model_choice": null
+    },
+    {
+        "question": "What is the country or region with the highest generosity level in the World Happiness Report 2019?",
+        "options": {
+            "A": "Switzerland",
+            "B": "Iceland",
+            "C": "Finland",
+            "D": "New Zealand",
+            "E": "Denmark"
+        },
+        "answer": "A",
+        "model_output": "D",
+        "model_choice": "D"
+    },
+    {
+        "question": null,
+        "options": null,
+        "answer": null,
+        "model_output": null,
+        "model_choice": null
+    }
+]
