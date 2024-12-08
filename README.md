@@ -55,6 +55,8 @@ bash run_dataset.sh "10"  # step10_chart_qa_edit_chart()
 
 **Research Question**: Does the VisCode improve VLMs in chart understanding? **Yes**
 
+- **Settings**: **63** generated chart figures with questions, options, and answers.
+
 ```bash
 CACHE_DIR="${HOME}/projects/def-carenini/yuweiyin/.cache/huggingface/"  # YOUR CACHE_DIR
 HF_ID_VLM="meta-llama/Llama-3.2-11B-Vision-Instruct"  # The VLMs for evaluation
@@ -81,6 +83,12 @@ python3 run_experiment.py --verbose --task 1 --add_ds_info --add_code \
 ### Main Experiment 2
 
 **Research Question**: Does the VisCode make VLMs more robust to chart modifications? **Yes**
+
+- **Settings**
+  - Step 1: **Pick 7 QA examples** that **Acc=100%** using original charts (w/ or w/o VisCode);
+  - Step 2: Modify the original VisCode, only change the color of bars (**8 new colors** each);
+  - Step 3: Produce new chart figures (paired with the **original QA**);
+  - Step 4: Run VLM evaluation on charts with new colors. (7 * 8 = **54 new examples**)
 
 ```bash
 CACHE_DIR="${HOME}/projects/def-carenini/yuweiyin/.cache/huggingface/"  # YOUR CACHE_DIR
