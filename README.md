@@ -46,34 +46,63 @@ bash run_dataset.sh "6"  # step6_chart_cap_gen() <-- VLM (GPU needed)
 bash run_dataset.sh "7"  # step7_overall_analysis() <-- Text LLM (GPU needed)
 bash run_dataset.sh "8"  # step8_merge_all_info()
 bash run_dataset.sh "9"  # step9_chart_qa_task() <-- Text LLM (GPU needed)
+bash run_dataset.sh "10"  # step10_chart_qa_edit_chart()
 ```
 
-## Run Experiments
+## Experiments
+
+### Main Experiment 1
+
+**Research Question**: Does the VisCode improve VLMs in chart understanding? **Yes**
 
 ```bash
 CACHE_DIR="${HOME}/projects/def-carenini/yuweiyin/.cache/huggingface/"  # YOUR CACHE_DIR
-HF_ID_VLM="meta-llama/Llama-3.2-11B-Vision-Instruct"  # The VLMs to evaluate
+HF_ID_VLM="meta-llama/Llama-3.2-11B-Vision-Instruct"  # The VLMs for evaluation
 #HF_ID_VLM="Qwen/Qwen2-VL-7B-Instruct"
 
-# Baseline (0, 0, 0, 0, 0): [#item = 63] Accuracy: 0.04762
-# Done All. Statistics: done_cnt_all=63, miss_cnt_all=53, fail_to_answer_cnt_all=47
+# Main (w/ or w/o VisCode as input)
 python3 run_experiment.py --verbose --task 1 \
   --cache_dir "${CACHE_DIR}" --project_root_dir "${HOME}" --hf_id_vlm "${HF_ID_VLM}"
-
-# Baseline + Code Input (1, 0, 0, 0, 0): [#item = 63] Accuracy: 0.17460
-# Done All. Statistics: done_cnt_all=63, miss_cnt_all=53, fail_to_answer_cnt_all=39
 python3 run_experiment.py --verbose --task 1 --add_code \
   --cache_dir "${CACHE_DIR}" --project_root_dir "${HOME}" --hf_id_vlm "${HF_ID_VLM}"
 
-# Baseline + Dataset Info (0, 1, 0, 0, 0): [#item = 63] Accuracy: 0.04762
-# Done All. Statistics: done_cnt_all=63, miss_cnt_all=53, fail_to_answer_cnt_all=47
+# Analytical (with dataset information as extra input)
 python3 run_experiment.py --verbose --task 1 --add_ds_info \
   --cache_dir "${CACHE_DIR}" --project_root_dir "${HOME}" --hf_id_vlm "${HF_ID_VLM}"
-
-# Baseline + Dataset Info + Code Input (1, 1, 0, 0, 0): [#item = 63] Accuracy: 0.30159
-# Done All. Statistics: done_cnt_all=63, miss_cnt_all=53, fail_to_answer_cnt_all=34
 python3 run_experiment.py --verbose --task 1 --add_ds_info --add_code \
   --cache_dir "${CACHE_DIR}" --project_root_dir "${HOME}" --hf_id_vlm "${HF_ID_VLM}"
 ```
+
+| Setting           | Accuracy  | 
+|-------------------|-----------|
+| w/o VisCode       | 49.2%     | 
+| w/ VisCode (Ours) | **52.4%** | 
+
+### Main Experiment 2
+
+**Research Question**: Does the VisCode make VLMs more robust to chart modifications? **Yes**
+
+```bash
+CACHE_DIR="${HOME}/projects/def-carenini/yuweiyin/.cache/huggingface/"  # YOUR CACHE_DIR
+HF_ID_VLM="meta-llama/Llama-3.2-11B-Vision-Instruct"  # The VLMs for evaluation
+#HF_ID_VLM="Qwen/Qwen2-VL-7B-Instruct"
+
+# Main (w/ or w/o VisCode as input)
+python3 run_experiment_edit.py --verbose --task 1 \
+  --cache_dir "${CACHE_DIR}" --project_root_dir "${HOME}" --hf_id_vlm "${HF_ID_VLM}"
+python3 run_experiment_edit.py --verbose --task 1 --add_code \
+  --cache_dir "${CACHE_DIR}" --project_root_dir "${HOME}" --hf_id_vlm "${HF_ID_VLM}"
+
+# Analytical (with dataset information as extra input)
+python3 run_experiment_edit.py --verbose --task 1 --add_ds_info \
+  --cache_dir "${CACHE_DIR}" --project_root_dir "${HOME}" --hf_id_vlm "${HF_ID_VLM}"
+python3 run_experiment_edit.py --verbose --task 1 --add_ds_info --add_code \
+  --cache_dir "${CACHE_DIR}" --project_root_dir "${HOME}" --hf_id_vlm "${HF_ID_VLM}"
+```
+
+| Setting           | Accuracy  | Δ Acc  | Avg Output Len |
+|-------------------|-----------|--------|----------------|
+| w/o VisCode       | 85.7%     | -14.3% | 97.7           |
+| w/ VisCode (Ours) | **100%**  | **0**  | **36.6**       |
 
 ---
