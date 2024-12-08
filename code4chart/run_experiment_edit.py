@@ -436,16 +436,20 @@ Answer:
 
         """
         --results_filename "all_qa_results-edit_bar_color-0_0_0_0_0-post.json"
-        >>> 
+        >>> [#item = 56] Accuracy: 0.85714   no_answer_cnt = 0
+        >>> [#item = 56] Output length statistics: o_min = 13; o_max = 147; o_mean = 97.70; o_std = 42.91
 
         --results_filename "all_qa_results-edit_bar_color-1_0_0_0_0-post.json"
-        >>> 
+        >>> [#item = 56] Accuracy: 1.00000   no_answer_cnt = 0
+        >>> [#item = 56] Output length statistics: o_min = 2; o_max = 127; o_mean = 36.61; o_std = 47.84
 
         --results_filename "all_qa_results-edit_bar_color-0_1_0_0_0-post.json"
-        >>> 
+        >>> [#item = 56] Accuracy: 0.85714   no_answer_cnt = 8
+        >>> [#item = 56] Output length statistics: o_min = 2; o_max = 201; o_mean = 111.66; o_std = 47.98
 
         --results_filename "all_qa_results-edit_bar_color-1_1_0_0_0-post.json"
-        >>> 
+        >>> [#item = 56] Accuracy: 1.00000   no_answer_cnt = 0
+        >>> [#item = 56] Output length statistics: o_min = 2; o_max = 137; o_mean = 38.39; o_std = 45.84
         """
 
         return None
