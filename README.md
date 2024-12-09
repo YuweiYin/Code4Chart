@@ -1,6 +1,4 @@
-# Code4Chart
-
-* C4C: Does Visualization Code Improve Chart Understanding for Vision-Language Models?
+# Code4Chart (C4C)
 
 ---
 
