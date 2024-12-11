@@ -1,6 +1,6 @@
 # Code4Chart (C4C)
 
----
+* **Code4Chart: Using Visualization Code to Improve Chart Understanding for Vision-Language Models**
 
 ## Python Environment
 
@@ -114,5 +114,23 @@ python3 run_experiment_edit.py --verbose --task 1 --add_ds_info --add_code \
 |-------------------|-----------|--------|----------------|
 | w/o VisCode       | 85.7%     | -14.3% | 97.7           |
 | w/ VisCode (Ours) | **100%**  | **0**  | **36.6**       |
+
+
+## Citation
+
+```bibtex
+@misc{yin2024code4chart,
+  title        = {Code4Chart: Using Visualization Code to Improve Chart Understanding for Vision-Language Models},
+  author       = {Yin, Yuwei},
+  publisher    = {GitHub},
+  howpublished = {\url{https://github.com/YuweiYin/Code4Chart}},
+  month        = {Dec},
+  year         = {2024},
+}
+```
+
+## License
+
+Please refer to the [LICENSE](./LICENSE) file for more details.
 
 ---
