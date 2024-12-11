@@ -13,6 +13,7 @@ from code4chart.init_functions import logger_setup
 def main(
         hf_id: Optional[str] = None,
         subset: Optional[str] = None,
+        hf_login_token: Optional[str] = None,
         cache_dir: Optional[str] = None,
         trust_remote_code: bool = False,
         verbose: bool = False,
@@ -23,6 +24,7 @@ def main(
 
     :param hf_id: HuggingFace dataset id (ORGANIZATION_NAME/DATASET_NAME)
     :param subset: Name of the dataset subset, e.g., "authors" or "characters"
+    :param hf_login_token: The login token of the Hugging Face.
     :param cache_dir: The root directory of the cache, e.g., "${HOME}/.cache/huggingface/"
     :param trust_remote_code: Whether to allow for datasets defined on the Hub using a dataset script.
     :param verbose: Verbose mode: show logs.
@@ -41,8 +43,8 @@ def main(
         raise ValueError(f"ValueError: Please specify a valid --cache_dir")
 
     # Hugging Face login
-    HF_TOKEN = "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"
-    login(token=HF_TOKEN)
+    if isinstance(hf_login_token, str):
+        login(token=hf_login_token)
 
     # Cache directory setup
     cache_dir = os.path.join(cache_dir, "datasets")
