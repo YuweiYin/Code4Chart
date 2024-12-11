@@ -47,7 +47,11 @@ bash run_dataset.sh "9"  # step9_chart_qa_task() <-- Text LLM (GPU needed)
 bash run_dataset.sh "10"  # step10_chart_qa_edit_chart()
 ```
 
+Processed [data](data/code4chart/process).
+
 ## Experiments
+
+Experimental [results](data/code4chart/results/Llama-3.2-11B-Vision-Instruct).
 
 ### Main Experiment 1
 
