@@ -90,7 +90,7 @@ python3 run_experiment.py --verbose --task 1 --add_ds_info --add_code \
   - Step 1: **Pick 7 QA examples** that **Acc=100%** using original charts (w/ or w/o VisCode);
   - Step 2: Modify the original VisCode, only change the color of bars (**8 new colors** each);
   - Step 3: Produce new chart figures (paired with the **original QA**);
-  - Step 4: Run VLM evaluation on charts with new colors. (7 * 8 = **54 new examples**)
+  - Step 4: Run VLM evaluation on charts with new colors. (7 * 8 = **56 new examples**)
 
 ```bash
 CACHE_DIR="${HOME}/projects/def-carenini/yuweiyin/.cache/huggingface/"  # YOUR CACHE_DIR
